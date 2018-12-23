@@ -1,0 +1,30 @@
+<div id="quran-search-grp" class="tab-pane fade">
+   <div id="quran-search-row">
+      <input #searchText type="text" class="form-control" id="quran-search" autocomplete="off" placeholder="رحمة"
+         (keyup)="onKeyUp(searchText.value)">
+   </div>
+
+   <ol id="quran-results">
+      <li *ngIf="disp_matches.length == 0" id="enter-data-msg">
+         أدخل كلمات آية ما لتظهر نتئاج.
+      </li>
+      <li [id]="r.ayah.id" *ngFor="let r of disp_matches">
+         <a href="https://furqan.co/{{r.ayah.surah_num()}}/{{r.ayah.surah_ayah_num()}}">
+            <div class="ayah-ref">{{r.ayah.surah_name()}} {{r.ayah.surah_aya_num_ar()}}</div>
+         </a>
+         <span [innerHTML]="r.text"></span>
+      </li>
+   </ol>
+   <div *ngIf="show_more_btn">
+      <button class="btn" id="quran-more-results" (click)="onMoreClicked()">
+         للمزيد …
+      </button>
+   </div>
+</div>
+
+<!--
+<div id="tip">
+   <p></p>
+</div>
+<div id="copy-text"></div>
+-->
