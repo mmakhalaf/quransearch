@@ -26,24 +26,69 @@ const suwar: any = [
    [3, "النصر"], [5, "المسد"], [4, "الإخلاص"], [5, "الفلق"], [6, "الناس"]
 ];
 
+let qurans = {
+   'uthmani': undefined,
+   'imlaai': undefined,
+   'morph': undefined
+};
+
+function all_quran_loaded(): boolean {
+   for (let k in qurans) {
+      if (qurans[k] === undefined) {
+         return false;
+      }
+   }
+   return true;
+}
+
+function all_quran_consistent_len(): boolean {
+   let s = qurans.imlaai.length;
+   for (let k in qurans) {
+      if (qurans[k].length != s) {
+         return false;
+      }
+   }
+   return true;
+}
+
+function quran_len(): number {
+   for (let k in qurans) {
+      if (qurans[k] != null) {
+         return qurans[k].length;
+      }
+   }
+}
+
 export class Quran {
 
    ayat: Array<Ayah> = null;
    is_loaded = false;
-   
+
    constructor() {
-      fetch('assets/quran.json', { cache: 'force-cache' }).then(r => r.json()).then(json => {
-         this.load(json);
-      });
+      for (let k in qurans) {
+         fetch(`assets/qdb_${k}.json`, { cache: 'force-cache' }).then(r => r.json()).then(json => {
+            qurans[k] = json;
+            this.load();
+         });
+      }
    }
 
-   private load(json: any) {
-      this.ayat = new Array<Ayah>(json.length);
+   private load() {
+      if (!all_quran_loaded()) {
+         return;
+      }
 
+      if (!all_quran_consistent_len()) {
+         console.error(`Inconsistent lengths for Quran files`);
+         return;
+      }
+
+      let len = quran_len();
+      this.ayat = new Array<Ayah>(len);
       let cur_a = 0;
       let cur_s = 0;
-      for (let i = 0; i < json.length; ++i) {
-         this.ayat[i] = new Ayah(json, i, cur_s, cur_a);
+      for (let i = 0; i < len; ++i) {
+         this.ayat[i] = new Ayah(i, cur_s, cur_a);
 
          cur_a++;
          if (cur_a >= suwar[cur_s][0]) {
@@ -59,15 +104,17 @@ export class Ayah {
    id: number = -1;
    surah_idx: number = -1;
    ayah_surah_idx: number = -1;
-   imlaa2y: string;
    uthmani: string;
+   imlaai: string;
+   // root: string;
 
-   constructor(json: any, ayah_glob: number, surah: number, ayah: number) {
+   constructor(ayah_glob: number, surah: number, ayah: number) {
       this.id = ayah_glob;
       this.surah_idx = surah;
       this.ayah_surah_idx = ayah;
-      this.imlaa2y = json[ayah_glob][0];
-      this.uthmani = json[ayah_glob][1];
+      this.uthmani = qurans.uthmani[ayah_glob];
+      this.imlaai = qurans.imlaai[ayah_glob];
+      // this.root = qurans.morph[ayah_glob];
    }
 
    surah_name(): string {

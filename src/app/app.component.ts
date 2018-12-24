@@ -52,6 +52,20 @@ export class AppComponent implements OnInit {
       this.disp_matches = this.inc_num_results();
       this.show_more_btn = this.can_show_more();
    }
+
+   onCopyAyahClicked(r: SearchResult) {
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = r.ayah.uthmani;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+   }
    
    /// DOM & Search
 

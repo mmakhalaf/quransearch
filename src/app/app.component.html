@@ -12,6 +12,11 @@
          <a href="https://furqan.co/{{r.ayah.surah_num()}}/{{r.ayah.surah_ayah_num()}}">
             <div class="ayah-ref">{{r.ayah.surah_name()}} {{r.ayah.surah_aya_num_ar()}}</div>
          </a>
+         <button *ngIf="undefined" class="btn copy-btn" (click)="onCopyAyahClicked(r)">
+            <svg class="icon icon-copy">
+               <use xlink:href="/assets/icons.svg#copy"></use>
+            </svg>
+         </button>
          <span [innerHTML]="r.text"></span>
       </li>
    </ol>
