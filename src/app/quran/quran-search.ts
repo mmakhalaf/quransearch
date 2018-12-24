@@ -45,16 +45,10 @@ export class QuranSearch {
          let words_i = []
          let m = null;
          while ((m = re.exec(ayah.imlaai)) !== null) {
-            // Sync the uthmani text to the imlaa'iee text
             let word_i = ayah.imlaai.slice(0, re.lastIndex).split(' ').length - 1;
-            if ((count === 2442 && word_i > 2) || count === 5463 && word_i > 0) {
-               word_i--;
-            }
-            
             const remove = ayah.imlaai.slice(0, m.index).match(/(^| )(ها|و?يا) /g);
             word_i -= remove ? remove.length : 0;
             word_i += ayah.uthmani.startsWith('۞') ? 1 : 0;
-         
             words_i.push(word_i);
          }
          if (words_i.length > 0) {
