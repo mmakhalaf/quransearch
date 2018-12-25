@@ -1,26 +1,18 @@
 <div id="quran-search-grp" class="tab-pane fade">
-   <div id="quran-search-row">
-      <input #searchText type="text" class="form-control" id="quran-search" autocomplete="off" placeholder="رحمة"
-         (keyup)="onKeyUp(searchText.value)">
-   </div>
-
+   <qsearch-controls></qsearch-controls>
    <ol id="quran-results">
-      <li *ngIf="disp_matches.length == 0" id="enter-data-msg">
-         أدخل كلمات آية ما لتظهر نتئاج.
+      <li *ngIf="qService.disp_matches.length() == 0" id="enter-data-msg">
+         أدخل كلمات آية ما لتظهر نتائج.
       </li>
-      <li [id]="r.ayah.id" *ngFor="let r of disp_matches">
-         <a href="https://furqan.co/{{r.ayah.surah_num()}}/{{r.ayah.surah_ayah_num()}}">
-            <div class="ayah-ref">{{r.ayah.surah_name()}} {{r.ayah.surah_aya_num_ar()}}</div>
-         </a>
-         <button *ngIf="undefined" class="btn copy-btn" (click)="onCopyAyahClicked(r)">
-            <svg class="icon icon-copy">
-               <use xlink:href="/assets/icons.svg#copy"></use>
-            </svg>
-         </button>
-         <span [innerHTML]="r.text"></span>
+      <li *ngIf="qService.disp_matches.length() > 0" id="enter-data-msg">
+         عدد الآيات: {{qService.all_matches.length()}}
+         عدد المرات: {{qService.all_matches.num_occurances()}}
+      </li>
+      <li [id]="r.ayah.id" *ngFor="let r of qService.disp_matches.results">
+         <qsearch-result [(result)]="r"></qsearch-result>
       </li>
    </ol>
-   <div *ngIf="show_more_btn">
+   <div *ngIf="can_show_more()">
       <button class="btn" id="quran-more-results" (click)="onMoreClicked()">
          للمزيد …
       </button>

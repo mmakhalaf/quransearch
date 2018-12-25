@@ -3,7 +3,7 @@
 import json
 
 uth = '../src/assets/qdb_uthmani.json'
-oth = '../src/assets/qdb_imlaai.json'
+oth = '../src/assets/qdb_morph.json'
 
 with open(uth, 'r') as f:
     uth_j = json.load(f)

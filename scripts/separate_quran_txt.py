@@ -27,15 +27,23 @@ for i in range(0, len(iml)):
     # Guz2
     if u.startswith('۞'):
         a = '۞ %s' % a
-    # Ya followed by Alef
-    a = a.replace('يا أ', 'ياأ')
-    a = a.replace('يا ل', 'يال')
-    # a = a.replace('يا و', 'ياو')
+    
+    a = a.replace('يا أسفى', 'ياأسفى')
+    a = a.replace(' يا أهل', ' ياأهل')
+    a = a.replace('يا أبانا', 'ياأبانا')
+    a = a.replace('يا أخت', 'ياأخت')
+    a = a.replace('يا أبت', 'ياأبت')
+    a = a.replace('يا ليت', 'ياليت')
+    a = a.replace('يا أيه', 'ياأيه')
+    a = a.replace('يا أيتها', 'ياأيتها')
+    a = a.replace('يا ليتني', 'ياليتني')
+    a = a.replace('يا أولي', 'ياأولي')
+    a = a.replace('يا أيها', 'ياأيها')
     a = a.replace('يا قوم', 'ياقوم')
     a = a.replace('يا معشر', 'يامعشر')
     a = a.replace('يا بني', 'يابني')
     a = a.replace('يا مالك', 'يامالك')
-    a = a.replace('يا رب', 'يارب')
+    a = a.replace(' يا رب', ' يارب')
     a = a.replace('يا عباد', 'ياعباد')
     a = a.replace('يا ويلنا', 'ياويلنا')
     a = a.replace('يا هامان', 'ياهامان')
@@ -64,33 +72,17 @@ for i in range(0, len(iml)):
     a = a.replace('يا ويلتنا', 'ياويلتنا')
     a = a.replace('يا صاحبي', 'ياصاحبي')
     a = a.replace('يا هود', 'ياهود')
-    a = a.replace('يا فرعون', 'يافرعون')
+    a = a.replace(' يا فرعون', ' يافرعون')
     a = a.replace('يا بشرى', 'يابشرى')
     a = a.replace('يا سماء', 'ياسماء')
     a = a.replace('يا ويلتا', 'ياويلتا')
     a = a.replace('يا حسرتنا', 'ياحسرتنا')
+    a = a.replace('يا لوط', 'يالوط')
+    a = a.replace('يا أرض', 'ياأرض')
 
-    # Corrections
-    a = a.replace('الدنيالعب', 'الدنيا لعب')
-    a = a.replace('عربيالينذر', 'عربيا لينذر')
-    a = a.replace('عربيالتنذر', 'عربيا لتنذر')
-    a = a.replace('عربيالعلكم', 'عربيا لعلكم')
-    a = a.replace('عربيالقوم', 'عربيا لقوم')
-    a = a.replace('وحياأو', 'وحيا أو')
-    a = a.replace('سخرياأم', 'سخريا أم')
-    a = a.replace('الدنيالعنة', 'الدنيا لعنة')
-    a = a.replace('أعجميالقالوا', 'أعجميا لقالوا')
-    a = a.replace('الدنيالنفتنهم', 'الدنيا لنفتنهم')
-    a = a.replace('سميتموهاأنتم', 'سميتموها أنتم')
-    a = a.replace('بغياأن', 'بغيا أن')
-    a = a.replace('زكرياربه', 'زكريا ربه')
-    a = a.replace('أتياأهل', 'أتيا أهل')
-    a = a.replace('فأتيافرعون', 'فأتيا فرعون')
-    a = a.replace('الدنياربنا', 'الدنيا ربنا')
-    a = a.replace('الحواياأو', 'الحوايا أو')
-    a = a.replace('غنياأو', 'غنيا أو')
+    if a.startswith('يا أهل'):
+        a = a.replace('يا أهل', 'ياأهل')
 
-    # Others
     a = a.replace('وأن لو', 'وألو')
     if a.startswith('ها أنتم'):
         a = a.replace('ها أنتم', 'هاأنتم')

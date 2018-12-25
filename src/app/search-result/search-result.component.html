@@ -1,0 +1,32 @@
+<div class="extra-panel">
+   <a class="ayah-ref" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
+      {{result.ayah.surah_name()}} {{result.ayah.surah_aya_num_ar()}}
+   </a>
+   <button class="extra-btn" (click)="onCopyAyahClicked()">
+      انسخ
+      <!-- <svg class="icon icon-copy">
+         <use xlink:href="/assets/icons.svg#copy"></use>
+      </svg> -->
+   </button>
+   <button class="extra-btn" (click)="onShowRootsClicked()">
+      المشتقات
+   </button>
+</div>
+<!-- <span [innerHTML]="result.text"></span> -->
+<span class="ayah-word" *ngFor="let w of result.ayah.words" (click)="onWordClicked(w)">
+   <div *ngIf="should_highlight(w); then Highlighted; else NotHighlighted"></div>
+   <ng-template #Highlighted>
+      <strong>{{w.uthmani}} </strong>
+   </ng-template>
+   <ng-template #NotHighlighted>
+      {{w.uthmani}}
+   </ng-template>
+</span>
+<ul *ngIf="show_roots" class="res-roots">
+   <li *ngFor="let r of roots">
+      <span class="ayah-word" (click)="onRootClicked(r)">{{r.text}}</span>:
+      <span *ngFor="let w of r.words">
+         {{w.uthmani}}
+      </span>
+   </li>
+</ul>

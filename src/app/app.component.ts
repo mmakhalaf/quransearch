@@ -1,8 +1,7 @@
-import { Component, OnInit, HostListener } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { Quran, Ayah } from './quran/quran';
-import { QuranSearch, SearchResult } from './quran/quran-search';
+import { Component, OnInit } from '@angular/core';
+import { QuranService } from './services/quran.service';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 
 // Consts
 @Component({
@@ -12,79 +11,36 @@ import { QuranSearch, SearchResult } from './quran/quran-search';
 })
 export class AppComponent implements OnInit {
 
-   quran = new Quran();
-   show_more_btn = false;
-   subject = new Subject<string>();
-   
-   all_matches = new Array<SearchResult>();
-   disp_matches = new Array<SearchResult>();
-   searchVal = '';
-
-   constructor() {
-      
+   constructor(
+      private qService: QuranService,
+      private route: ActivatedRoute
+      ) {
    }
 
    ngOnInit() {
-      this.subject.pipe(debounceTime(500)).subscribe(searchVal => {
-         this.onSearch(searchVal);
+      this.route.queryParams.subscribe((params: ParamMap) => {
+         this.on_query_change(params);
       });
    }
 
-   /// Events
-   onKeyUp(searchTextValue: string){
-      this.searchVal = searchTextValue;
-      this.subject.next(searchTextValue);
-   }
-
-   onSearch(searchTextValue: string) {
-      this.clear_matches();
-      this.searchVal = searchTextValue;
-      if (this.searchVal.length < 2)
-         return;
-      
-      let searcher = new QuranSearch(this.quran);
-      this.all_matches = searcher.search_by_word(this.searchVal);
-      this.disp_matches = this.init_num_results();
-      this.show_more_btn = this.can_show_more();
+   on_query_change(params: ParamMap) {
+      let q = params['q'];
+      let r = params['r'];
+      console.log(`OnInit ${q}, ${r}`);
+      if (q !== undefined) {
+         this.qService.perform_query_search(q);
+      } else if (r !== undefined) {
+         this.qService.perform_root_search(r);
+      }
    }
 
    onMoreClicked() {
-      this.disp_matches = this.inc_num_results();
-      this.show_more_btn = this.can_show_more();
+      this.qService.show_more();
    }
 
-   onCopyAyahClicked(r: SearchResult) {
-      let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = r.ayah.uthmani;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-   }
-   
    /// DOM & Search
 
    can_show_more(): boolean {
-      return this.all_matches.length != 0 && this.disp_matches.length < this.all_matches.length;
-   }
-
-   init_num_results(): any {
-      let s = Math.min(this.all_matches.length, 50);
-      return this.all_matches.slice(0, s);
-   }
-
-   inc_num_results(): any {
-      let s = Math.min(this.all_matches.length, this.disp_matches != null ? this.disp_matches.length + 50 : 50);
-      return this.all_matches.slice(0, s);
-   }
-
-   clear_matches() {
-      this.all_matches = new Array<SearchResult>();
-      this.disp_matches = new Array<SearchResult>();
+      return this.qService.can_show_more();
    }
 }
