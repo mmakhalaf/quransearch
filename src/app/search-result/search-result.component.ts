@@ -1,5 +1,5 @@
 import { Component, Input, AfterViewInit, OnInit } from '@angular/core';
-import { SearchResult } from '../quran/quran-search';
+import { SearchResult } from '../quran/search-result';
 import { QuranService } from '../services/quran.service';
 import { QuranRoot, QuranWord } from '../quran/quran';
 

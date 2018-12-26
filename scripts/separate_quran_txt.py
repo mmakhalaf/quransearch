@@ -3,7 +3,7 @@ import json
 # Separates the Quran JSON file containing uthmani and imlaa'i text
 # Make the imlaa'i text respect the word boundary of the uthmani text
 
-qtxt = '../files/quran.json'
+qtxt = '../files/quran-search-original/quran.json'
 with open(qtxt, 'r') as f:
     qtxt_j = json.load(f)
 
@@ -27,7 +27,7 @@ for i in range(0, len(iml)):
     # Guz2
     if u.startswith('۞'):
         a = '۞ %s' % a
-    
+
     a = a.replace('يا أسفى', 'ياأسفى')
     a = a.replace(' يا أهل', ' ياأهل')
     a = a.replace('يا أبانا', 'ياأبانا')

@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>بحث</title>
+
+<div id="quran-search-grp" class="tab-pane fade">
+  <div id="quran-search-row">
+    <input type="text" class="form-control" id="quran-search" autocomplete="off" placeholder="رحمة">
+  </div>
+  <ol id="quran-results">
+    <li id="enter-data-msg">أدخل كلمات آية ما لتظهر نتئاج.</li>
+  </ol>
+</div>
+
+<div id="tip"><p></p></div>
+<div id="copy-text"></div>
+
+<script>
+  window.Promise || document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"><\/script>');
+  window.fetch || document.write('<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@2.0.4/fetch.min.js"><\/script>');
+  window.IntersectionObserver || document.write('<script src="https://cdn.rawgit.com/w3c/IntersectionObserver/0cd30fe5/polyfill/intersection-observer.js"><\/script>');
+  Element.prototype.closest || document.write('<script src="https://cdn.jsdelivr.net/npm/element-closest@2.0.2/element-closest.min.js"><\/script>');
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+    document.write('<script src="lib/colorpicker.js"><\/script>');
+</script>
+<script src="js.js" type="module"></script>

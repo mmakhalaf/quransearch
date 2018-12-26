@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { QuranService } from './services/quran.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
 
 // Consts
 @Component({

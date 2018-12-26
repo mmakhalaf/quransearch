@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Quran } from '../quran/quran';
-import { SearchResults, QuranSearch } from '../quran/quran-search';
+import { QuranSearch } from '../quran/quran-search';
 import { Router } from '@angular/router';
+import { SearchResults } from '../quran/search-result';
 
 export type OnSearchValUpdated = (val: string) => void;
 

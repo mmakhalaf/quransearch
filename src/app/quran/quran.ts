@@ -1,4 +1,6 @@
 
+import * as MathUtils from './math-utils';
+
 const suwar: any = [
    [7, "الفاتحة"], [286, "البقرة"], [200, "آل عمران"], [176, "النساء"],
    [120, "المائدة"], [165, "الأنعام"], [206, "الأعراف"], [75, "الأنفال"],
@@ -211,11 +213,11 @@ export class Quran {
             cur_s++;
          }
       }
+      console.log('Done.');
       this.is_loaded = true;
       if (this.onLoaded != null) {
          this.onLoaded();
       }
-      console.log('Done.');
    }
 }
 
@@ -302,11 +304,29 @@ export class Ayah {
     * Convert a character index to the nearest word before it
     * @param index 
     */
-   imlaai_index_to_word(index: number): number {
-      if (index < 0 || index >= this.imlaai.length) {
-         return -1;
+   imlaai_index_to_word(start: number, end: number): Array<number> {
+      let word_indices = new Array<number>();
+      if (start < 0 || start > this.imlaai.length ||
+         end < 0 || end > this.imlaai.length) {
+         return word_indices;
       }
-      return this.imlaai.substr(0, index).trim().split(' ').length - 1;
+
+      // Here we have the start index and end index of the match
+      // We want to find out the words in between.
+      // Go through each word and get its range.
+      // If the ranges intersect, then we have a word
+      let word_arr = this.imlaai.split(' ');
+      let start_w = 0;
+      let word_i = 0;
+      for (let word of word_arr) {
+         let end_w = start_w + word.length;
+         if (MathUtils.ranges_intersect(start_w, end_w, start, end)) {
+            word_indices.push(word_i);
+         }
+         ++word_i;
+         start_w = end_w + 1;
+      }
+      return word_indices;
    }
 
    word_occurances(word: QuranWord): Set<number> {
