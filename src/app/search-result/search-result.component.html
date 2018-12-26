@@ -59,7 +59,7 @@
          <ul class="ayah-info">
             <li *ngFor="let a of related_ayat" class="ayah-related">
                [
-               <a class="ayah-ref" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
+               <a class="ayah-ref" href="https://furqan.co/{{a.surah_num()}}/{{a.surah_ayah_num()}}">
                   {{a.surah_name()}} {{a.surah_aya_num_ar()}}
                </a>
                ]
