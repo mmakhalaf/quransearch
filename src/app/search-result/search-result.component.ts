@@ -1,7 +1,7 @@
 import { Component, Input, AfterViewInit, OnInit } from '@angular/core';
 import { SearchResult } from '../quran/search-result';
 import { QuranService } from '../services/quran.service';
-import { QuranRoot, QuranWord } from '../quran/quran';
+import { QuranRoot, QuranWord, Ayah } from '../quran/quran';
 
 @Component({
    selector: 'qsearch-result',
@@ -14,8 +14,11 @@ export class SearchResultComponent implements OnInit {
    result: SearchResult;
 
    show_roots = false;
+   show_related = false;
+
    roots = new Array<QuranRoot>();
    highlighted_words = new Array<QuranWord>();
+   related_ayat = new Array<Ayah>();
 
    constructor(private qService: QuranService) {
 
@@ -38,6 +41,10 @@ export class SearchResultComponent implements OnInit {
             }
          }
       });
+      
+      this.result.ayah.for_each_related_ayah((ayah: Ayah) => {
+         this.related_ayat.push(ayah);
+      });
    }
 
    should_highlight(w: QuranWord): boolean {
@@ -46,6 +53,10 @@ export class SearchResultComponent implements OnInit {
    
    onShowRootsClicked() {
       this.show_roots = !this.show_roots;
+   }
+
+   onShowRelatedClicked() {
+      this.show_related = !this.show_related
    }
 
    onWordClicked(word: QuranWord) {

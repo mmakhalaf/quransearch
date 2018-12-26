@@ -1,4 +1,4 @@
-import { Quran } from './quran';
+import { Quran, Ayah } from './quran';
 import * as QSearchUtils from './search-utils';
 import { QuranSearchOpts, QuranSearchPlaceMode } from './search-opts';
 import { SearchResults, SearchResult } from './search-result';
@@ -76,7 +76,7 @@ export class QuranSearch {
 
    private search_by_regex(re: RegExp, num_words: number): SearchResults {
       let matches = new SearchResults();
-      for (let ayah of this.quran.ayat) {
+      this.quran.for_each_ayah((ayah: Ayah, ayah_id: string) => {
          let words_i = new Set();
          let found = false;
          let m: RegExpExecArray = null;
@@ -93,7 +93,7 @@ export class QuranSearch {
          if (found) {
             matches.add_result(ayah, words_i);
          }
-      }
+      });
       return matches;
    }
 }

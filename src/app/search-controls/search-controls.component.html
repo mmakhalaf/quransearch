@@ -1,4 +1,10 @@
-<div id="quran-search-row">
-   <input type="text" class="form-control" id="quran-search" autocomplete="off" placeholder="رحمة" [(ngModel)]="searchVal"
-      (keyup)="onKeyUp()">
+<div class="search-input-row">
+   <input 
+      type="text" 
+      class="form-control search-input" 
+      placeholder="رحمة" 
+      [(ngModel)]="searchVal"
+      (keyup)="onKeyUp()"
+      autofocus
+      >
 </div>

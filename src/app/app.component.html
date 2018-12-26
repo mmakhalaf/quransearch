@@ -1,19 +1,17 @@
 <div id="quran-search-grp" class="tab-pane fade">
    <qsearch-controls></qsearch-controls>
-   <ol id="quran-results">
-      <li *ngIf="qService.disp_matches.length() == 0" id="enter-data-msg">
-         أدخل كلمات آية ما لتظهر نتائج.
-      </li>
-      <li *ngIf="qService.disp_matches.length() > 0" id="enter-data-msg">
-         عدد الآيات: {{qService.all_matches.length()}}
-         عدد المرات: {{qService.all_matches.num_occurances()}}
-      </li>
-      <li [id]="r.ayah.id" *ngFor="let r of qService.disp_matches.results">
-         <qsearch-result [(result)]="r"></qsearch-result>
-      </li>
-   </ol>
+   <div *ngIf="qService.disp_matches.length() == 0" class="data-msg">
+      أدخل كلمات آية ما لتظهر نتائج.
+   </div>
+   <div *ngIf="qService.disp_matches.length() > 0" class="data-msg">
+      عدد الآيات: {{qService.all_matches.length()}}
+      عدد المرات: {{qService.all_matches.num_occurances()}}
+   </div>
+   <div class="search-results">
+      <qsearch-result *ngFor="let r of qService.disp_matches.results" [(result)]="r"></qsearch-result>
+   </div>
    <div *ngIf="can_show_more()">
-      <button class="btn" id="quran-more-results" (click)="onMoreClicked()">
+      <button class="btn" class="more-btn" (click)="onMoreClicked()">
          للمزيد …
       </button>
    </div>

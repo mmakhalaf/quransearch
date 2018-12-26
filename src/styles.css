@@ -6,97 +6,191 @@
    font-display: block;
    font-weight: 400;
    src: url(https://deendev.com/fonts/scheh.woff2) format('woff2'),
-        url(https://deendev.com/fonts/scheh.woff) format('woff');
- }
- @font-face {
+   url(https://deendev.com/fonts/scheh.woff) format('woff');
+}
+@font-face {
    font-family: Scheherazade;
    font-style: normal;
    font-display: block;
    font-weight: 700;
    src: url(https://deendev.com/fonts/scheh-b.woff2) format('woff2'),
-        url(https://deendev.com/fonts/scheh-b.woff) format('woff');
- }
- /* General */
- html { font-size: 22px; }
- @media (max-width: 768px) { html {font-size: 19px;} }
- @media (max-width: 576px) { html {font-size: 17px;} html.safari {font-size: 18px;} }
- body {
+   url(https://deendev.com/fonts/scheh-b.woff) format('woff');
+}
+
+/* General */
+html {
+   font-size: 22px; 
+}
+
+@media (max-width: 768px) {
+   html {
+      font-size: 19px;
+   }
+}
+
+@media (max-width: 576px) {
+   html {
+      font-size: 17px;
+   } 
+   html.safari {
+      font-size: 18px;
+   }
+}
+
+body {
    font-family: Scheherazade;
    font-size: 1rem;
    direction: rtl;
-   max-width: 750px;
    margin: 0 auto;
    padding: 0.8rem 0.3rem;
- }
- input {
-   font-family: inherit;
- }
- 
- #quran-search {
-   padding: 5px 12px 0;
+}
+
+.search-input {
+   padding: 5px 10px;
    line-height: 1.9;
-   max-width: 350px;
-   margin: 0 auto;
+   width: 50%;
+   outline-width: 0;
+   font-family: inherit;
    font-size: 1.3rem;
    border: 1px solid #ccc;
-   border-radius: 4px;
+   border-radius: 20px;
    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
- }
- #quran-results {
+}
+
+.search-results {
    font-size: 1.3rem;
-   list-style-type: none;
    margin: 0;
    padding: 0.5rem 0.9rem;
    min-height: 6rem;
- }
- #quran-results li {
+   display: grid;
+}
+
+.search-results .result-row {
    padding: 5.5px 5px;
    min-height: 75px;
- }
- #quran-results li:not(:first-child) {
-   border-top: solid 1px #f5f5f5;
- }
- #quran-results li strong {
+}
+.search-results .result-row {
+   border-top: solid 1px #bdbdbd;
+}
+.search-results .result-row .highlighted {
    color: hsla(0, 85%, 50%, 1);
- }
- 
+}
+
 .extra-panel {
    float: left;
    padding-right: 5px;
-   padding-bottom: 1px;
+   padding-bottom: 3px;
    display: grid;
 }
+
+.extra-btn {
+   border: 1px solid #999;
+   border-radius: 10px;
+   background: transparent;
+   cursor: pointer;
+   font-size: 0.7rem;
+   outline-width: 0;
+}
  
- .ayah-ref {
+.ayah-ref {
    color: #888;
-   font-size: 1rem;
+   font-size: 1.1rem;
    text-decoration: none;
- }
+}
 
- .ayah-word {
+.ayah-word {
     cursor: pointer;
- }
+}
 
- .extra-btn {
-    font-size: 0.5rem;
- }
- 
- #quran-more-results {
+.more-btn {
    display: block;
    width: 100%;
    box-shadow: 0px 0px 6px 0 #999;
    border-radius: 15px;
    background: transparent;
    font-size: 1.1rem;
- }
+   outline-width: 0;
+}
+
+.more-btn:hover {
+   cursor: pointer;   
+}
  
- #quran-search-row {
+.search-input-row {
    text-align: center;
- }
+}
  
- #enter-data-msg {
+.data-msg {
    text-align: center;
-   font-size: 2.5rem;
+   font-size: 2rem;
    color: #999;
- }
+}
+
+.ayah-info-group {
+   width: 90%;
+   padding-left: 10%;
+}
+
+.ayah-info {
+   font-size: 1.2rem;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+.ayah-related {
+   list-style-type: none;
+   margin-left: 0;
+   text-indent: -1em;
+}
+
+.btn-group {
+   display: grid;
+   grid-template-columns: repeat(2, auto);
+}
+
+.opt-btn {
+   box-shadow: 0px 0px 3px 0 rgb(189, 189, 189);
+   border: 1px solid #999;
+   background: transparent;
+   cursor: pointer;
+   font-size: 0.8rem;
+   outline-width: 0;
+}
+
+.btn-group .opt-btn:first-child {
+   border-left: none;
+   border-top-right-radius: 5px;
+   border-bottom-right-radius: 5px;
+}
+
+.btn-group .opt-btn:last-child {
+   border-right: none;
+   border-top-left-radius: 5px;
+   border-bottom-left-radius: 5px;
+}
+
+.btn-group .opt-btn:not(:first-child):not(:last-child) {
+   border-left: none;
+   border-right: none;
+}
+
+.btn-group .opt-btn:disabled {
+   background-color: rgb(172, 172, 172);
+   font-style: italic;
+   color: white;
+   cursor: unset;
+}
+
+.btn-group .not-toggled:hover {
+   background-color: rgb(185, 185, 185);
+}
+
+.btn-group .toggled {
+   font-weight: bold;
+   border: 1px solid rgb(75, 75, 75);
+}
+
+.btn-group .toggled:hover {
+   background-color: rgb(185, 185, 185);
+}

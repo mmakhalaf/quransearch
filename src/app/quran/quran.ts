@@ -31,7 +31,8 @@ const suwar: any = [
 let qurans = {
    'uthmani': undefined,
    'imlaai': undefined,
-   'morph': undefined
+   'morph': undefined,
+   'ibnkathir_rel': undefined
 };
 
 // List of tokens excluded from validation
@@ -43,6 +44,9 @@ let morph_excluded = [
    '36:129:3' // إل ياسين
 ];
 
+type AyahWithIdFn = (ayah: Ayah, ayah_id: string) => void;
+type AyahFn = (ayah: Ayah) => void;
+
 function all_quran_loaded(): boolean {
    for (let k in qurans) {
       if (qurans[k] === undefined) {
@@ -50,10 +54,6 @@ function all_quran_loaded(): boolean {
       }
    }
    return true;
-}
-
-function quran_consistent_len(): boolean {
-   return qurans.imlaai.length == qurans.uthmani.length;
 }
 
 function quran_len(): number {
@@ -171,7 +171,7 @@ export class QuranWordStore
 
 export class Quran {
 
-   ayat: Array<Ayah> = null;
+   private ayat: Map<string, Ayah> = null;
    word_store = new QuranWordStore();
    is_loaded = false;
 
@@ -187,12 +187,20 @@ export class Quran {
       }
    }
 
+   private static ayah_str_id(sura: number, ayah: number, incr_id: boolean) {
+      if (incr_id) {
+         return `${sura + 1}:${ayah + 1}`;
+      } else {
+         return `${sura}:${ayah}`;
+      }
+   }
+
    private load() {
       if (!all_quran_loaded()) {
          return;
       }
 
-      if (!quran_consistent_len()) {
+      if (qurans.imlaai.length != qurans.uthmani.length) {
          console.error(`Inconsistent lengths for Quran files`);
          return;
       }
@@ -200,12 +208,13 @@ export class Quran {
       console.log('Files Loaded.');
       console.log('Processing...');
 
+      // Go through the Ayat and construct our Ayah list and Word/Root store
       let len = quran_len();
-      this.ayat = new Array<Ayah>(len);
+      this.ayat = new Map<string, Ayah>();
       let cur_a = 0;
       let cur_s = 0;
       for (let i = 0; i < len; ++i) {
-         this.ayat[i] = new Ayah(i, cur_s, cur_a, this.word_store);
+         this.ayat.set(Quran.ayah_str_id(cur_s, cur_a, true), new Ayah(i, cur_s, cur_a, this.word_store));
 
          cur_a++;
          if (cur_a >= suwar[cur_s][0]) {
@@ -213,11 +222,34 @@ export class Quran {
             cur_s++;
          }
       }
+
+      // Go through the Ibn Kathir relevance map and connect the Ayat to each other
+      let rel_arr = qurans.ibnkathir_rel.kathir;
+      for (let rel of rel_arr) {
+         let src_id = Quran.ayah_str_id(+rel.ss, +rel.sv, false);
+         let src_ayah = this.ayat.get(src_id);
+         if (src_ayah === undefined) {
+            console.error(`Ayah ${src_id} not found from relevance file`);
+            continue;
+         }
+         let targ_id = Quran.ayah_str_id(+rel.ts, +rel.tv, false);
+         let targ_ayah = this.ayat.get(targ_id);
+         if (targ_ayah === undefined) {
+            console.error(`Ayah ${targ_id} not found from relevance file`);
+            continue;
+         }
+         src_ayah.add_related_ayah(targ_ayah);
+      }
+
       console.log('Done.');
       this.is_loaded = true;
       if (this.onLoaded != null) {
          this.onLoaded();
       }
+   }
+
+   for_each_ayah(fn: AyahWithIdFn) {
+      this.ayat.forEach(fn);
    }
 }
 
@@ -229,6 +261,7 @@ export class Ayah {
    uthmani_words: Array<string>;
    imlaai: string;
    words = new Array<QuranWord>();
+   private related_ayat = new Map<number, Ayah>();
 
    constructor(ayah_glob: number, surah: number, ayah: number, word_store: QuranWordStore) {
       this.id = ayah_glob;
@@ -282,6 +315,23 @@ export class Ayah {
             this.words.push(word);
          }
       }
+   }
+
+   add_related_ayah(ayah: Ayah): boolean {
+      if (ayah.id == this.id) {
+         // The file contains self-references in some places
+         // console.error(`Trying to add Ayah ${this.id} related to itself`);
+         return false;
+      }
+      this.related_ayat.set(ayah.id, ayah);
+      ayah.related_ayat.set(this.id, this);
+      return true;
+   }
+
+   for_each_related_ayah(fn: AyahFn) {
+      this.related_ayat.forEach((ayah: Ayah, id: number) => {
+         fn(ayah);
+      });
    }
 
    surah_name(): string {

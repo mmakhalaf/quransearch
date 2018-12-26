@@ -1,32 +1,72 @@
-<div class="extra-panel">
-   <a class="ayah-ref" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
-      {{result.ayah.surah_name()}} {{result.ayah.surah_aya_num_ar()}}
-   </a>
-   <button class="extra-btn" (click)="onCopyAyahClicked()">
-      انسخ
-      <!-- <svg class="icon icon-copy">
-         <use xlink:href="/assets/icons.svg#copy"></use>
-      </svg> -->
-   </button>
-   <button class="extra-btn" (click)="onShowRootsClicked()">
-      المشتقات
-   </button>
+
+<div class="result-row" [id]="result.ayah.id">
+   <!-- Buttons -->
+   <div class="extra-panel">
+      <a class="ayah-ref" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
+         {{result.ayah.surah_name()}} {{result.ayah.surah_aya_num_ar()}}
+      </a>
+
+      <button class="extra-btn" (click)="onCopyAyahClicked()">
+         انسخ
+      </button>
+   </div>
+
+   <!-- Ayah -->
+   <span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
+      <div *ngIf="should_highlight(w); then Highlighted; else NotHighlighted"></div>
+      <ng-template #Highlighted>
+         <strong class="highlighted">{{result.ayah.uthmani_words[i]}} </strong>
+      </ng-template>
+      <ng-template #NotHighlighted>
+         {{result.ayah.uthmani_words[i]}}
+      </ng-template>
+   </span>
+
+   <div class="ayah-info-group">
+      <div class="btn-group">
+         <button 
+            class="opt-btn" 
+            [class.toggled]="show_roots" 
+            [class.not-toggled]="!show_roots" 
+            (click)="onShowRootsClicked()" 
+            [disabled]="roots.length == 0"
+            >
+            المشتقات
+         </button>
+
+         <button
+            class="opt-btn"
+            [class.toggled]="show_related"
+            [class.not-toggled]="!show_related"
+            (click)="onShowRelatedClicked()"
+            [disabled]="related_ayat.length == 0"
+            >
+            آيات متعلقه
+         </button>
+      </div>
+
+      <!-- Roots (if visible) -->
+      <div *ngIf="show_roots && roots.length > 0" class="ayah-info">
+         <strong>جذور الكلمات: </strong>
+         <span *ngFor="let r of roots" class="ayah-word" (click)="onRootClicked(r)">
+            {{r.text}}
+         </span>
+      </div>
+
+      <!-- Related (if visible) -->
+      <div *ngIf="show_related && related_ayat.length > 0" class="ayah-info">
+         <strong>آيات متعلقه:</strong>
+         <ul class="ayah-info">
+            <li *ngFor="let a of related_ayat" class="ayah-related">
+               [
+               <a class="ayah-ref" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
+                  {{a.surah_name()}} {{a.surah_aya_num_ar()}}
+               </a>
+               ]
+               <br/>
+               {{a.uthmani}}
+            </li>
+         </ul>
+      </div>
+   </div>
 </div>
-<!-- <span [innerHTML]="result.text"></span> -->
-<span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
-   <div *ngIf="should_highlight(w); then Highlighted; else NotHighlighted"></div>
-   <ng-template #Highlighted>
-      <strong>{{result.ayah.uthmani_words[i]}} </strong>
-   </ng-template>
-   <ng-template #NotHighlighted>
-      {{result.ayah.uthmani_words[i]}}
-   </ng-template>
-</span>
-<ul *ngIf="show_roots" class="res-roots">
-   <li>
-      جذور الكلمات:
-      <span *ngFor="let r of roots" class="ayah-word" (click)="onRootClicked(r)">
-         {{r.text}}
-      </span>
-   </li>
-</ul>
