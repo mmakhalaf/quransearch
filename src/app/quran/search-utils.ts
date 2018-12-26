@@ -39,7 +39,8 @@ export function remove_diacritic(q: string) {
    // console.log(q);
    // q = q.replace('ـٰ', 'ا');
 
-   let letter_range = make_range(1570, 1610);
+   let letter_range = make_range(1569, 1610);
+   letter_range.add(32);   // space
    let new_q = '';
    for (let i = 0; i < q.length; ++i) {
       let cc = q.charCodeAt(i);

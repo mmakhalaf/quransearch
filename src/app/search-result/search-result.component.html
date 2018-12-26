@@ -13,20 +13,20 @@
    </button>
 </div>
 <!-- <span [innerHTML]="result.text"></span> -->
-<span class="ayah-word" *ngFor="let w of result.ayah.words" (click)="onWordClicked(w)">
+<span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
    <div *ngIf="should_highlight(w); then Highlighted; else NotHighlighted"></div>
    <ng-template #Highlighted>
-      <strong>{{w.uthmani}} </strong>
+      <strong>{{result.ayah.uthmani_words[i]}} </strong>
    </ng-template>
    <ng-template #NotHighlighted>
-      {{w.uthmani}}
+      {{result.ayah.uthmani_words[i]}}
    </ng-template>
 </span>
 <ul *ngIf="show_roots" class="res-roots">
-   <li *ngFor="let r of roots">
-      <span class="ayah-word" (click)="onRootClicked(r)">{{r.text}}</span>:
-      <span *ngFor="let w of r.words">
-         {{w.uthmani}}
+   <li>
+      جذور الكلمات:
+      <span *ngFor="let r of roots" class="ayah-word" (click)="onRootClicked(r)">
+         {{r.text}}
       </span>
    </li>
 </ul>

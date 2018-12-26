@@ -80,7 +80,7 @@ export class QuranWord
 {  
    public ayat = new Array<Ayah>();
    private root: QuranRoot = null;
-   constructor(public imlaai: string, public uthmani: string) {
+   constructor(public imlaai: string) {
    }
 
    set_root(root: QuranRoot): boolean {
@@ -117,14 +117,14 @@ export class QuranWordStore
    constructor() {
    }
 
-   add_word(iml: string, uth: string, root: QuranRoot): QuranWord {
+   add_word(iml: string, root: QuranRoot): QuranWord {
       let w = this.words.get(iml);
       if (w !== undefined) {
          if (w.get_root() == root) {
             return w;
          }
       }
-      w = new QuranWord(iml, uth);
+      w = new QuranWord(iml);
       if (root != null) {
          w.set_root(root);
       }
@@ -155,9 +155,9 @@ export class QuranWordStore
       return null;
    }
 
-   add(iml: string, uth: string, root: string, ayah: Ayah): QuranWord {
+   add(iml: string, root: string, ayah: Ayah): QuranWord {
       let qroot = this.add_root(root);
-      let word: QuranWord = this.add_word(iml, uth, qroot);
+      let word: QuranWord = this.add_word(iml, qroot);
       if (word != null) {
          word.ayat.push(ayah);
       }
@@ -224,6 +224,7 @@ export class Ayah {
    surah_idx: number = -1;
    ayah_surah_idx: number = -1;
    uthmani: string;
+   uthmani_words: Array<string>;
    imlaai: string;
    words = new Array<QuranWord>();
 
@@ -233,8 +234,13 @@ export class Ayah {
       this.ayah_surah_idx = ayah;
       this.uthmani = qurans.uthmani[ayah_glob];
       this.imlaai = qurans.imlaai[ayah_glob];
+      this.uthmani_words = this.uthmani.split(' ');
 
       this.add_words(word_store);
+
+      if (this.uthmani_words.length != this.words.length) {
+         console.error(`Mismatching number of words in Ayah ${this.id}`);
+      }
    }
 
    private add_words(word_store: QuranWordStore): boolean {
@@ -269,7 +275,7 @@ export class Ayah {
             }
             ++word_index;
          }
-         let word: QuranWord = word_store.add(iml, uth, root, this);
+         let word: QuranWord = word_store.add(iml, root, this);
          if (word != null) {
             this.words.push(word);
          }
