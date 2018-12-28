@@ -1,6 +1,8 @@
+
 .search-input-row {
    display: flex;
    flex-direction: column;
+   z-index: 999;
 }
 
 .search-input {
@@ -9,7 +11,7 @@
  
 .search-input-row > * {
    width: 80%;
-   margin-top: 1rem;
+   /* margin-top: 0.3rem; */
    margin-left: 10%;
    margin-right: 10%;
 }

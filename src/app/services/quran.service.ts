@@ -2,10 +2,18 @@ import { Injectable, NgZone } from '@angular/core';
 import { Quran } from '../quran/quran';
 import { QuranSearch } from '../quran/quran-search';
 import { Router } from '@angular/router';
-import { SearchResults } from '../quran/search-result';
+import { SearchResults, SearchResult } from '../quran/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/search-opts';
 
+export enum SearchMode {
+   Word,
+   Root
+}
+
+type SearchFn = () => void;
 export type OnSearchValUpdated = (val: string) => void;
+export type OnSearchCompleted = (res: SearchResults, mode: SearchMode) => void;
+
 
 @Injectable({
    providedIn: 'root'
@@ -14,9 +22,13 @@ export class QuranService {
 
    quran = new Quran();
    matches = new SearchResults();
+
    searchVal = '';
+   searchMode = SearchMode.Word;
 
    onSearchValUpdated = new Map<any, OnSearchValUpdated>();
+   onSearchCompleted = new Map<any, OnSearchCompleted>();
+
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
@@ -33,18 +45,14 @@ export class QuranService {
    }
 
    perform_query_search(searchVal: string) {
-      this.do_search(searchVal, this.do_query_search);
+      this.perform_search(searchVal, this.do_query_search, SearchMode.Word);
    }
 
    perform_root_search(searchVal: string) {
-      this.do_search(searchVal, this.do_root_search);
+      this.perform_search(searchVal, this.do_root_search, SearchMode.Root);
    }
 
-   private do_search(searchVal: string, fn: ()=>void) {
-      if (searchVal.length < 2) {
-         return;
-      }
-
+   private perform_search(searchVal: string, fn: SearchFn, searchMode: SearchMode) {
       let changed = this.searchVal !== searchVal;
       this.searchVal = searchVal;
       if (changed) {
@@ -53,16 +61,28 @@ export class QuranService {
          });
       }
 
+      if (searchVal.length < 2) {
+         this.clear_results(searchMode);
+         return;
+      }
+
       if (this.quran.is_loaded) {
-         fn();
+         this.do_search(fn, searchMode);
       } else {
          this.quran.onLoaded = () => {
             this.quran.onLoaded = null;
             this.zone.run(() => {
-               fn();
+               this.do_search(fn, searchMode);
             });
          }
       }
+   }
+
+   private do_search(fn: SearchFn, searchMode: SearchMode) {
+      fn();
+      this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
+         cb(this.matches, searchMode);
+      });
    }
 
    private do_query_search = () => {
@@ -73,5 +93,13 @@ export class QuranService {
    private do_root_search = () => {
       let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
       this.matches = searcher.search_by_root(this.searchVal);
+   }
+
+   clear_results(searchMode: SearchMode) {
+      this.matches = new SearchResults();
+      this.searchMode = SearchMode.Word;
+      this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
+         cb(this.matches, searchMode);
+      });
    }
 }

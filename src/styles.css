@@ -41,5 +41,38 @@ html {
 body {
    direction: rtl;
    margin: 0 auto;
-   background: url('assets/bg.png');
+   background-image: linear-gradient(rgb(221, 255, 255), white, rgb(234, 252, 255), rgb(232, 250, 255));
+   /* background-color: rgb(221, 255, 255); */
+   /* background: url('assets/bg.png'); */
+}
+
+.mat-card {
+   font-family: inherit;
+   font-size: inherit;
+   /* background: inherit; */
+}
+
+.mat-card-content {
+   font-family: inherit;
+   font-size: inherit;
+   /* background: inherit; */
+}
+
+.mat-expansion-panel {
+   font: inherit;
+   font-size: inherit;
+   /* background: inherit; */
+}
+
+.mat-expansion-panel-content {
+   font: inherit;
+   font-family: inherit;
+   font-size: inherit;
+   /* background: inherit; */
+}
+.mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+   font: inherit;
+   font-family: inherit;
+   font-size: inherit;
+   /* background: inherit; */
 }

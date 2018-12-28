@@ -1,0 +1,41 @@
+
+<!-- 
+[scrollDebounceTime]="20"
+[scrollAnimationTime]="0"
+class="search-results"
+-->
+<div #scrolltop></div>
+<virtual-scroller
+   #scroll
+   [items]="qService.matches.results"
+   [enableUnequalChildrenSizes]="true"
+   [stripedTable]="true"
+   [scrollThrottlingTime]="20"
+   [bufferAmount]="20"
+   [parentScroll]="parent"
+   >
+   <div *ngIf="qService.matches.length() > 0" class="data-msg">
+      عدد الآيات: {{qService.matches.length()}}
+      عدد المرات: {{qService.matches.num_occurances()}}
+   </div>
+   
+   <mat-expansion-panel *ngIf="roots.length > 0" class="root-card">
+      <mat-expansion-panel-header>
+         <mat-panel-title>
+            الجذور
+         </mat-panel-title>
+      </mat-expansion-panel-header>
+      <span *ngFor="let r of roots" class="root-word related-ayah-style ayah-word" (click)="onRootClicked(r)">
+         {{r.text}}
+      </span>
+   </mat-expansion-panel>
+
+   <div #container>
+      <qsearch-result
+         *ngFor="let r of scroll.viewPortItems; let i = index"
+         [result]="r"
+         (sizeChanged)="onItemUpdated(r, i)"
+         >
+      </qsearch-result>
+   </div>
+</virtual-scroller>

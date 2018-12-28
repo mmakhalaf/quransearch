@@ -21,17 +21,6 @@
 
       <!-- Extra Info -->
       <mat-accordion>
-         <mat-expansion-panel *ngIf="roots.length > 0" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
-            <mat-expansion-panel-header>
-               <mat-panel-title>
-                  الجذور
-               </mat-panel-title>
-            </mat-expansion-panel-header>
-            <span *ngFor="let r of roots" class="related-ayah-style ayah-word" (click)="onRootClicked(r)">
-               {{r.text}}
-            </span>
-         </mat-expansion-panel>
-
          <mat-expansion-panel *ngIf="related_ayat.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
             <mat-expansion-panel-header>
                <mat-panel-title>

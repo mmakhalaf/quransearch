@@ -80,7 +80,7 @@ export class QuranRoot {
 // They should reference back the Ayah which they reside in
 // 
 export class QuranWord
-{  
+{
    public ayat = new Array<Ayah>();
    private root: QuranRoot = null;
    constructor(public imlaai: string) {

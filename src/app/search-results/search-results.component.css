@@ -1,0 +1,18 @@
+
+.data-msg {
+   text-align: center;
+   font-size: 1.5rem;
+   /* color: #999; */
+}
+
+.root-card {
+   margin: 0.5rem;
+}
+
+.root-word {
+   font-family: Scheherazade;
+   font-size: 1.2rem;
+   line-height: 2rem;
+   text-decoration: underline;
+   cursor: pointer;
+}
