@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
    scroll: VirtualScrollerComponent;
    
    constructor(
-      private qService: QuranService,
+      public qService: QuranService,
       private route: ActivatedRoute
       ) {
    }
@@ -38,7 +38,6 @@ export class AppComponent implements OnInit {
    }
 
    onItemUpdated(r: SearchResult, i: number) {
-      console.log(`Invalidate Cached Measurement for Ayah ${r.ayah.id}`);
       if (i > 0) {
          this.scroll.invalidateCachedMeasurementAtIndex(i - 1);
       }
@@ -51,7 +50,6 @@ export class AppComponent implements OnInit {
    on_query_change(params: ParamMap) {
       let q = params['q'];
       let r = params['r'];
-      console.log(`OnInit ${q}, ${r}`);
       if (q !== undefined) {
          this.qService.perform_query_search(q);
       } else if (r !== undefined) {

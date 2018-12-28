@@ -2,22 +2,26 @@
 .mat-card {
    font-family: inherit;
    font-size: inherit;
+   background: inherit;
 }
 
 .mat-card-content {
    font-family: inherit;
    font-size: inherit;
+   background: inherit;
 }
 
 .mat-expansion-panel {
    font: inherit;
    font-size: inherit;
+   background: inherit;
 }
 
 .mat-expansion-panel-content {
    font: inherit;
    font-family: inherit;
    font-size: inherit;
+   background: inherit;
 }
 
 .result-row {

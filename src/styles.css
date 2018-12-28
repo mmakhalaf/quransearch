@@ -41,4 +41,5 @@ html {
 body {
    direction: rtl;
    margin: 0 auto;
+   background: url('assets/bg.png');
 }

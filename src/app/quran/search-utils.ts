@@ -102,7 +102,7 @@ export function remove_diacritic(q: string) {
    let new_q = '';
    for (let i = 0; i < q.length; ++i) {
       let cc = q.charCodeAt(i);
-      console.log(`${cc}: ${q.charAt(i)}`);
+      // console.log(`${cc}: ${q.charAt(i)}`);
       if (letter_range.has(cc)) {
          new_q += String.fromCharCode(cc);
       }
