@@ -1,5 +1,6 @@
 
 import * as MathUtils from './math-utils';
+import * as StringUtils from './string-utils';
 
 const suwar: any = [
    [7, "الفاتحة"], [286, "البقرة"], [200, "آل عمران"], [176, "النساء"],
@@ -195,6 +196,10 @@ export class Quran {
       }
    }
 
+   private static ayah_to_str_id(ayah: Ayah) {
+      return `${ayah.surah_idx + 1}:${ayah.ayah_surah_idx + 1}`;
+   }
+
    private load() {
       if (!all_quran_loaded()) {
          return;
@@ -224,9 +229,12 @@ export class Quran {
       }
 
       // Go through the Ibn Kathir relevance map and connect the Ayat to each other
+      // We create a map for each Ayah (source and target to ensure 2-way similarity)
+      // and then we add similar ayat and their relevance into a map for each Ayah.
+      let rel_map = new Map<Ayah, Map<Ayah, number>>();
       let rel_arr = qurans.ibnkathir_rel.kathir;
       for (let rel of rel_arr) {
-         let src_id = Quran.ayah_str_id(+rel.ss, +rel.sv, false);
+         let src_id: string = Quran.ayah_str_id(+rel.ss, +rel.sv, false);
          let src_ayah = this.ayat.get(src_id);
          if (src_ayah === undefined) {
             console.error(`Ayah ${src_id} not found from relevance file`);
@@ -238,8 +246,32 @@ export class Quran {
             console.error(`Ayah ${targ_id} not found from relevance file`);
             continue;
          }
-         src_ayah.add_related_ayah(targ_ayah);
+
+         if (src_ayah.id != targ_ayah.id) {
+            let relevance = +rel.relevance;
+
+            // Related source to targ
+            let smap = rel_map.get(src_ayah);
+            if (smap === undefined) {
+               smap = new Map<Ayah, number>();
+               rel_map.set(src_ayah, smap);
+            }
+            smap.set(targ_ayah, relevance);
+
+            // Relate targ to source
+            let tmap = rel_map.get(targ_ayah);
+            if (tmap === undefined) {
+               tmap = new Map<Ayah, number>();
+               rel_map.set(targ_ayah, tmap);
+            }
+            tmap.set(src_ayah, relevance);
+         }
       }
+
+      // Now we go through the map and populate each Ayah with its similar Ayat
+      rel_map.forEach((rel_ayat: Map<Ayah, number>, k: Ayah) => {
+         k.add_related_ayat(rel_ayat);
+      });
 
       console.log('Done.');
       this.is_loaded = true;
@@ -253,6 +285,12 @@ export class Quran {
    }
 }
 
+export class SimilarAyah {
+   constructor(public ayah: Ayah, public relevance: number) {
+
+   }
+}
+
 export class Ayah {
    id: number = -1;
    surah_idx: number = -1;
@@ -261,7 +299,7 @@ export class Ayah {
    uthmani_words: Array<string>;
    imlaai: string;
    words = new Array<QuranWord>();
-   private related_ayat = new Map<number, Ayah>();
+   private related_ayat = new Array<SimilarAyah>();
 
    constructor(ayah_glob: number, surah: number, ayah: number, word_store: QuranWordStore) {
       this.id = ayah_glob;
@@ -317,20 +355,30 @@ export class Ayah {
       }
    }
 
-   add_related_ayah(ayah: Ayah): boolean {
-      if (ayah.id == this.id) {
-         // The file contains self-references in some places
-         // console.error(`Trying to add Ayah ${this.id} related to itself`);
-         return false;
+   add_related_ayat(rel_ayat: Map<Ayah, number>) {
+      if (this.related_ayat.length > 0) {
+         console.error(`Related Ayat populated twice for Ayah ${this.id}`);
+         this.related_ayat = new Array<SimilarAyah>();
       }
-      this.related_ayat.set(ayah.id, ayah);
-      ayah.related_ayat.set(this.id, this);
+
+      rel_ayat.forEach((relevance: number, ayah: Ayah) => {
+         this.related_ayat.push(new SimilarAyah(ayah, relevance));
+      });
+
+      this.related_ayat.sort((a1: SimilarAyah, a2: SimilarAyah): number => {
+         return a1.relevance < a2.relevance ? 1 : (a1.relevance > a2.relevance ? -1 : 0);
+      });
+      
       return true;
    }
 
+   get_related_ayat(): Array<SimilarAyah> {
+      return this.related_ayat;
+   }
+
    for_each_related_ayah(fn: AyahFn) {
-      this.related_ayat.forEach((ayah: Ayah, id: number) => {
-         fn(ayah);
+      this.related_ayat.forEach((ayah: SimilarAyah, id: number) => {
+         fn(ayah.ayah);
       });
    }
 
@@ -343,7 +391,7 @@ export class Ayah {
    }
 
    surah_aya_num_ar(): string {
-      return ('' + this.surah_ayah_num()).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'.substr(+d, 1));
+      return StringUtils.number_en_to_ar(this.surah_ayah_num());
    }
 
    surah_num(): number {

@@ -72,6 +72,9 @@ export class SearchResults {
 
    get_first(n: number): SearchResults {
       let sr = new SearchResults();
+      if (n >= this.results.length) {
+         n = this.results.length;
+      }
       sr.results = this.results.slice(0, n);
       return sr;
    }

@@ -1,10 +1,13 @@
 <div class="search-input-row">
-   <input 
-      type="text" 
-      class="form-control search-input" 
-      placeholder="رحمة" 
-      [(ngModel)]="searchVal"
-      (keyup)="onKeyUp()"
-      autofocus
-      >
+   <mat-form-field hintLabel="أدخل كلمات آية ما لتظهر نتائج" class="search-input">
+      <mat-label dir="rtl">إبحث</mat-label>
+      <input matInput 
+         placeholder="رحمة"
+         dir="rtl"
+         [(ngModel)]="searchVal"
+         (keyup)="onKeyUp()"
+         autofocus
+         >
+      <mat-icon matSuffix>search</mat-icon>
+   </mat-form-field>
 </div>

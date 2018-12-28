@@ -12,9 +12,16 @@ export enum QuranSearchPlaceMode {
 }
 
 /**
- * Options class to control how the search is performed
+ * Those options affect the way the searc is performed.
+ * (i.e. They will have an impact on the number of results).
  */
 export class QuranSearchOpts {
    place_mode = QuranSearchPlaceMode.ExactOrder;
+}
+
+/**
+ * Those options affect the displaying of the result.
+ */
+export class QuranSearchDisplayOpts {
    sort_mode = QuranSearchSortMode.Sequence;
 }

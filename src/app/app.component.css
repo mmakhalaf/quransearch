@@ -1,0 +1,27 @@
+
+.search-page {
+   height: 100vh;
+   overflow-y: hidden;
+   overflow-x: hidden;
+   scroll-behavior: smooth;
+}
+
+.more-btn {
+   display: block;
+   width: 100%;
+   box-shadow: 0px 0px 6px 0 #999;
+   border-radius: 15px;
+   background: transparent;
+   font-size: 1.1rem;
+   outline-width: 0;
+}
+
+.more-btn:hover {
+   cursor: pointer;   
+}
+
+.data-msg {
+   text-align: center;
+   font-size: 1.5rem;
+   color: #999;
+}

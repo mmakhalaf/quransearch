@@ -1,18 +1,20 @@
 import { Quran, Ayah } from './quran';
 import * as QSearchUtils from './search-utils';
-import { QuranSearchOpts, QuranSearchPlaceMode } from './search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchDisplayOpts } from './search-opts';
 import { SearchResults, SearchResult } from './search-result';
 
 export class QuranSearch {
 
 
    search_opts: QuranSearchOpts = null;
-   constructor(private quran: Quran, search_opts?: QuranSearchOpts) {
-      if (search_opts !== undefined) {
-         this.search_opts = search_opts;
-      } else {
-         this.search_opts = new QuranSearchOpts();
-      }
+   disp_opts: QuranSearchDisplayOpts = null;
+   constructor(
+      private quran: Quran, 
+      search_opts: QuranSearchOpts, 
+      disp_opts: QuranSearchDisplayOpts
+      ) {
+      this.search_opts = search_opts;
+      this.disp_opts = disp_opts;
    }
 
    search_by_root(r: string): SearchResults {
@@ -38,7 +40,7 @@ export class QuranSearch {
          }
       }
 
-      matches.sort(this.search_opts.sort_mode);
+      matches.sort(this.disp_opts.sort_mode);
       return matches;
    }
 
@@ -68,7 +70,7 @@ export class QuranSearch {
       let matches = new SearchResults();
       for (let re_tup of regexes) {
          let sub_matches = this.search_by_regex(re_tup.re, re_tup.w);
-         sub_matches.sort(this.search_opts.sort_mode);
+         sub_matches.sort(this.disp_opts.sort_mode);
          matches.add_results(sub_matches);
       }
       return matches;

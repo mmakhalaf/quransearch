@@ -1,0 +1,59 @@
+
+.mat-card {
+   font-family: inherit;
+   font-size: inherit;
+}
+
+.mat-card-content {
+   font-family: inherit;
+   font-size: inherit;
+}
+
+.mat-expansion-panel {
+   font: inherit;
+   font-size: inherit;
+}
+
+.mat-expansion-panel-content {
+   font: inherit;
+   font-family: inherit;
+   font-size: inherit;
+}
+
+.result-row {
+   margin: 10px;
+}
+
+.ayah-style {
+   font-family: Scheherazade;
+   font-size: 1.3rem;
+   padding: 0.5rem 0.3rem;
+}
+
+.highlighted-ayah-word {
+   color: hsla(0, 85%, 50%, 1);
+}
+
+.ayah-word {
+    cursor: pointer;
+}
+
+.ayah-ref {
+   color: #888;
+   font-size: 0.9rem;
+   text-decoration: none;
+   padding: 0.2rem;
+}
+
+.ayah-info-header {
+   font-size: 1.2rem;
+}
+
+.related-ayah-style {
+   font-family: Scheherazade;
+   list-style-type: none;
+   margin-left: 0;
+   text-indent: -1em;
+   font-size: 1.2rem;
+   line-height: 2rem;
+}

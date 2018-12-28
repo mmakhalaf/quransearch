@@ -1,33 +1,42 @@
-import { Component, Input, AfterViewInit, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Output, EventEmitter, NgZone } from '@angular/core';
 import { SearchResult } from '../quran/search-result';
 import { QuranService } from '../services/quran.service';
-import { QuranRoot, QuranWord, Ayah } from '../quran/quran';
+import { QuranRoot, QuranWord, Ayah, SimilarAyah } from '../quran/quran';
+import * as StringUtils from '../quran/string-utils';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+
 
 @Component({
    selector: 'qsearch-result',
    templateUrl: './search-result.component.html',
-   styleUrls: ['./search-result.component.css']
+   styleUrls: ['./search-result.component.css'],
+   // changeDetection: ChangeDetectionStrategy.OnPush,
+   host: {
+      '[id]': 'result.ayah.id'
+   }
 })
-export class SearchResultComponent implements OnInit {
+export class SearchResultComponent implements OnInit, OnDestroy {
 
    @Input()
    result: SearchResult;
 
+   @Output()
+   sizeChanged = new EventEmitter<void>();
+   
    show_roots = false;
    show_related = false;
 
    roots = new Array<QuranRoot>();
-   highlighted_words = new Array<QuranWord>();
-   related_ayat = new Array<Ayah>();
+   related_ayat = new Array<SimilarAyah>();
 
-   constructor(private qService: QuranService) {
-
+   constructor(private qService: QuranService, private change_det: ChangeDetectorRef, private zone: NgZone) {
    }
 
    ngOnInit() {
+      // console.log(`Component created for Ayah ${this.result.ayah.id}`);
       this.result.word_indices.forEach((val: number, k: number) => {
          let w = this.result.ayah.words[val];
-         this.highlighted_words.push(w);
          let r = w.get_root();
          if (r != null) {
             let found = false;
@@ -42,21 +51,24 @@ export class SearchResultComponent implements OnInit {
          }
       });
       
-      this.result.ayah.for_each_related_ayah((ayah: Ayah) => {
-         this.related_ayat.push(ayah);
-      });
+      this.related_ayat = this.result.ayah.get_related_ayat();
    }
 
-   should_highlight(w: QuranWord): boolean {
-      return this.highlighted_words.indexOf(w) != -1;
+   ngOnDestroy() {
+   }
+   
+   should_highlight(index: number): boolean {
+      return this.result.word_indices.has(index);
    }
    
    onShowRootsClicked() {
       this.show_roots = !this.show_roots;
+      this.change_det.detectChanges();
    }
 
    onShowRelatedClicked() {
-      this.show_related = !this.show_related
+      this.show_related = !this.show_related;
+      this.change_det.detectChanges();
    }
 
    onWordClicked(word: QuranWord) {
@@ -67,18 +79,11 @@ export class SearchResultComponent implements OnInit {
       this.qService.request_root_search(root.text);
    }
 
-   onCopyAyahClicked() {
-      let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = this.result.ayah.uthmani;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
+   number_en_to_ar(num: number): string {
+      return StringUtils.number_en_to_ar(num);
    }
-   
+
+   panelChanged() {
+      this.sizeChanged.emit();
+   }
 }

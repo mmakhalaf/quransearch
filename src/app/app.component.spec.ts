@@ -2,15 +2,14 @@
 
 import { Quran } from './quran/quran';
 import { QuranSearch } from './quran/quran-search';
-import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchSortMode } from './quran/search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchSortMode, QuranSearchDisplayOpts } from './quran/search-opts';
 
 let quran = new Quran();
 
 let exact_match_opts = new QuranSearchOpts();
 exact_match_opts.place_mode = QuranSearchPlaceMode.ExactOrder;
-exact_match_opts.sort_mode = QuranSearchSortMode.Sequence;
 
-let search = new QuranSearch(quran, exact_match_opts);
+let search = new QuranSearch(quran, exact_match_opts, new QuranSearchDisplayOpts());
 
 // beforeEach(() => {
 //    search = new QuranSearch(quran);
