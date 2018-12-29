@@ -41,7 +41,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
    on_search_query_changed = (searchVal: string) => {
       // Scroll to the top of the search when a new query is done
-      this.top_item.nativeElement.scrollIntoView();
+      this.top_item.nativeElement.scrollIntoView({
+         behavior: "instant", block: 'nearest'
+      });
    }
 
    on_search_complete = (results: SearchResults, searchMode : SearchMode) => {

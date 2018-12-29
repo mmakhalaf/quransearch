@@ -33,7 +33,8 @@ let qurans = {
    'uthmani': undefined,
    'imlaai': undefined,
    'morph': undefined,
-   'ibnkathir_rel': undefined
+   'ibnkathir_rel': undefined,
+   'index': undefined
 };
 
 // List of tokens excluded from validation

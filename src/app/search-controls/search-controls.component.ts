@@ -21,7 +21,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
 
    ngOnInit() {
       this.qService.onSearchValUpdated.set(this, this.on_search_val_updated);
-      this.subject.pipe(debounceTime(250)).subscribe(() => {
+      this.subject.pipe(debounceTime(500)).subscribe(() => {
          this.onSearch();
       });
    }
