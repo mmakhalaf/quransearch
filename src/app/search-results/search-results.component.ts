@@ -3,6 +3,7 @@ import { QuranService, SearchMode } from '../services/quran.service';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { SearchResult, SearchResults } from '../quran/search-result';
 import { QuranRoot } from '../quran/quran';
+import * as StringUtils from '../quran/string-utils';
 
 @Component({
    selector: 'qsearch-results',
@@ -37,6 +38,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    ngOnDestroy() {
       this.qService.onSearchValUpdated.delete(this);
       this.qService.onSearchCompleted.delete(this);
+   }
+
+   num_results() {
+      return StringUtils.number_en_to_ar(this.qService.matches.length())
    }
 
    on_search_query_changed = (searchVal: string) => {

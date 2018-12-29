@@ -7,7 +7,8 @@ import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/search-opts';
 
 export enum SearchMode {
    Word,
-   Root
+   Root,
+   Category
 }
 
 type SearchFn = () => void;
@@ -44,12 +45,20 @@ export class QuranService {
       this.router.navigateByUrl(`?r=${r}`);
    }
 
+   request_category_search(c: string) {
+      this.router.navigateByUrl(`?c=${c}`);
+   }
+
    perform_query_search(searchVal: string) {
       this.perform_search(searchVal, this.do_query_search, SearchMode.Word);
    }
 
    perform_root_search(searchVal: string) {
       this.perform_search(searchVal, this.do_root_search, SearchMode.Root);
+   }
+
+   perform_cat_search(searchVal: string) {
+      this.perform_search(searchVal, this.do_cat_search, SearchMode.Category);
    }
 
    private perform_search(searchVal: string, fn: SearchFn, searchMode: SearchMode) {
@@ -93,6 +102,11 @@ export class QuranService {
    private do_root_search = () => {
       let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
       this.matches = searcher.search_by_root(this.searchVal);
+   }
+
+   private do_cat_search = () => {
+      let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
+      this.matches = searcher.search_by_category(this.searchVal);
    }
 
    clear_results(searchMode: SearchMode) {

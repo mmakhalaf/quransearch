@@ -60,13 +60,15 @@ def map_categories_to_indices(cats_str, cats_list):
     """
     if len(cats_str) == 0:
         raise Exception('Passed an empty category list')
-    cats_idx = list()
+    cats_idx = set()
     for cat_str in cats_str:
         idx = cats_list.index(cat_str)
         if idx == -1:
             raise Exception('Category "%s" not found' % cat_str)
-        cats_idx.append(idx)
-    return cats_idx
+        cats_idx.add(idx)
+    arr = [c for c in cats_idx]
+    arr.sort()
+    return arr
 
 
 def merge_arrays(arr1, arr2):
@@ -107,9 +109,9 @@ for cat_obj in index_j:
         ayah_id = '%d:%d' % (surah_idx, ayah_num)
         found_obj = ayah_dict.get(ayah_id)
         if found_obj is None:
-            ayah_dict[ayah_id] = {'surah': surah_idx, 'ayah': ayah_num, 'categories': cats_indices}
+            ayah_dict[ayah_id] = {'s': surah_idx, 'a': ayah_num, 'c': cats_indices}
         else:
-            found_obj['categories'] = merge_arrays(found_obj['categories'], cats_indices)
+            found_obj['c'] = merge_arrays(found_obj['c'], cats_indices)
 
 print('Number of categorised Ayat: %d' % len(ayah_dict))
 

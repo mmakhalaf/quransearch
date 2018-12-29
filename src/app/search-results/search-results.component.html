@@ -15,8 +15,7 @@ class="search-results"
    [parentScroll]="parent"
    >
    <div *ngIf="qService.matches.length() > 0" class="data-msg">
-      عدد الآيات: {{qService.matches.length()}}
-      عدد المرات: {{qService.matches.num_occurances()}}
+      عدد الآيات: {{num_results()}}
    </div>
    
    <mat-expansion-panel *ngIf="roots.length > 0" class="root-card">
@@ -25,7 +24,7 @@ class="search-results"
             الجذور
          </mat-panel-title>
       </mat-expansion-panel-header>
-      <span *ngFor="let r of roots" class="root-word related-ayah-style ayah-word" (click)="onRootClicked(r)">
+      <span *ngFor="let r of roots" class="root-word" (click)="onRootClicked(r)">
          {{r.text}}
       </span>
    </mat-expansion-panel>

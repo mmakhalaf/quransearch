@@ -17,6 +17,21 @@ export class QuranSearch {
       this.disp_opts = disp_opts;
    }
 
+   search_by_category(c: string): SearchResults {
+      let cat = this.quran.get_category(c);
+      let matches = new SearchResults();
+      if (cat == null) {
+         return matches;
+      }
+
+      for (let a of cat.ayat) {
+         matches.add_result(a, new Set<number>());
+      }
+      
+      matches.sort(this.disp_opts.sort_mode);
+      return matches;
+   }
+
    search_by_root(r: string): SearchResults {
       let root = this.quran.word_store.get_root(r);
       let matches = new SearchResults();

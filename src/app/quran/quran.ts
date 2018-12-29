@@ -47,7 +47,6 @@ let morph_excluded = [
 ];
 
 type AyahWithIdFn = (ayah: Ayah, ayah_id: string) => void;
-type AyahFn = (ayah: Ayah) => void;
 
 function all_quran_loaded(): boolean {
    for (let k in qurans) {
@@ -107,6 +106,17 @@ export class QuranWord
 
    get_root(): QuranRoot {
       return this.root;
+   }
+}
+
+function sort_ayah_by_id(a1: Ayah, a2: Ayah): number {
+   return a1.id < a2.id ? -1 : (a1.id > a2.id ? 1 : 0);
+}
+
+export class Category {
+   ayat = new Array<Ayah>();
+
+   constructor(public name: string) {
    }
 }
 
@@ -175,6 +185,7 @@ export class Quran {
 
    private ayat: Map<string, Ayah> = null;
    word_store = new QuranWordStore();
+   categories = new Map<number, Category>();
    is_loaded = false;
 
    onLoaded: (() => void) = null;
@@ -187,6 +198,20 @@ export class Quran {
             this.load();
          });
       }
+   }
+
+   for_each_ayah(fn: AyahWithIdFn) {
+      this.ayat.forEach(fn);
+   }
+
+   get_category(c: string): Category {
+      let found = null;
+      this.categories.forEach((val: Category, k: number) => {
+         if (val.name == c) {
+            found = val;
+         }
+      });
+      return found;
    }
 
    private static ayah_str_id(sura: number, ayah: number, incr_id: boolean) {
@@ -229,6 +254,17 @@ export class Quran {
          }
       }
 
+      this.process_ibn_kathir_relations();
+      this.process_index();
+
+      console.log('Done.');
+      this.is_loaded = true;
+      if (this.onLoaded != null) {
+         this.onLoaded();
+      }
+   }
+
+   private process_ibn_kathir_relations() {
       // Go through the Ibn Kathir relevance map and connect the Ayat to each other
       // We create a map for each Ayah (source and target to ensure 2-way similarity)
       // and then we add similar ayat and their relevance into a map for each Ayah.
@@ -271,18 +307,62 @@ export class Quran {
 
       // Now we go through the map and populate each Ayah with its similar Ayat
       rel_map.forEach((rel_ayat: Map<Ayah, number>, k: Ayah) => {
-         k.add_related_ayat(rel_ayat);
+         k.set_related_ayat(rel_ayat);
       });
-
-      console.log('Done.');
-      this.is_loaded = true;
-      if (this.onLoaded != null) {
-         this.onLoaded();
-      }
    }
 
-   for_each_ayah(fn: AyahWithIdFn) {
-      this.ayat.forEach(fn);
+   private process_index() {
+      // Load the categories
+      let index = 0;
+      for (let cat of qurans.index.categories) {
+         this.categories.set(index, new Category(cat));
+         ++index;
+      }
+      
+      // Link the Ayat with the categories
+      let idx_map = new Map<Ayah, Set<Category>>();
+      let cat_map = new Map<Category, Array<Ayah>>();
+      for (let a of qurans.index.ayat) {
+         let a_id: string = Quran.ayah_str_id(a.s, a.a, false);
+         let ayah = this.ayat.get(a_id);
+         if (ayah === undefined) {
+            console.error(`Could not find referenced Ayah in index ${a_id}`);
+         } else {
+            let cat_list = idx_map.get(ayah);
+            if (cat_list === undefined) {
+               cat_list = new Set<Category>();
+               idx_map.set(ayah, cat_list);
+            }
+
+            for (let cat_idx of a.c) {
+               let cat = this.categories.get(cat_idx);
+               if (cat === undefined) {
+                  console.error(`Could not find referenced category ${cat_idx}`);
+               } else {
+                  // if (cat_list.has(cat)) {
+                  //    console.error(`Duplicate category "${cat.name}" in Ayah ${a_id}`);
+                  // }
+                  // Now add the categories to the Ayah
+                  cat_list.add(cat);
+
+                  let ayah_list = cat_map.get(cat);
+                  if (ayah_list === undefined) {
+                     ayah_list = new Array<Ayah>();
+                     cat_map.set(cat, ayah_list);
+                  }
+                  ayah_list.push(ayah);
+               }
+            }
+         }
+      }
+
+      idx_map.forEach((val: Set<Category>, k: Ayah) => {
+         k.set_categories(val);
+      });
+      cat_map.forEach((val: Array<Ayah>, k: Category) => {
+         val = val.sort(sort_ayah_by_id);
+         k.ayat = val;
+      });
    }
 }
 
@@ -300,7 +380,8 @@ export class Ayah {
    uthmani_words: Array<string>;
    imlaai: string;
    words = new Array<QuranWord>();
-   private related_ayat = new Array<SimilarAyah>();
+   related_ayat = new Array<SimilarAyah>();
+   categories = new Array<Category>();
 
    constructor(ayah_glob: number, surah: number, ayah: number, word_store: QuranWordStore) {
       this.id = ayah_glob;
@@ -356,7 +437,7 @@ export class Ayah {
       }
    }
 
-   add_related_ayat(rel_ayat: Map<Ayah, number>) {
+   set_related_ayat(rel_ayat: Map<Ayah, number>) {
       if (this.related_ayat.length > 0) {
          console.error(`Related Ayat populated twice for Ayah ${this.id}`);
          this.related_ayat = new Array<SimilarAyah>();
@@ -373,13 +454,14 @@ export class Ayah {
       return true;
    }
 
-   get_related_ayat(): Array<SimilarAyah> {
-      return this.related_ayat;
-   }
+   set_categories(cats: Set<Category>) {
+      if (this.categories.length > 0) {
+         console.error(`Categories populated twice for Ayah ${this.id}`);
+         this.categories = new Array<Category>();
+      }
 
-   for_each_related_ayah(fn: AyahFn) {
-      this.related_ayat.forEach((ayah: SimilarAyah, id: number) => {
-         fn(ayah.ayah);
+      cats.forEach((cat: Category) => {
+         this.categories.push(cat);
       });
    }
 

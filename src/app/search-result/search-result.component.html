@@ -21,18 +21,18 @@
 
       <!-- Extra Info -->
       <mat-accordion>
-         <mat-expansion-panel *ngIf="related_ayat.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
+         <mat-expansion-panel *ngIf="result.ayah.related_ayat.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
             <mat-expansion-panel-header>
                <mat-panel-title>
                   آيات متعلقه
                </mat-panel-title>
                <mat-panel-description>
-                  {{number_en_to_ar(related_ayat.length)}}
+                  {{number_en_to_ar(result.ayah.related_ayat.length)}}
                </mat-panel-description>
             </mat-expansion-panel-header>
 
             <ul class="related-ayah-style">
-               <li *ngFor="let r of related_ayat">
+               <li *ngFor="let r of result.ayah.related_ayat">
                   <button mat-icon-button ngxClipboard [cbContent]="r.ayah.uthmani">
                      <mat-icon mini-fab-icon>file_copy_outline</mat-icon>
                   </button>
@@ -42,6 +42,24 @@
                   </a>
                </li>
             </ul>
+         </mat-expansion-panel>
+
+         <mat-expansion-panel *ngIf="result.ayah.categories.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
+            <mat-expansion-panel-header>
+               <mat-panel-title>
+                  مواضيع متعلقه
+               </mat-panel-title>
+               <mat-panel-description>
+                  {{number_en_to_ar(result.ayah.categories.length)}}
+               </mat-panel-description>
+            </mat-expansion-panel-header>
+            
+            <span *ngFor="let c of result.ayah.categories; let i = index">
+               <span class="cat-style" (click)="onCategoryClicked(c)">{{c.name}}</span>
+               <span class="cat-delim-style" *ngIf="i < result.ayah.categories.length - 1">
+                  ،&nbsp;
+               </span>
+            </span>
          </mat-expansion-panel>
       </mat-accordion>
    </mat-card-content>

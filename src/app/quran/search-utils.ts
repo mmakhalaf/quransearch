@@ -99,6 +99,7 @@ export function remove_diacritic(q: string) {
 
    let letter_range = MathUtils.make_range(1569, 1610);
    letter_range.add(32);   // space
+   letter_range.add(1649); // ٱ
    let new_q = '';
    for (let i = 0; i < q.length; ++i) {
       let cc = q.charCodeAt(i);

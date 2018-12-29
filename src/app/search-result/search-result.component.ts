@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Output, EventEmitter, NgZone } from '@angular/core';
 import { SearchResult } from '../quran/search-result';
 import { QuranService } from '../services/quran.service';
-import { QuranRoot, QuranWord, Ayah, SimilarAyah } from '../quran/quran';
+import { QuranRoot, QuranWord, Ayah, SimilarAyah, Category } from '../quran/quran';
 import * as StringUtils from '../quran/string-utils';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -23,14 +23,11 @@ export class SearchResultComponent implements OnInit {
 
    @Output()
    sizeChanged = new EventEmitter<void>();
-   
-   related_ayat = new Array<SimilarAyah>();
 
    constructor(private qService: QuranService, private change_det: ChangeDetectorRef, private zone: NgZone) {
    }
 
    ngOnInit() {
-      this.related_ayat = this.result.ayah.get_related_ayat();
    }
    
    should_highlight(index: number): boolean {
@@ -39,6 +36,10 @@ export class SearchResultComponent implements OnInit {
    
    onWordClicked(word: QuranWord) {
       this.qService.request_query_search(word.imlaai);
+   }
+
+   onCategoryClicked(cat: Category) {
+      this.qService.request_category_search(cat.name);
    }
    
    number_en_to_ar(num: number): string {
