@@ -115,8 +115,46 @@ function sort_ayah_by_id(a1: Ayah, a2: Ayah): number {
 
 export class Category {
    ayat = new Array<Ayah>();
+   subcat = new Array<Category>();
+   parent: Category = null;
 
-   constructor(public name: string) {
+   constructor(public id: number, public name: string) {
+
+   }
+
+   add_category(cat: Category) {
+      this.subcat.push(cat);
+      cat.parent = this;
+   }
+
+   get_children(include_this: boolean) {
+      let children = new Array<Category>();
+      if (include_this) {
+         children.push(this);
+      }
+      Category.get_children(this, children);
+      return children;
+   }
+   
+   private static get_children(c: Category, children: Array<Category>) {
+      for (let cc of c.subcat) {
+         children.push(cc);
+         Category.get_children(cc, children);
+      }
+   }
+
+   get_parents(include_this: boolean): Array<Category> {
+      let parents = new Array<Category>();
+      if (include_this) {
+         parents.push(this);
+      }
+      let p = this.parent;
+      while (p != null) {
+         parents.push(p);
+         p = p.parent;
+      }
+      parents.reverse();
+      return parents;
    }
 }
 
@@ -311,12 +349,23 @@ export class Quran {
       });
    }
 
+   private add_category(cat: any, parent: Category) {
+      let o = new Category(cat.id, cat.name);
+      this.categories.set(o.id, o);
+      if (parent != null) {
+         parent.add_category(o);
+      }
+      if (cat.categories !== undefined) {
+         for (let subcat of cat.categories) {
+            this.add_category(subcat, o);
+         }
+      }
+   }
+
    private process_index() {
       // Load the categories
-      let index = 0;
       for (let cat of qurans.index.categories) {
-         this.categories.set(index, new Category(cat));
-         ++index;
+         this.add_category(cat, null);
       }
       
       // Link the Ayat with the categories

@@ -23,11 +23,12 @@ export class QuranSearch {
       if (cat == null) {
          return matches;
       }
-
-      for (let a of cat.ayat) {
-         matches.add_result(a, new Set<number>());
+      let cats = cat.get_children(true);
+      for (let c of cats) {
+         for (let a of c.ayat) {
+            matches.add_result(a, new Set<number>());
+         }
       }
-      
       matches.sort(this.disp_opts.sort_mode);
       return matches;
    }
