@@ -1,5 +1,5 @@
 
-import * as MathUtils from './math-utils';
+import * as MathUtils from '../utils/math-utils';
 
 const multi_match_map_any = { 
    ا: '[اأآإى]',

@@ -11,3 +11,7 @@
       <mat-icon matSuffix>search</mat-icon>
    </mat-form-field>
 </mat-card>
+
+<div *ngIf="!qService.isQuranLoaded">
+   <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>
+</div>

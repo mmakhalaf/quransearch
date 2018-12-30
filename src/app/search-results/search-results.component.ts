@@ -3,7 +3,7 @@ import { QuranService, SearchMode } from '../services/quran.service';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { SearchResult, SearchResults } from '../quran/search-result';
 import { QuranRoot } from '../quran/quran';
-import * as StringUtils from '../quran/string-utils';
+import * as StringUtils from '../quran/utils/string-utils';
 
 @Component({
    selector: 'qsearch-results',

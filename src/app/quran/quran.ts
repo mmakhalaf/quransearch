@@ -1,6 +1,6 @@
 
-import * as MathUtils from './math-utils';
-import * as StringUtils from './string-utils';
+import * as MathUtils from './utils/math-utils';
+import * as StringUtils from './utils/string-utils';
 
 const suwar: any = [
    [7, "الفاتحة"], [286, "البقرة"], [200, "آل عمران"], [176, "النساء"],
@@ -217,25 +217,39 @@ export class QuranWordStore
    }
 }
 
-
-
 export class Quran {
 
    private ayat: Map<string, Ayah> = null;
    word_store = new QuranWordStore();
    categories = new Map<number, Category>();
-   is_loaded = false;
+   
+   private constructor() {
 
-   onLoaded: (() => void) = null;
+   }
 
-   constructor() {
-      console.log('Loading Files...');
+   static create(): Promise<Quran> {
+      return Quran.loadFiles().then(() => {
+         console.log('Files Loaded.');
+         let q = new Quran();
+         q.load();
+         return q;
+      });
+   }
+
+   private static loadFiles(): Promise<any> {
+      let arr = new Array<Promise<any>>();
       for (let k in qurans) {
-         fetch(`assets/qdb_${k}.json`, { cache: 'force-cache' }).then(r => r.json()).then(json => {
-            qurans[k] = json;
-            this.load();
-         });
+         arr.push(Quran.loadFile(k));
       }
+      console.log(`Load Files Promise Sent`);
+      return Promise.all(arr);
+   }
+
+   private static loadFile(k: any): Promise<any> {
+      console.log(`Load file ${k} Promise Sent`);
+      return fetch(`assets/qdb_${k}.json`, { cache: 'force-cache' })
+         .then(r => r.json())
+         .then(json => { qurans[k] = json; });
    }
 
    for_each_ayah(fn: AyahWithIdFn) {
@@ -274,7 +288,6 @@ export class Quran {
          return;
       }
 
-      console.log('Files Loaded.');
       console.log('Processing...');
 
       // Go through the Ayat and construct our Ayah list and Word/Root store
@@ -296,10 +309,6 @@ export class Quran {
       this.process_index();
 
       console.log('Done.');
-      this.is_loaded = true;
-      if (this.onLoaded != null) {
-         this.onLoaded();
-      }
    }
 
    private process_ibn_kathir_relations() {

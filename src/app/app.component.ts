@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { QuranService } from './services/quran.service';
+import { QuranService, SearchMode } from './services/quran.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 // Consts
@@ -27,11 +27,11 @@ export class AppComponent implements OnInit {
       let r = params['r'];
       let c = params['c'];
       if (q !== undefined) {
-         this.qService.perform_query_search(q);
+         this.qService.perform_search(q, SearchMode.Word);
       } else if (r !== undefined) {
-         this.qService.perform_root_search(r);
+         this.qService.perform_search(r, SearchMode.Root);
       } else if (c !== undefined) {
-         this.qService.perform_cat_search(c);
+         this.qService.perform_search(c, SearchMode.Category);
       }
    }
 }

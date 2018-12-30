@@ -1,9 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Quran } from '../quran/quran';
-import { QuranSearch } from '../quran/quran-search';
+import { QuranSearcher } from '../quran/quran-search/quran-searcher';
 import { Router } from '@angular/router';
 import { SearchResults, SearchResult } from '../quran/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/search-opts';
+import { WordSearchFilter } from '../quran/quran-search/word-filter';
+import { RootSearchFilter } from '../quran/quran-search/root-filter';
+import { CategorySearchFilter } from '../quran/quran-search/category-filter';
 
 export enum SearchMode {
    Word,
@@ -21,7 +24,10 @@ export type OnSearchCompleted = (res: SearchResults, mode: SearchMode) => void;
 })
 export class QuranService {
 
-   quran = new Quran();
+   quran: Quran = null;
+   searcher: QuranSearcher = null;
+   isQuranLoaded = false;
+
    matches = new SearchResults();
 
    searchVal = '';
@@ -34,7 +40,22 @@ export class QuranService {
    disp_opts = new QuranSearchDisplayOpts();
 
    constructor(private router: Router, private zone: NgZone) {
-      
+      Quran.create().then(this.on_quran_loaded);
+      console.log(`Promise sent`);
+   }
+
+   on_quran_loaded = (quran: Quran) => {
+      console.log(`Promise Returned`);
+      // setTimeout(() => {
+         this.quran = quran;
+         this.searcher = new QuranSearcher(this.quran, this.disp_opts);
+         this.isQuranLoaded = true;
+         if (this.searchVal.length > 0) {
+            this.zone.run(() => {
+               this.repeat_search();
+            });
+         }
+      // }, 1000);
    }
 
    request_query_search(q: string) {
@@ -49,21 +70,14 @@ export class QuranService {
       this.router.navigateByUrl(`?c=${c}`);
    }
 
-   perform_query_search(searchVal: string) {
-      this.perform_search(searchVal, this.do_query_search, SearchMode.Word);
+   repeat_search() {
+      this.perform_search(this.searchVal, this.searchMode);
    }
 
-   perform_root_search(searchVal: string) {
-      this.perform_search(searchVal, this.do_root_search, SearchMode.Root);
-   }
-
-   perform_cat_search(searchVal: string) {
-      this.perform_search(searchVal, this.do_cat_search, SearchMode.Category);
-   }
-
-   private perform_search(searchVal: string, fn: SearchFn, searchMode: SearchMode) {
+   perform_search(searchVal: string, searchMode: SearchMode) {
       let changed = this.searchVal !== searchVal;
       this.searchVal = searchVal;
+      this.searchMode = searchMode;
       if (changed) {
          this.onSearchValUpdated.forEach((cb: OnSearchValUpdated, k: any) => {
             cb(this.searchVal);
@@ -75,41 +89,55 @@ export class QuranService {
          return;
       }
 
-      if (this.quran.is_loaded) {
-         this.do_search(fn, searchMode);
-      } else {
-         this.quran.onLoaded = () => {
-            this.quran.onLoaded = null;
-            this.zone.run(() => {
-               this.do_search(fn, searchMode);
-            });
+      if (this.quran == null) {
+         return;
+      }
+      
+      switch (searchMode) {
+         case SearchMode.Category: {
+            this.do_cat_search();
+            break;
+         }
+         case SearchMode.Root: {
+            this.do_root_search();
+            break;
+         }
+         case SearchMode.Word: {
+            this.do_query_search();
+            break;
          }
       }
-   }
 
-   private do_search(fn: SearchFn, searchMode: SearchMode) {
-      fn();
       this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
          cb(this.matches, searchMode);
       });
    }
 
-   private do_query_search = () => {
-      let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
-      this.matches = searcher.search_by_word(this.searchVal);
+   private do_query_search() {
+      // this.matches = searcher.search_by_word(this.searchVal);
+      this.searcher.reset_filter(new WordSearchFilter(this.quran, this.search_opts, this.searchVal));
+      this.matches = this.searcher.search();
    }
 
-   private do_root_search = () => {
-      let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
-      this.matches = searcher.search_by_root(this.searchVal);
+   private do_root_search() {
+      // this.matches = searcher.search_by_root(this.searchVal);
+      let root = this.quran.word_store.get_root(this.searchVal);
+      if (root != null) {
+         this.searcher.reset_filter(new RootSearchFilter(this.quran, this.search_opts, root));
+         this.matches = this.searcher.search();
+      }
    }
 
-   private do_cat_search = () => {
-      let searcher = new QuranSearch(this.quran, this.search_opts, this.disp_opts);
-      this.matches = searcher.search_by_category(this.searchVal);
+   private do_cat_search() {
+      // this.matches = searcher.search_by_category(this.searchVal);
+      let cat = this.quran.get_category(this.searchVal);
+      if (cat != null) {
+         this.searcher.reset_filter(new CategorySearchFilter(this.quran, this.search_opts, cat));
+         this.matches = this.searcher.search();
+      }
    }
 
-   clear_results(searchMode: SearchMode) {
+   private clear_results(searchMode: SearchMode) {
       this.matches = new SearchResults();
       this.searchMode = SearchMode.Word;
       this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {

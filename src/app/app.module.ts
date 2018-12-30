@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule} from '@angular/material';
 import { ClipboardModule } from 'ngx-clipboard';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 
@@ -32,6 +32,8 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     MatExpansionModule,
     MatGridListModule,
     MatInputModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
     VirtualScrollerModule,
     AppRoutingModule
   ],

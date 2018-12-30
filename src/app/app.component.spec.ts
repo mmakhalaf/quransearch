@@ -1,30 +1,32 @@
 /** Depends on Jasmine (through Angular) */
 
 import { Quran } from './quran/quran';
-import { QuranSearch } from './quran/quran-search';
+import { QuranSearcher } from './quran/quran-search/quran-searcher';
 import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchSortMode, QuranSearchDisplayOpts } from './quran/search-opts';
-
-let quran = new Quran();
+import { WordSearchFilter } from './quran/quran-search/word-filter';
+import { RootSearchFilter } from './quran/quran-search/root-filter';
 
 let exact_match_opts = new QuranSearchOpts();
 exact_match_opts.place_mode = QuranSearchPlaceMode.ExactOrder;
 
-let search = new QuranSearch(quran, exact_match_opts, new QuranSearchDisplayOpts());
+let quran: Quran = null;
+let search: QuranSearcher = null;
 
-// beforeEach(() => {
-//    search = new QuranSearch(quran);
-// });
 describe('Search', () => {
    it('Test Suite', (done: any) => {
-      setTimeout(() => {
-         console.log('Starting Tests');
+      let start = new Date();
+      Quran.create().then((q: Quran) => {
+         let end = new Date();
+         let elp = end.valueOf() - start.valueOf();
+         console.log(`Elapsed: ${elp}`);
+         quran = q;
+         search = new QuranSearcher(quran, new QuranSearchDisplayOpts());
          start_tests(done);
-      }, 250);
+      });
    });
 });
 
 function start_tests(done: any) {
-   expect(quran.is_loaded).toEqual(true);
    expect_word_search('ياأيها', 142, 142);
    expect_word_search('يا أيها', 142, 142);
    expect_word_search('ياموسى', 24, 24);
@@ -34,11 +36,16 @@ function start_tests(done: any) {
 }
 
 function expect_word_search(q: string, num_ayat: number, num_occ: number) {
-   expect(search.search_by_word(q).length()).toEqual(num_ayat);
-   expect(search.search_by_word(q).num_occurances()).toEqual(num_occ);
+   search.reset_filter(new WordSearchFilter(quran, exact_match_opts, q));
+   let res = search.search();
+   expect(res.length()).toEqual(num_ayat);
+   expect(res.num_occurances()).toEqual(num_occ);
 }
 
 function expect_root_search(r: string, num_ayat: number, num_occ: number) {
-   expect(search.search_by_root(r).length()).toEqual(num_ayat);
-   expect(search.search_by_root(r).num_occurances()).toEqual(num_occ);
+   let root = quran.word_store.get_root(r);
+   search.reset_filter(new RootSearchFilter(quran, exact_match_opts, root));
+   let res = search.search();
+   expect(res.length()).toEqual(num_ayat);
+   expect(res.num_occurances()).toEqual(num_occ);
 }

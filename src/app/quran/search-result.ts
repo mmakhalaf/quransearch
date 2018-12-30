@@ -28,8 +28,13 @@ export class SearchResult {
 export class SearchResults {
    results = new Array<SearchResult>();
 
+   // Unched
+   addUnchecked(res: SearchResult) {
+      this.results.push(res);
+   }
+
    add_result(ayah: Ayah, word_indices: Set<number>) {
-      let res: SearchResult = this.get(ayah.id);
+      let res: SearchResult = this.get_by_ayah(ayah);
       if (res != null && res !== undefined) {
          res.add_words(word_indices);
       } else {
@@ -37,9 +42,10 @@ export class SearchResults {
          this.results.push(res);
       }
    }
+
    add_results(results: SearchResults) {
       for (let res of results.results) {
-         let found = this.get(res.ayah.id);
+         let found = this.get_by_ayah(res.ayah);
          if (found != null) {
             found.merge(res);
             return;
@@ -49,13 +55,18 @@ export class SearchResults {
       }
    }
 
-   get(ayah_id: number): SearchResult {
-      for (let r of this.results) {
-         if (r.ayah.id == ayah_id) {
-            return r;
-         }
-      }
-      return null;
+   get_by_ayah_id(ayah_id: number): SearchResult {
+      let idx = this.results.findIndex((r: SearchResult):boolean => {
+         return r.ayah.id == ayah_id;
+      });
+      return idx == -1 ? null : this.results[idx];
+   }
+   
+   get_by_ayah(ayah: Ayah): SearchResult {
+      let idx = this.results.findIndex((r: SearchResult):boolean => {
+         return r.ayah == ayah;
+      });
+      return idx == -1 ? null : this.results[idx];
    }
 
    length(): number {

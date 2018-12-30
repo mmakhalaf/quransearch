@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, O
 import { SearchResult } from '../quran/search-result';
 import { QuranService } from '../services/quran.service';
 import { QuranRoot, QuranWord, Ayah, SimilarAyah, Category } from '../quran/quran';
-import * as StringUtils from '../quran/string-utils';
+import * as StringUtils from '../quran/utils/string-utils';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 

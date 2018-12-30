@@ -15,7 +15,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
    subject = new Subject<string>();
    searchVal = '';
 
-   constructor(private qService: QuranService) {
+   constructor(public qService: QuranService) {
       
    }
 
