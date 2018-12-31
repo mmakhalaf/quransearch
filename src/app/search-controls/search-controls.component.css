@@ -30,17 +30,17 @@
 
 .search-input {
    text-align: right;
-   width: 60%;
+   width: 50%;
 }
 
 .search-select {
    text-align: right;
-   width: 30%;
+   width: 25%;
 }
 
 .search-term-select {
    text-align: right;
-   width: 30%;
+   width: 25%;
 }
 
 .search-settings-toggle {

@@ -4,28 +4,42 @@ import { debounceTime } from 'rxjs/operators';
 import { QuranService } from '../services/quran.service';
 import { MatExpansionPanel } from '@angular/material';
 import { ControlsResService } from '../services/controlres.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 let $: any;
 
 @Component({
    selector: 'qsearch-controls',
    templateUrl: './search-controls.component.html',
-   styleUrls: ['./search-controls.component.css']
+   styleUrls: ['./search-controls.component.css'],
+   animations: [
+      trigger('slideInOut', [
+         transition(':enter', [
+            style({ transform: 'translateY(-100%)' }),
+            animate('200ms ease-in', style({ transform: 'translateY(0%)' }))
+         ]),
+         transition(':leave', [
+            animate('200ms ease-in', style({ transform: 'translateY(-100%)' }))
+         ])
+      ])
+   ]
 })
 export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit {
 
    subject = new Subject<string>();
    searchVal = '';
 
+   show_filter_list = false;
    show_extra_opts = false;
    show_toolbar = true;
 
    prevScrollPos = 0;
 
-   filters = [ 
-      // 'كلمة', 
-      // 'أية', 
-      // 'إبحث'
+   filters = [
+      'كلمتان', 
+      'خفيفتان', 
+      'على',
+      'اللسان'
    ];
 
    constructor(public qService: QuranService, private constrolService: ControlsResService) {
@@ -58,7 +72,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    /// Events
 
-   onKeyUp(){
+   onKeyUp() {
       this.subject.next();
    }
 
@@ -70,6 +84,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       if (dir < 0) {
          this.show_toolbar = false;
          this.show_extra_opts = false;
+         this.show_filter_list = false;
       } else {
          this.show_toolbar = true;
       }
@@ -95,6 +110,18 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
    }
 
    onOpenSettingsClicked() {
-      this.show_extra_opts = true;
+      this.show_extra_opts = !this.show_extra_opts;
+   }
+
+   filtersExpanded() {
+      this.show_filter_list = true;
+   }
+
+   filtersCollapsed() {
+      this.show_filter_list = false;
+   }
+
+   onOpenFiltersClicked() {
+      this.show_filter_list = !this.show_filter_list;
    }
 }

@@ -26,7 +26,7 @@ export class QuranService {
 
    quran: Quran = null;
    searcher: QuranSearcher = null;
-   isQuranLoaded = false;
+   isOpPending = false;
 
    matches = new SearchResults();
 
@@ -40,6 +40,7 @@ export class QuranService {
    disp_opts = new QuranSearchDisplayOpts();
 
    constructor(private router: Router, private zone: NgZone) {
+      this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
       console.log(`Promise sent`);
    }
@@ -49,7 +50,7 @@ export class QuranService {
       // setTimeout(() => {
          this.quran = quran;
          this.searcher = new QuranSearcher(this.quran, this.disp_opts);
-         this.isQuranLoaded = true;
+         this.isOpPending = false;
          if (this.searchVal.length > 0) {
             this.zone.run(() => {
                this.repeat_search();
@@ -114,17 +115,15 @@ export class QuranService {
    }
 
    private do_query_search() {
-      // this.matches = searcher.search_by_word(this.searchVal);
       this.searcher.reset_filter(new WordSearchFilter(this.quran, this.search_opts, this.searchVal));
-      this.matches = this.searcher.search();
+      this.begin_search();
    }
 
    private do_root_search() {
-      // this.matches = searcher.search_by_root(this.searchVal);
       let root = this.quran.word_store.get_root(this.searchVal);
       if (root != null) {
          this.searcher.reset_filter(new RootSearchFilter(this.quran, this.search_opts, root));
-         this.matches = this.searcher.search();
+         this.begin_search();
       }
    }
 
@@ -133,8 +132,19 @@ export class QuranService {
       let cat = this.quran.get_category(this.searchVal);
       if (cat != null) {
          this.searcher.reset_filter(new CategorySearchFilter(this.quran, this.search_opts, cat));
-         this.matches = this.searcher.search();
+         this.begin_search();
       }
+   }
+
+   private begin_search() {
+      // this.matches = this.searcher.search();
+      this.isOpPending = true;
+      this.searcher.beginSearch().then((searchRes: SearchResults) => {
+         this.zone.run(() => {
+            this.matches = searchRes;
+            this.isOpPending = false;
+         });
+      });
    }
 
    private clear_results(searchMode: SearchMode) {

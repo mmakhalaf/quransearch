@@ -1,29 +1,30 @@
-<mat-card class="controls" *ngIf="show_toolbar">
+<mat-card class="controls" *ngIf="show_toolbar" [@slideInOut]>
    <div class="controls-row search-input-row">
-      <div>
-         <mat-form-field hintLabel="إبحث عن" class="search-select">
-            <select matNativeControl value="word">
-               <option value="word">كلمة</option>
-               <option value="root">جذر</option>
-               <option value="category">موضوع</option>
-            </select>
-         </mat-form-field>
-         <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
-            <input matInput
-               [(ngModel)]="searchVal"
-               (keyup)="onKeyUp()"
-               autofocus
-               >
-            <button mat-icon-button matSuffix (click)="onFilterNewClicked()">
-               <mat-icon>add</mat-icon>
-            </button>
-         </mat-form-field>
-      </div>
-      <button mat-icon-button mat-raised-button class="search-settings-toggle" *ngIf="!show_extra_opts" (click)="onOpenSettingsClicked()">
+      <mat-form-field hintLabel="إبحث عن" class="search-select">
+         <select matNativeControl value="word">
+            <option value="word">كلمة</option>
+            <option value="root">جذر</option>
+            <option value="category">موضوع</option>
+         </select>
+      </mat-form-field>
+      <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
+         <input matInput
+            [(ngModel)]="searchVal"
+            (keyup)="onKeyUp()"
+            autofocus
+            >
+         <button mat-icon-button matSuffix (click)="onFilterNewClicked()">
+            <mat-icon>add</mat-icon>
+         </button>
+      </mat-form-field>
+      <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()">
+         <mat-icon>filter_list</mat-icon>
+      </button>
+      <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenSettingsClicked()">
          <mat-icon>settings</mat-icon>
       </button>
    </div>
-
+   
    <!-- Extra Options -->
    <mat-accordion>
       <mat-expansion-panel class="opts-row" (afterCollapse)="extraOptsCollapsed()" (afterExpand)="extraOptsExpanded()" *ngIf="show_extra_opts" [expanded]="show_extra_opts" hideToggle>
@@ -59,10 +60,27 @@
             </mat-form-field>
          </div>
       </mat-expansion-panel>
+
+      <mat-expansion-panel class="opts-row" (afterCollapse)="filtersCollapsed()" (afterExpand)="filtersExpanded()" *ngIf="show_filter_list" [expanded]="show_filter_list" hideToggle>
+         <mat-expansion-panel-header>
+            <mat-panel-title>
+               التصفيات الحالية
+            </mat-panel-title>
+            <mat-panel-description style="direction: ltr">
+               <mat-icon>filter_list</mat-icon>
+            </mat-panel-description>
+         </mat-expansion-panel-header>
+         <mat-chip-list>
+            <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
+               {{f}}
+               <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+         </mat-chip-list>
+      </mat-expansion-panel>
    </mat-accordion>
 </mat-card>
 
-<div *ngIf="!qService.isQuranLoaded">
+<div *ngIf="qService.isOpPending">
    <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>
 </div>
 

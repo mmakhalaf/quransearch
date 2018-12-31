@@ -53,6 +53,14 @@ export class QuranSearcher {
       return this.matches;
    }
 
+   beginSearch(): Promise<SearchResults> {
+      console.log(`Searcher creating promise`);
+      return new Promise<SearchResults>((resolve, reject) => {
+         this.search();
+         resolve(this.matches);
+      });
+   }
+
    private prep_quran_as_results(): SearchResults {
       let results = new SearchResults();
       this.quran.for_each_ayah((ayah: Ayah, ayah_id: string) => {
