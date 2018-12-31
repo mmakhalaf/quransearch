@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { QuranService, SearchMode } from '../services/quran.service';
+import { QuranService } from '../services/quran.service';
 import { VirtualScrollerComponent, ChangeEvent } from 'ngx-virtual-scroller';
 import { SearchResult, SearchResults } from '../quran/quran-search/search-result';
 import { QuranRoot } from '../quran/quran';
@@ -32,13 +32,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
-      this.qService.onSearchValUpdated.set(this, this.on_search_query_changed);
       this.qService.onSearchCompleted.set(this, this.on_search_complete);
       this.constrolService.onScrollToTopRequest.set(this, this.scrollToTop);
    }
 
    ngOnDestroy() {
-      this.qService.onSearchValUpdated.delete(this);
       this.qService.onSearchCompleted.delete(this);
       this.constrolService.onScrollToTopRequest.delete(this);
    }
@@ -46,11 +44,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    num_results() {
       return StringUtils.number_en_to_ar(this.qService.matches.length())
    }
-
-   on_search_query_changed = (searchVal: string) => {
-      this.scrollToTop();
-   }
-
+   
    scrollToTop = () => {
       // Scroll to the top of the search when a new query is done
       this.top_item.nativeElement.scrollIntoView({
@@ -58,31 +52,31 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       });
    }
 
-   on_search_complete = (results: SearchResults, searchMode : SearchMode) => {
+   on_search_complete = (results: SearchResults) => {
       this.roots = new Array<QuranRoot>();
-      if (searchMode != SearchMode.Root) {
-         for (let res of results.results) {
-            res.word_indices.forEach((val: number, k: number) => {
-               let w = res.ayah.words[val];
-               let r = w.get_root();
-               if (r != null) {
-                  let found = false;
-                  for (let r of this.roots) {
-                     if (r.text === r.text) {
-                        found = true;
-                     }
-                  }
-                  if (!found) {
-                     this.roots.push(r);
+      for (let res of results.results) {
+         res.word_indices.forEach((val: number, k: number) => {
+            let w = res.ayah.words[val];
+            let r = w.get_root();
+            if (r != null) {
+               let found = false;
+               for (let r of this.roots) {
+                  if (r.text === r.text) {
+                     found = true;
                   }
                }
-            });
-         }
+               if (!found) {
+                  this.roots.push(r);
+               }
+            }
+         });
       }
 
       this.roots.sort((a1: QuranRoot, a2: QuranRoot): number => {
          return a1 < a2 ? -1 : (a1 > a2 ? 1 : 0);
       });
+
+      this.scrollToTop();
    }
 
    onItemUpdated(r: SearchResult, i: number) {
@@ -96,7 +90,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    }
 
    onRootClicked(root: QuranRoot) {
-      this.qService.request_root_search(root.text);
+      this.qService.reset_search_with_root_filter(root);
    }
 
    curPos = 0;

@@ -4,7 +4,9 @@ import { QuranSearchOpts } from './search-opts';
 
 export abstract class SearchFilter
 {
-   constructor(protected quran: Quran, protected searchOpts: QuranSearchOpts) {
+   quran: Quran = null;
+   
+   constructor(public id: number, protected searchOpts: QuranSearchOpts) {
    }
 
    filter(searchRes: SearchResults): SearchResults {

@@ -8,8 +8,8 @@ export class WordSearchFilter extends SearchFilter {
 
    num_matches = 0;
    
-   constructor(quran: Quran, searchOpts: QuranSearchOpts, private query: string) {
-      super(quran, searchOpts);
+   constructor(id: number, searchOpts: QuranSearchOpts, private query: string) {
+      super(id, searchOpts);
    }
 
    filter(searchRes: SearchResults): SearchResults {

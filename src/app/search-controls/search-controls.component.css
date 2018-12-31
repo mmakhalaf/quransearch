@@ -22,6 +22,20 @@
 }
 
 .opts-row {
+   border: 1px gray solid;
+   border-radius: 0.2rem;
+   margin-top: 0.2rem;
+}
+
+.opts-title {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+}
+
+.opts-title-item {
+   margin-right: 0.1rem;
+   margin-left: 0.1rem;
 }
 
 .search-input-row {

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule, MatChipsModule, MatSelectModule, MatButtonToggleModule, MatDividerModule } from '@angular/material';
 import { ClipboardModule } from 'ngx-clipboard';
@@ -22,6 +22,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
    imports: [
       BrowserModule,
       FormsModule,
+      ReactiveFormsModule,
       ClipboardModule,
       BrowserAnimationsModule,
       MatIconModule,

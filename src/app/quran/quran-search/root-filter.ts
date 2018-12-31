@@ -6,8 +6,8 @@ import { SearchResults } from './search-result';
 export class RootSearchFilter extends SearchFilter {
    num_matches = 0;
 
-   constructor(quran: Quran, searchOpts: QuranSearchOpts, private root: QuranRoot) {
-      super(quran, searchOpts);
+   constructor(id: number, searchOpts: QuranSearchOpts, private root: QuranRoot) {
+      super(id, searchOpts);
    }
 
    filter(searchRes: SearchResults): SearchResults {

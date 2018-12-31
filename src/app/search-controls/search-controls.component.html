@@ -1,7 +1,7 @@
 <mat-card class="controls" *ngIf="show_toolbar" [@slideInOut]>
    <div class="controls-row search-input-row">
       <mat-form-field hintLabel="إبحث عن" class="search-select">
-         <select matNativeControl value="word">
+         <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">
             <option value="word">كلمة</option>
             <option value="root">جذر</option>
             <option value="category">موضوع</option>
@@ -9,10 +9,17 @@
       </mat-form-field>
       <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
          <input matInput
-            [(ngModel)]="searchVal"
             (keyup)="onKeyUp()"
+            [formControl]="searchFormControl"
+            [errorStateMatcher]="matcher"
             autofocus
             >
+            <mat-error *ngIf="searchFormControl.hasError('err')">
+               {{searchFormControl.getError('err')}}
+            </mat-error>
+         <button mat-icon-button matSuffix (click)="onOpenSettingsClicked()">
+            <mat-icon>settings</mat-icon>
+         </button>
          <button mat-icon-button matSuffix (click)="onFilterNewClicked()">
             <mat-icon>add</mat-icon>
          </button>
@@ -20,70 +27,58 @@
       <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()">
          <mat-icon>filter_list</mat-icon>
       </button>
-      <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenSettingsClicked()">
-         <mat-icon>settings</mat-icon>
-      </button>
    </div>
    
    <!-- Extra Options -->
-   <mat-accordion>
-      <mat-expansion-panel class="opts-row" (afterCollapse)="extraOptsCollapsed()" (afterExpand)="extraOptsExpanded()" *ngIf="show_extra_opts" [expanded]="show_extra_opts" hideToggle>
-         <mat-expansion-panel-header>
-            <mat-panel-title>
-               إعدادات
-            </mat-panel-title>
-            <mat-panel-description style="direction: ltr">
-               <mat-icon>settings</mat-icon>
-            </mat-panel-description>
-         </mat-expansion-panel-header>
-         <div class="controls-row search-input-row">
-            <mat-form-field class="search-term-select" hintLabel="موقعها في الآية">
-               <select matNativeControl value="any">
-                  <option value="any">أي مكان</option>
-                  <option value="start_ayah_only">بداية الآيه فقط</option>
-                  <option value="end_ayah_only">نهاية الآيه فقط</option>
-               </select>
-            </mat-form-field>
-            <mat-form-field class="search-term-select" hintLabel="مطابقة و ترتيب الكلمات">
-               <select matNativeControl value="any">
-                  <option value="any">أي ترتيب</option>
-                  <option value="same_order_any_word">نفس الترتيب</option>
-                  <option value="same_order_full_word">نفس الترتيب (كلمات كاملة)</option>
-               </select>
-            </mat-form-field>
-            <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
-               <select matNativeControl value="seq">
-                  <option value="seq">حسب السورة</option>
-                  <option value="occ">عدد الكلمات المتطابقة</option>
-                  <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
-               </select>
-            </mat-form-field>
-         </div>
-      </mat-expansion-panel>
+   <fieldset class="opts-row" *ngIf="show_extra_opts">
+      <legend class="opts-title">
+         <mat-icon class="opts-title-item">settings</mat-icon>
+         <span class="opts-title-item">إعدادات</span>
+      </legend>
+      <div class="controls-row search-input-row">
+         <mat-form-field class="search-term-select" hintLabel="موقعها في الآية">
+            <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_loc" (change)="onWordOrderChanged()">
+               <option value="any">أي مكان</option>
+               <option value="start_ayah_only">بداية الآيه فقط</option>
+               <option value="end_ayah_only">نهاية الآيه فقط</option>
+            </select>
+         </mat-form-field>
+         <mat-form-field class="search-term-select" hintLabel="مطابقة و ترتيب الكلمات">
+            <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_order" (change)="onMatchTypeChanged()">
+               <option value="same_order_full_word">نفس الترتيب (كلمات كاملة)</option>
+               <option value="same_order_any_word">نفس الترتيب</option>
+               <option value="any">أي ترتيب</option>
+            </select>
+         </mat-form-field>
+         <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
+            <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
+               <option value="seq">حسب السورة</option>
+               <option value="occ">عدد الكلمات المتطابقة</option>
+               <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
+            </select>
+         </mat-form-field>
+      </div>
+   </fieldset>
 
-      <mat-expansion-panel class="opts-row" (afterCollapse)="filtersCollapsed()" (afterExpand)="filtersExpanded()" *ngIf="show_filter_list" [expanded]="show_filter_list" hideToggle>
-         <mat-expansion-panel-header>
-            <mat-panel-title>
-               التصفيات الحالية
-            </mat-panel-title>
-            <mat-panel-description style="direction: ltr">
-               <mat-icon>filter_list</mat-icon>
-            </mat-panel-description>
-         </mat-expansion-panel-header>
-         <mat-chip-list>
-            <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
-               {{f}}
-               <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-         </mat-chip-list>
-      </mat-expansion-panel>
-   </mat-accordion>
+   <fieldset class="opts-row" *ngIf="show_filter_list">
+      <legend class="opts-title">
+         <mat-icon class="opts-title-item">filter_list</mat-icon>
+         <span class="opts-title-item">التصفيات الحالية</span>
+      </legend>
+
+      <mat-chip-list>
+         <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
+            {{f}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+         </mat-chip>
+      </mat-chip-list>
+   </fieldset>
 </mat-card>
 
 <div *ngIf="qService.isOpPending">
    <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>
 </div>
 
-<button mat-icon-button mat-raised-button class="scroll-up-btn" (click)="onScrollUpwardsClicked()">
+<button mat-icon-button mat-raised-button class="scroll-up-btn" (click)="onScrollUpwardsClicked()" *ngIf="show_up_arrow">
    <mat-icon>arrow_upward</mat-icon>
 </button>
