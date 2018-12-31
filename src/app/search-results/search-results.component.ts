@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { QuranService, SearchMode } from '../services/quran.service';
-import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
-import { SearchResult, SearchResults } from '../quran/search-result';
+import { VirtualScrollerComponent, ChangeEvent } from 'ngx-virtual-scroller';
+import { SearchResult, SearchResults } from '../quran/quran-search/search-result';
 import { QuranRoot } from '../quran/quran';
 import * as StringUtils from '../quran/utils/string-utils';
+import { ControlsResService } from '../services/controlres.service';
 
 @Component({
    selector: 'qsearch-results',
@@ -25,7 +26,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
    constructor(
       public qService: QuranService,
-      private change_det: ChangeDetectorRef
+      private constrolService: ControlsResService
       ) {
       
    }
@@ -33,11 +34,13 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    ngOnInit() {
       this.qService.onSearchValUpdated.set(this, this.on_search_query_changed);
       this.qService.onSearchCompleted.set(this, this.on_search_complete);
+      this.constrolService.onScrollToTopRequest.set(this, this.scrollToTop);
    }
 
    ngOnDestroy() {
       this.qService.onSearchValUpdated.delete(this);
       this.qService.onSearchCompleted.delete(this);
+      this.constrolService.onScrollToTopRequest.delete(this);
    }
 
    num_results() {
@@ -45,6 +48,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    }
 
    on_search_query_changed = (searchVal: string) => {
+      this.scrollToTop();
+   }
+
+   scrollToTop = () => {
       // Scroll to the top of the search when a new query is done
       this.top_item.nativeElement.scrollIntoView({
          behavior: "instant", block: 'nearest'
@@ -90,5 +97,15 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
    onRootClicked(root: QuranRoot) {
       this.qService.request_root_search(root.text);
+   }
+
+   curPos = 0;
+   onScrollChanged(e: ChangeEvent) {
+      if (e.scrollStartPosition == 0 || e.scrollStartPosition < this.curPos) {
+         this.constrolService.onScrollUp();
+      } else {
+         this.constrolService.onScrollDown();
+      }
+      this.curPos = e.scrollStartPosition;
    }
 }

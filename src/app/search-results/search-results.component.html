@@ -13,6 +13,7 @@ class="search-results"
    [scrollThrottlingTime]="20"
    [bufferAmount]="20"
    [parentScroll]="parent"
+   (vsChange)="onScrollChanged($event)"
    >
    <div *ngIf="qService.matches.length() > 0" class="data-msg">
       عدد الآيات: {{num_results()}}
@@ -28,7 +29,7 @@ class="search-results"
          {{r.text}}
       </span>
    </mat-expansion-panel>
-
+   
    <div #container>
       <qsearch-result
          *ngFor="let r of scroll.viewPortItems; let i = index"

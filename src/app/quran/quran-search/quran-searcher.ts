@@ -1,6 +1,6 @@
 import { Quran, Ayah } from '../quran';
-import { QuranSearchOpts, QuranSearchDisplayOpts } from '../search-opts';
-import { SearchResults } from '../search-result';
+import { QuranSearchOpts, QuranSearchDisplayOpts } from './search-opts';
+import { SearchResults } from './search-result';
 import { SearchFilter } from './search-filter';
 
 export class QuranSearcher {

@@ -5,10 +5,15 @@ export enum QuranSearchSortMode {
 }
 
 export enum QuranSearchPlaceMode {
-   ExactOrder, // Word has to appear in the exact order
    BeginOnly,  // Word has to appear in the beginning of an Ayah (ExactOrder)
    EndOnly,    // Word has to appear in the end of an Ayah (ExactOrder)
-   Any         // Words can appear in any order / sequence
+   Any         // Words can appear anywhere
+}
+
+export enum QuranSearchMatchMode {
+   ExactOrder, // Word has to appear in the exact order
+   ExactOrderFullWord,  // Word has to appear in the exact order and match a full word
+   Any
 }
 
 /**
@@ -16,7 +21,8 @@ export enum QuranSearchPlaceMode {
  * (i.e. They will have an impact on the number of results).
  */
 export class QuranSearchOpts {
-   place_mode = QuranSearchPlaceMode.ExactOrder;
+   place_mode = QuranSearchPlaceMode.Any;
+   match_mode = QuranSearchMatchMode.ExactOrder;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { SearchFilter } from './search-filter';
 import { Quran, Category } from '../quran';
-import { QuranSearchOpts } from '../search-opts';
-import { SearchResults } from '../search-result';
+import { QuranSearchOpts } from './search-opts';
+import { SearchResults } from './search-result';
 
 export class CategorySearchFilter extends SearchFilter {
 
@@ -17,16 +17,17 @@ export class CategorySearchFilter extends SearchFilter {
          return searchRes;
       }
 
-
       let new_res = new SearchResults();
-      for (let res of searchRes.results) {
-         let catIdx = res.ayah.categories.indexOf(this.category);
-         if (catIdx != -1) {
-            this.num_matches++;
-            new_res.addUnchecked(res);
+      let categories = this.category.get_children(true);
+      for (let cat of categories) {
+         for (let res of searchRes.results) {
+            let catIdx = res.ayah.categories.indexOf(cat);
+            if (catIdx != -1) {
+               this.num_matches++;
+               new_res.addUnchecked(res);
+            }
          }
-      }
-      
+      }      
       return new_res;
    }
 

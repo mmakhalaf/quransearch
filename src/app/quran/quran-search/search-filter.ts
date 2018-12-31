@@ -1,6 +1,6 @@
 import { Quran } from '../quran';
-import { SearchResults } from '../search-result';
-import { QuranSearchOpts } from '../search-opts';
+import { SearchResults } from './search-result';
+import { QuranSearchOpts } from './search-opts';
 
 export abstract class SearchFilter
 {

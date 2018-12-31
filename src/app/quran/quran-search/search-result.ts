@@ -1,4 +1,4 @@
-import { Ayah } from './quran';
+import { Ayah } from '../quran';
 import { QuranSearchSortMode } from './search-opts';
 
 /**

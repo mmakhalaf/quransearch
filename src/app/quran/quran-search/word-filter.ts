@@ -1,7 +1,7 @@
 import { SearchFilter } from './search-filter';
-import { QuranSearchOpts, QuranSearchPlaceMode } from '../search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode } from './search-opts';
 import { Quran, Ayah } from '../quran';
-import { SearchResults } from '../search-result';
+import { SearchResults } from './search-result';
 import * as QSearchUtils from './search-utils';
 
 export class WordSearchFilter extends SearchFilter {

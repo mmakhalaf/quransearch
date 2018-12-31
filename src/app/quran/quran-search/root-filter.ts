@@ -1,7 +1,7 @@
 import { SearchFilter } from './search-filter';
 import { Quran, QuranRoot } from '../quran';
-import { QuranSearchOpts } from '../search-opts';
-import { SearchResults } from '../search-result';
+import { QuranSearchOpts } from './search-opts';
+import { SearchResults } from './search-result';
 
 export class RootSearchFilter extends SearchFilter {
    num_matches = 0;

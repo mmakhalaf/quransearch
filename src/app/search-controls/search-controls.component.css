@@ -1,17 +1,56 @@
 
-.search-input-row {
-   display: flex;
-   flex-direction: column;
+.mat-standard-chip .mat-chip-remove, .mat-standard-chip .mat-chip-trailing-icon {
+   margin-right: 8px;
+   margin-left: 0px;
+}
+.mat-standard-chip.mat-chip-with-trailing-icon {
+   padding-left: 8px;
+   padding-right: 12px;
+}
+
+.controls {
    z-index: 999;
+   transition: top 0.3s;
+}
+
+.controls-row {
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   align-items: center;
+}
+
+.opts-row {
+}
+
+.search-input-row {
+   justify-content: space-between;
 }
 
 .search-input {
    text-align: right;
+   width: 60%;
 }
- 
-.search-input-row > * {
-   width: 80%;
-   /* margin-top: 0.3rem; */
-   margin-left: 10%;
-   margin-right: 10%;
+
+.search-select {
+   text-align: right;
+   width: 30%;
+}
+
+.search-term-select {
+   text-align: right;
+   width: 30%;
+}
+
+.search-settings-toggle {
+   float: left;
+}
+
+.scroll-up-btn {
+   position: absolute;
+   z-index: 999;
+   margin-top: 0.1rem;
+   margin-right: 0.1rem;
+   /* margin-left: 0.2rem; */
 }

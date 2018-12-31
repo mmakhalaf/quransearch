@@ -2,7 +2,7 @@
    <mat-card-content>
       <!-- Ayah -->
       <div class="ayah-style">
-         <button mat-icon-button  ngxClipboard [cbContent]="result.ayah.uthmani">
+         <button mat-icon-button ngxClipboard [cbContent]="result.ayah.uthmani">
             <mat-icon mini-fab-icon>file_copy_outline</mat-icon>
          </button>
          <span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
@@ -30,7 +30,7 @@
                   {{number_en_to_ar(result.ayah.related_ayat.length)}}
                </mat-panel-description>
             </mat-expansion-panel-header>
-
+            
             <ul class="related-ayah-style">
                <li *ngFor="let r of result.ayah.related_ayat">
                   <button mat-icon-button ngxClipboard [cbContent]="r.ayah.uthmani">

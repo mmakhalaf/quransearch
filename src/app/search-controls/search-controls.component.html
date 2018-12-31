@@ -1,17 +1,71 @@
-<mat-card class="search-input-row">
-   <mat-form-field hintLabel="أدخل كلمات آية ما لتظهر نتائج" class="search-input">
-      <mat-label dir="rtl">إبحث</mat-label>
-      <input matInput 
-         placeholder="رحمة"
-         dir="rtl"
-         [(ngModel)]="searchVal"
-         (keyup)="onKeyUp()"
-         autofocus
-         >
-      <mat-icon matSuffix>search</mat-icon>
-   </mat-form-field>
+<mat-card class="controls" *ngIf="show_toolbar">
+   <div class="controls-row search-input-row">
+      <div>
+         <mat-form-field hintLabel="إبحث عن" class="search-select">
+            <select matNativeControl value="word">
+               <option value="word">كلمة</option>
+               <option value="root">جذر</option>
+               <option value="category">موضوع</option>
+            </select>
+         </mat-form-field>
+         <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
+            <input matInput
+               [(ngModel)]="searchVal"
+               (keyup)="onKeyUp()"
+               autofocus
+               >
+            <button mat-icon-button matSuffix (click)="onFilterNewClicked()">
+               <mat-icon>add</mat-icon>
+            </button>
+         </mat-form-field>
+      </div>
+      <button mat-icon-button mat-raised-button class="search-settings-toggle" *ngIf="!show_extra_opts" (click)="onOpenSettingsClicked()">
+         <mat-icon>settings</mat-icon>
+      </button>
+   </div>
+
+   <!-- Extra Options -->
+   <mat-accordion>
+      <mat-expansion-panel class="opts-row" (afterCollapse)="extraOptsCollapsed()" (afterExpand)="extraOptsExpanded()" *ngIf="show_extra_opts" [expanded]="show_extra_opts" hideToggle>
+         <mat-expansion-panel-header>
+            <mat-panel-title>
+               إعدادات
+            </mat-panel-title>
+            <mat-panel-description style="direction: ltr">
+               <mat-icon>settings</mat-icon>
+            </mat-panel-description>
+         </mat-expansion-panel-header>
+         <div class="controls-row search-input-row">
+            <mat-form-field class="search-term-select" hintLabel="موقعها في الآية">
+               <select matNativeControl value="any">
+                  <option value="any">أي مكان</option>
+                  <option value="start_ayah_only">بداية الآيه فقط</option>
+                  <option value="end_ayah_only">نهاية الآيه فقط</option>
+               </select>
+            </mat-form-field>
+            <mat-form-field class="search-term-select" hintLabel="مطابقة و ترتيب الكلمات">
+               <select matNativeControl value="any">
+                  <option value="any">أي ترتيب</option>
+                  <option value="same_order_any_word">نفس الترتيب</option>
+                  <option value="same_order_full_word">نفس الترتيب (كلمات كاملة)</option>
+               </select>
+            </mat-form-field>
+            <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
+               <select matNativeControl value="seq">
+                  <option value="seq">حسب السورة</option>
+                  <option value="occ">عدد الكلمات المتطابقة</option>
+                  <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
+               </select>
+            </mat-form-field>
+         </div>
+      </mat-expansion-panel>
+   </mat-accordion>
 </mat-card>
 
 <div *ngIf="!qService.isQuranLoaded">
    <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>
 </div>
+
+<button mat-icon-button mat-raised-button class="scroll-up-btn" (click)="onScrollUpwardsClicked()">
+   <mat-icon>arrow_upward</mat-icon>
+</button>

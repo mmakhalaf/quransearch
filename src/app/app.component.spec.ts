@@ -2,12 +2,13 @@
 
 import { Quran } from './quran/quran';
 import { QuranSearcher } from './quran/quran-search/quran-searcher';
-import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchSortMode, QuranSearchDisplayOpts } from './quran/search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchSortMode, QuranSearchDisplayOpts, QuranSearchMatchMode } from './quran/quran-search/search-opts';
 import { WordSearchFilter } from './quran/quran-search/word-filter';
 import { RootSearchFilter } from './quran/quran-search/root-filter';
 
 let exact_match_opts = new QuranSearchOpts();
-exact_match_opts.place_mode = QuranSearchPlaceMode.ExactOrder;
+exact_match_opts.match_mode = QuranSearchMatchMode.ExactOrder;
+exact_match_opts.place_mode = QuranSearchPlaceMode.Any;
 
 let quran: Quran = null;
 let search: QuranSearcher = null;
