@@ -237,17 +237,17 @@ export class Quran {
    }
 
    private static loadFiles(): Promise<any> {
+      console.log('Loading Files.');
       let arr = new Array<Promise<any>>();
       for (let k in qurans) {
          arr.push(Quran.loadFile(k));
       }
-      console.log(`Load Files Promise Sent`);
       return Promise.all(arr);
    }
 
    private static loadFile(k: any): Promise<any> {
-      console.log(`Load file ${k} Promise Sent`);
-      return fetch(`assets/qdb_${k}.json`, { cache: 'force-cache' })
+      // console.log(`Load file ${k} Promise Sent`);
+      return fetch(`assets/qdb_${k}.json`, { cache: 'default' })
          .then(r => r.json())
          .then(json => { qurans[k] = json; });
    }
@@ -550,6 +550,12 @@ export class Ayah {
          return word_indices;
       }
 
+      if (end - 1 < start) {
+         end = start;
+      } else {
+         --end;
+      }
+
       // Here we have the start index and end index of the match
       // We want to find out the words in between.
       // Go through each word and get its range.
@@ -558,12 +564,12 @@ export class Ayah {
       let start_w = 0;
       let word_i = 0;
       for (let word of word_arr) {
-         let end_w = start_w + word.length;
+         let end_w = start_w + word.length - 1;
          if (MathUtils.ranges_intersect(start_w, end_w, start, end)) {
             word_indices.push(word_i);
          }
          ++word_i;
-         start_w = end_w + 1;
+         start_w = end_w + 2;
       }
       return word_indices;
    }

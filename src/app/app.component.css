@@ -5,5 +5,5 @@
    overflow-x: hidden;
    scroll-behavior: smooth;
    display: grid;
-   grid-template-rows: auto calc(100vh - auto);
+   /* grid-template-rows: auto calc(100vh - auto); */
 }

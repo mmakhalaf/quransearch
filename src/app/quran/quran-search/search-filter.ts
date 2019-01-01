@@ -10,6 +10,6 @@ export abstract class SearchFilter
    }
 
    filter(searchRes: SearchResults): SearchResults {
-      return searchRes;
+      return new SearchResults();
    }
 }

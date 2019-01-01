@@ -70,11 +70,15 @@ export class QuranSearcher {
    }
 
    search(): SearchResults {
-      this.matches = this.quran_results;
-      this.filters.forEach((filter: SearchFilter) => {
-         filter.quran = this.quran;
-         this.matches = filter.filter(this.matches);
-      });
+      if (this.filters.size == 0) {
+         this.matches = new SearchResults();
+      } else {
+         this.matches = this.quran_results;
+         this.filters.forEach((filter: SearchFilter) => {
+            filter.quran = this.quran;
+            this.matches = filter.filter(this.matches);
+         });
+      }
       this.matches.sort(this.disp_opts.sort_mode);
       return this.matches;
    }

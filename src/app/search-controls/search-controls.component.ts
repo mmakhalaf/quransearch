@@ -19,10 +19,10 @@ let $: any;
       trigger('slideInOut', [
          transition(':enter', [
             style({ transform: 'translateY(-100%)' }),
-            animate('200ms ease-in', style({ transform: 'translateY(0%)' }))
+            animate('100ms ease-in', style({ transform: 'translateY(0%)' }))
          ]),
          transition(':leave', [
-            animate('200ms ease-in', style({ transform: 'translateY(-100%)' }))
+            animate('100ms ease-in', style({ transform: 'translateY(-100%)' }))
          ])
       ])
    ]
@@ -52,7 +52,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
    ];
 
    constructor(public qService: QuranService, private constrolService: ControlsResService) {
-      this.matcher.filter = this.qService.searchCriteriaPres.cur_filter;
+      this.matcher.filter_group = this.qService.searchCriteriaPres;
    }
    
    ngOnInit() {
@@ -95,15 +95,15 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.qService.request_search(this.qService.searchCriteriaPres);
    }
 
-   onScroll = (dir: number) => {
-      if (dir < 0) {
-         this.show_toolbar = false;
-         this.show_extra_opts = false;
-         this.show_filter_list = false;
-         this.show_up_arrow = true;
-      } else {
+   onScroll = (dir: number, at_top: boolean) => {
+      if (at_top) {
          this.show_toolbar = true;
          this.show_up_arrow = false;
+      } else {
+         this.show_toolbar = false;
+         this.show_up_arrow = true;
+         this.show_extra_opts = false;
+         this.show_filter_list = false;
       }
    }
 

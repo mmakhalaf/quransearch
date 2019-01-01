@@ -1,6 +1,9 @@
 
 import * as MathUtils from '../utils/math-utils';
 
+declare var XRegExp: any;
+
+
 const multi_match_map_any = { 
    ا: '[اأآإى]',
    أ: '[أءؤئ]',
@@ -72,7 +75,7 @@ function replace_end(q: string, index: number): string {
  * Return a regex on the query string which aims to be flexible
  * @param q Query string
  */
-export function prep_regex(q: string, start_only?: boolean, end_only?: boolean): RegExp {
+export function prep_regex(q: string, start_only?: boolean, end_only?: boolean, full_word?: boolean): RegExp {
    let new_q = '';
    let q_len = q.length;
    for (let i = 0; i < q_len; ++i) {
@@ -85,11 +88,29 @@ export function prep_regex(q: string, start_only?: boolean, end_only?: boolean):
    }
 
    new_q = new_q.replace(' ', '\\s*');
+   // new_q = `(${new_q})`;
+   
    let re = `(${new_q})`;
-   if (end_only !== undefined && end_only) {
-      re += '$';
+   if (start_only !== undefined && start_only) {
+      if (full_word !== undefined && full_word) {
+         re = `^(${new_q})(\\s|$)`;
+      } else {
+         re = `^(${new_q})`;
+      }
+   } else if (end_only !== undefined && end_only) {
+      if (full_word !== undefined && full_word) {
+         re = `(^|\\s)(${new_q})$`;
+      } else {
+         re = `(${new_q})$`;
+      }
+   } else {
+      if (full_word !== undefined && full_word) {
+         re = `(^|\\s)(${new_q})(\\s|$)`;
+      } else {
+         re = `(${new_q})`;
+      }
    }
-
+   
    return new RegExp(re, 'g');
 }
 

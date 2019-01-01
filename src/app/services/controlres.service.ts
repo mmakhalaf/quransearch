@@ -6,21 +6,21 @@ import { Injectable } from '@angular/core';
 })
 export class ControlsResService {
 
-   onScroll = new Map<any, (dir: number)=>void>();
+   onScroll = new Map<any, (dir: number, atTop: boolean)=>void>();
    onScrollToTopRequest = new Map<any, ()=>void>();
 
    constructor() {
    }
 
-   onScrollUp() {
+   onScrollUp(at_top: boolean) {
       this.onScroll.forEach((cb) => {
-         cb(1);
+         cb(1, at_top);
       });
    }
 
-   onScrollDown() {
+   onScrollDown(at_top: boolean) {
       this.onScroll.forEach((cb) => {
-         cb(-1);
+         cb(-1, at_top);
       });
    }
 

@@ -14,7 +14,7 @@ export class RootSearchFilter extends SearchFilter {
 
       this.num_matches = 0;
       if (this.root == null) {
-         return searchRes;
+         return new SearchResults();
       }
 
       // For each word derived from this root,

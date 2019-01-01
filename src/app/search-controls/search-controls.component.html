@@ -1,3 +1,4 @@
+
 <mat-card class="controls" *ngIf="show_toolbar" [@slideInOut]>
    <div class="controls-row search-input-row">
       <mat-form-field hintLabel="إبحث عن" class="search-select">
@@ -50,13 +51,6 @@
                <option value="any">أي ترتيب</option>
             </select>
          </mat-form-field>
-         <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
-            <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
-               <option value="seq">حسب السورة</option>
-               <option value="occ">عدد الكلمات المتطابقة</option>
-               <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
-            </select>
-         </mat-form-field>
       </div>
    </fieldset>
 
@@ -66,12 +60,23 @@
          <span class="opts-title-item">التصفيات الحالية</span>
       </legend>
 
-      <mat-chip-list>
-         <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
-            {{f}}
-            <mat-icon matChipRemove>cancel</mat-icon>
-         </mat-chip>
-      </mat-chip-list>
+      <div class="controls-row search-input-row">
+         <mat-chip-list>
+            <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
+               {{f}}
+               <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+         </mat-chip-list>
+
+         <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
+            <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
+               <option value="seq">حسب السورة</option>
+               <option value="occ">عدد الكلمات المتطابقة</option>
+               <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
+            </select>
+         </mat-form-field>
+      </div>
+      
    </fieldset>
 </mat-card>
 

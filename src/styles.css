@@ -76,3 +76,7 @@ body {
    font-size: inherit;
    /* background: inherit; */
 }
+
+.controls .mat-form-field-infix {
+   border-top: none;
+}

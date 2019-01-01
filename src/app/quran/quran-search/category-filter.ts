@@ -14,7 +14,7 @@ export class CategorySearchFilter extends SearchFilter {
    filter(searchRes: SearchResults): SearchResults {
       this.num_matches = 0;
       if (this.category == null) {
-         return searchRes;
+         return new SearchResults();
       }
 
       let new_res = new SearchResults();
@@ -24,7 +24,7 @@ export class CategorySearchFilter extends SearchFilter {
             let catIdx = res.ayah.categories.indexOf(cat);
             if (catIdx != -1) {
                this.num_matches++;
-               new_res.addUnchecked(res);
+               new_res.add(res);
             }
          }
       }      

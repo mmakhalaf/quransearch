@@ -96,9 +96,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    curPos = 0;
    onScrollChanged(e: ChangeEvent) {
       if (e.scrollStartPosition == 0 || e.scrollStartPosition < this.curPos) {
-         this.constrolService.onScrollUp();
+         this.constrolService.onScrollUp(e.start <= 0);
       } else {
-         this.constrolService.onScrollDown();
+         this.constrolService.onScrollDown(e.start <= 0);
       }
       this.curPos = e.scrollStartPosition;
    }

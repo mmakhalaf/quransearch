@@ -28,9 +28,13 @@ export class SearchResult {
 export class SearchResults {
    results = new Array<SearchResult>();
 
-   // Unched
-   addUnchecked(res: SearchResult) {
-      this.results.push(res);
+   add(res: SearchResult) {
+      let cur_res = this.get_by_ayah(res.ayah);
+      if (cur_res == null) {
+         this.results.push(res);
+      } else {
+         cur_res.add_words(res.word_indices);
+      }
    }
 
    add_result(ayah: Ayah, word_indices: Set<number>) {

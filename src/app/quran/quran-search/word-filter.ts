@@ -1,5 +1,5 @@
 import { SearchFilter } from './search-filter';
-import { QuranSearchOpts, QuranSearchPlaceMode } from './search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode } from './search-opts';
 import { Quran, Ayah } from '../quran';
 import { SearchResults } from './search-result';
 import * as QSearchUtils from './search-utils';
@@ -15,27 +15,36 @@ export class WordSearchFilter extends SearchFilter {
    filter(searchRes: SearchResults): SearchResults {
       this.num_matches = 0;
       if (this.query.length == 0) {
-         return searchRes;
+         return new SearchResults();
       }
 
       let q = QSearchUtils.remove_diacritic(this.query);
+      if (q.length == 0) {
+         return new SearchResults();
+      }
       
       // Regular expressions in order of display
       let regexes = new Array<RegExp>();
 
       let qwords = q.trim().split(' ');
-      if (this.searchOpts.place_mode == QuranSearchPlaceMode.Any) {
+      if (this.searchOpts.match_mode == QuranSearchMatchMode.Any) {
          regexes.push(QSearchUtils.prep_regex(q));
          for (let qw of qwords) {
             if (qw.length > 0) {
-               regexes.push(QSearchUtils.prep_regex(qw));
+               regexes.push(QSearchUtils.prep_regex(
+                  qw,
+                  this.searchOpts.place_mode == QuranSearchPlaceMode.BeginOnly,
+                  this.searchOpts.place_mode == QuranSearchPlaceMode.EndOnly,
+                  false
+                  ));
             }
          }
       } else {
          regexes.push(QSearchUtils.prep_regex(
-            q, 
+            q,
             this.searchOpts.place_mode == QuranSearchPlaceMode.BeginOnly,
-            this.searchOpts.place_mode == QuranSearchPlaceMode.EndOnly
+            this.searchOpts.place_mode == QuranSearchPlaceMode.EndOnly,
+            this.searchOpts.match_mode == QuranSearchMatchMode.ExactOrderFullWord
             ));
       }
 

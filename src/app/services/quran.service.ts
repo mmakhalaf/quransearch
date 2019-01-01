@@ -34,22 +34,19 @@ export class QuranService {
    constructor(private router: Router, private zone: NgZone) {
       this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
-      console.log(`Promise sent`);
    }
 
    on_quran_loaded = (quran: Quran) => {
-      console.log(`Promise Returned`);
-         this.quran = quran;
-         this.searcher = new QuranSearcher(this.quran, this.disp_opts);
-         this.isOpPending = false;
-         this.onQuranLoaded.forEach((fn: OnQuranLoaded) => {
-            fn(this.quran);
-         });
-         if (this.searchCriteriaPres.filters.length > 0) {
-            this.zone.run(() => {
-               this.repeat_search();
-            });
-         }
+      this.quran = quran;
+      this.searcher = new QuranSearcher(this.quran, this.disp_opts);
+      this.isOpPending = false;
+      this.onQuranLoaded.forEach((fn: OnQuranLoaded) => {
+         fn(this.quran);
+      });
+
+      this.zone.run(() => {
+         this.repeat_search();
+      });
    }
 
    reset_search_with_word_filter(word: string) {
@@ -70,23 +67,33 @@ export class QuranService {
       this.request_search(this.searchCriteriaPres);
    }
 
+   request_repeat_search() {
+      this.request_search(this.searchCriteriaPres);
+   }
+
    request_search(crit: FilterGroupPres) {
-      this.searchCriteriaPres = crit;
+      let p = crit.to_params();
+      this.router.navigate([''], {
+         queryParams: p
+      });
+   }
+
+   perform_search(crit: FilterGroupPres) {
+      if (this.searchCriteriaPres != crit) {
+         this.searchCriteriaPres.copy(crit);
+      }
       this.repeat_search();
    }
 
-   repeat_search() {
+   private repeat_search() {
+      if (this.quran == null) {
+         // Quran not loaded yet, so return
+         return;
+      }
       let crit = this.searchCriteriaPres.to_criteria(this.quran);
       this.searcher.update_criteria(crit);
-      this.matches = this.searcher.search();
+      this.matches = this.searcher.matches;
 
-      this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
-         cb(this.matches);
-      });
-   }
-   
-   private clear_results() {
-      this.matches = new SearchResults();
       this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
          cb(this.matches);
       });
