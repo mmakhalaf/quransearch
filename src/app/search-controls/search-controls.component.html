@@ -1,5 +1,5 @@
 
-<mat-card class="controls" *ngIf="show_toolbar" [@slideInOut]>
+<mat-card class="controls" *ngIf="show_toolbar">
    <div class="controls-row search-input-row">
       <mat-form-field hintLabel="إبحث عن" class="search-select">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">

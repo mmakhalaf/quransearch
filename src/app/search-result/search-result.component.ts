@@ -1,10 +1,8 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Output, EventEmitter, NgZone } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, Output, EventEmitter, NgZone } from '@angular/core';
 import { SearchResult } from '../quran/quran-search/search-result';
 import { QuranService } from '../services/quran.service';
-import { QuranRoot, QuranWord, Ayah, SimilarAyah, Category } from '../quran/quran';
+import { QuranWord, Category } from '../quran/quran';
 import * as StringUtils from '../quran/utils/string-utils';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 
 
 @Component({

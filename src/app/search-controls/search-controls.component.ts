@@ -1,36 +1,25 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener, Input, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { QuranService } from '../services/quran.service';
-import { MatExpansionPanel, MatSelectChange } from '@angular/material';
 import { ControlsResService } from '../services/controlres.service';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { FilterPres, FilterGroupPres, SearchInputStateMatcher } from '../services/filter-pres';
+import { SearchInputStateMatcher } from '../services/filter-pres';
 import { FormControl, Validators } from '@angular/forms';
 import { Quran } from '../quran/quran';
 
-let $: any;
+let timer: any = 0;
+const debounce = (() => {
+   return (cb, ms) => {
+      clearTimeout(timer);
+      timer = setTimeout(cb, ms);
+   };
+})();
 
 @Component({
    selector: 'qsearch-controls',
    templateUrl: './search-controls.component.html',
-   styleUrls: ['./search-controls.component.css'],
-   animations: [
-      trigger('slideInOut', [
-         transition(':enter', [
-            style({ transform: 'translateY(-100%)' }),
-            animate('100ms ease-in', style({ transform: 'translateY(0%)' }))
-         ]),
-         transition(':leave', [
-            animate('100ms ease-in', style({ transform: 'translateY(-100%)' }))
-         ])
-      ])
-   ]
+   styleUrls: ['./search-controls.component.css']
 })
 export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit {
 
-   subject = new Subject<string>();
-   
    searchFormControl = new FormControl('', [
       Validators.required
    ]);
@@ -59,9 +48,6 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.qService.searchCriteriaPres.onFiltersUpdated.set(this, this.on_criteria_updated);
       this.qService.onQuranLoaded.set(this, this.on_quran_loaded);
       this.constrolService.onScroll.set(this, this.onScroll);
-      this.subject.pipe(debounceTime(500)).subscribe(() => {
-         this.onSearch();
-      });
    }
 
    ngOnDestroy() {
@@ -87,7 +73,9 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
    /// Events
 
    onKeyUp() {
-      this.subject.next();
+      debounce(() => {
+         this.onSearch();
+      }, 500);
    }
 
    onSearch() {
