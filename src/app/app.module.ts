@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule, MatChipsModule, MatSelectModule, MatButtonToggleModule, MatDividerModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule, MatChipsModule, MatSelectModule, MatButtonToggleModule, MatDividerModule, MatBadgeModule } from '@angular/material';
 import { ClipboardModule } from 'ngx-clipboard';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 
@@ -39,6 +39,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
       MatSelectModule,
       MatButtonToggleModule,
       MatDividerModule,
+      MatBadgeModule,
       VirtualScrollerModule,
       AppRoutingModule
    ],

@@ -73,7 +73,8 @@ export class WordSearchFilter extends SearchFilter {
             }
          }
          if (found) {
-            matches.add_result(res.ayah, words_i);
+            res.add_words(words_i);
+            matches.add(res);
          }
       }
       return matches;

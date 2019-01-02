@@ -33,11 +33,11 @@ export class SearchResultComponent implements OnInit {
    }
    
    onWordClicked(word: QuranWord) {
-      this.qService.reset_search_with_word_filter(word.imlaai);
+      this.qService.request_search_with_word_filter(word.imlaai, false);
    }
 
    onCategoryClicked(cat: Category) {
-      this.qService.reset_search_with_cat_filter(cat);
+      this.qService.request_search_with_cat_filter(cat, false);
    }
    
    number_en_to_ar(num: number): string {

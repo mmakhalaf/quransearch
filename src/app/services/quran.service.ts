@@ -49,21 +49,39 @@ export class QuranService {
       });
    }
 
-   reset_search_with_word_filter(word: string) {
-      this.searchCriteriaPres.cur_filter.from_word(word);
-      this.searchCriteriaPres.filter_updated();
+   request_search_with_word_filter(word: string, reset: boolean) {
+      if (reset) {
+         this.searchCriteriaPres.cur_filter.from_word(word);
+         this.searchCriteriaPres.clear();
+      } else {
+         this.searchCriteriaPres.add_current_filter(this.quran);
+         this.searchCriteriaPres.cur_filter.from_word(word);
+         this.searchCriteriaPres.filter_updated();
+      }
       this.request_search(this.searchCriteriaPres);
    }
 
-   reset_search_with_root_filter(root: QuranRoot) {
-      this.searchCriteriaPres.cur_filter.from_root(root);
-      this.searchCriteriaPres.filter_updated();
+   request_search_with_root_filter(root: QuranRoot, reset: boolean) {
+      if (reset) {
+         this.searchCriteriaPres.cur_filter.from_root(root);
+         this.searchCriteriaPres.clear();
+      } else {
+         this.searchCriteriaPres.add_current_filter(this.quran);
+         this.searchCriteriaPres.cur_filter.from_root(root);
+         this.searchCriteriaPres.filter_updated();
+      }
       this.request_search(this.searchCriteriaPres);
    }
 
-   reset_search_with_cat_filter(cat: Category) {
-      this.searchCriteriaPres.cur_filter.from_category(cat);
-      this.searchCriteriaPres.filter_updated();
+   request_search_with_cat_filter(cat: Category, reset: boolean) {
+      if (reset) {
+         this.searchCriteriaPres.cur_filter.from_category(cat);
+         this.searchCriteriaPres.clear();
+      } else {
+         this.searchCriteriaPres.add_current_filter(this.quran);
+         this.searchCriteriaPres.cur_filter.from_category(cat);
+         this.searchCriteriaPres.filter_updated();
+      }
       this.request_search(this.searchCriteriaPres);
    }
 
@@ -72,7 +90,10 @@ export class QuranService {
    }
 
    request_search(crit: FilterGroupPres) {
-      let p = crit.to_params();
+      if (this.quran == null) {
+         return;
+      }
+      let p = crit.to_params(this.quran);
       this.router.navigate([''], {
          queryParams: p
       });

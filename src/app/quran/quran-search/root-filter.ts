@@ -17,25 +17,27 @@ export class RootSearchFilter extends SearchFilter {
          return new SearchResults();
       }
 
-      // For each word derived from this root,
-      //  For each ayah this word was mentioned in
-      //   Add the Ayah as a result along with the word
-      //   NOTE: This could probably be done faster by gathering the Ayat first
-      //         and then going through the words, but we'll see if it needs optimising.
-      let new_res = new SearchResults();
-      for (let w of this.root.words) {
-         for (let a of w.ayat) {
-            let occ = a.word_occurances(w);
-            if (occ.size == 0) {
-               console.error(`Word ${w.imlaai} does not occur in the Ayah ${a.id}`);
-            } else {
-               this.num_matches++;
-               new_res.add_result(a, occ);
+      // For each search result => ayah
+      //  For each word deriving from the root
+      //   if the Ayah references the word, add it to our results
+      let matches = new SearchResults();
+      for (let res of searchRes.results) {
+         for (let w of this.root.words) {
+            let idx = w.ayat.indexOf(res.ayah);
+            if (idx != -1) {
+               let occ = res.ayah.word_occurances(w);
+               if (occ.size == 0) {
+                  console.error(`Word ${w.imlaai} does not occur in the Ayah ${res.ayah.id}`);
+               } else {
+                  this.num_matches++;
+                  res.add_words(occ);
+                  matches.add(res);
+               }
             }
          }
       }
 
-      return new_res;
+      return matches;
    }
 
    // Return the number of matches by the last filtering operation

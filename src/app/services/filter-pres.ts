@@ -10,7 +10,11 @@ import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { ParamMap, Params } from '@angular/router';
 
 
-const opts_query_types = [ 'word', 'root', 'category' ];
+const opts_query_types = [
+   { opt: 'word', word: 'كلمة' },
+   { opt: 'root', word: 'جذر' },
+   { opt: 'category', word: 'موضوع' }
+   ];
 const opts_ayah_loc = [
    { opt: 'any', e: QuranSearchPlaceMode.Any }, 
    { opt: 'start_ayah_only', e: QuranSearchPlaceMode.BeginOnly }, 
@@ -33,7 +37,7 @@ export class SearchInputStateMatcher implements ErrorStateMatcher {
 
    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
       if (this.filter_group.cur_filter == null) {
-         console.error('Null Filter or Quran for validation');
+         console.error('Null Filter');
          return false;
       } else if (this.quran == null) {
          return false;
@@ -59,6 +63,10 @@ export class FilterGroupPres {
 
    onFiltersUpdated = new Map<any, ()=>void>();
 
+   show_sort_order_opt(opt: string): boolean {
+      return this.available_sort_order.indexOf(opt) != -1;
+   }
+
    copy(oth: FilterGroupPres) {
       this.filters = oth.filters;
       this.cur_filter = oth.cur_filter;
@@ -67,14 +75,64 @@ export class FilterGroupPres {
    }
 
    add_filter(f: FilterPres) {
-      let i = this.filters.findIndex((p: FilterPres): boolean => {
-         return p == f || p.id == f.id;
-      });
+      let i = this.filters.findIndex(p => p == f || p.id == f.id);
       if (i == -1) {
          this.filters.push(f);
       } else {
          this.filters[i] = f;
       }
+   }
+
+   add_current_filter(quran: Quran) {
+      if (this.cur_filter.is_valid(quran)) {
+         let f = new FilterPres();
+         f.copy(this.cur_filter);
+         this.filters.push(f);
+         this.cur_filter.cur_search_term = '';
+         this.filter_updated();
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   make_current(f: FilterPres, quran: Quran) {
+      let idx = this.filters.indexOf(f);
+      if (idx == -1) {
+         console.error(`Filter '${f.cur_search_term}' does not exist, so can not make active`);
+         return false;
+      }
+
+      if (!f.is_valid(quran)) {
+         console.error(`Filter '${f.cur_search_term}' is not valid, so can not make active`);
+         return false;
+      }
+
+      this.filters.splice(idx, 1);
+      if (this.cur_filter.is_valid(quran)) {
+         this.filters.push(this.cur_filter);
+      }
+
+      this.cur_filter = f;
+      this.filter_updated();
+      return true;
+   }
+
+   remove_filter(f: FilterPres) {
+      let idx = this.filters.indexOf(f);
+      if (idx == -1) {
+         console.error(`Trying to remove filter not in group`);
+         return false;
+      }
+      console.log(`Removing ${idx}`);
+      this.filters.splice(idx, 1);
+      this.filter_updated();
+      return true;
+   }
+
+   clear() {
+      this.filters.splice(0, this.filters.length);
+      this.filter_updated();
    }
 
    to_display_opts(): QuranSearchDisplayOpts {
@@ -125,6 +183,7 @@ export class FilterGroupPres {
       for (let f of this.filters) {
          f.set_term_type(f.cur_term_type);
       }
+      this.cur_filter.set_term_type(this.cur_filter.cur_term_type);
       this.available_sort_order = this.sort_order_options();
       this.onFiltersUpdated.forEach((cb, k: any) => {
          cb();
@@ -154,6 +213,9 @@ export class FilterGroupPres {
             s.add(opt);
          }
       }
+      for (let opt of this.cur_filter.available_sort_order) {
+         s.add(opt);
+      }
       let arr = new Array<string>();
       s.forEach((opt: string) => {
          arr.push(opt);
@@ -161,20 +223,24 @@ export class FilterGroupPres {
       return arr;
    }
 
-   to_params(): Params {
+   to_params(quran: Quran): Params {
       let map = {};
-      map['n'] = this.filters.length;
       map['s'] = opts_sort_order.findIndex((v) => v.opt == this.cur_sort_order);
       this.filter_to_map(this.cur_filter, -1, map);
+      let nfilters = 0;
       for (let i = 0; i < this.filters.length; ++i) {
          let f = this.filters[i];
-         this.filter_to_map(f, i, map);
+         if (f.is_valid(quran)) {
+            this.filter_to_map(f, nfilters, map);
+            ++nfilters;
+         }
       }
+      map['n'] = nfilters;
       return map;
    }
 
    private filter_to_map(f: FilterPres, i: number, map: any) {
-      map[i < 0 ? 't' : `t${i}`] = opts_query_types.indexOf(f.cur_term_type);
+      map[i < 0 ? 't' : `t${i}`] = opts_query_types.findIndex(v => v.opt == f.cur_term_type);
       map[i < 0 ? 'q' : `q${i}`] = f.cur_search_term;
       map[i < 0 ? 'l' : `l${i}`] = opts_ayah_loc.findIndex(v => v.opt == f.cur_ayah_loc);
       map[i < 0 ? 'm' : `m${i}`] = opts_ayah_order.findIndex(v => v.opt == f.cur_ayah_order);
@@ -192,17 +258,22 @@ export class FilterGroupPres {
       if (!isNaN(s)) {
          if (s >= opts_sort_order.length) {
             console.log(`Unsupported sort value ${s}`);
-         } else {
-            group.cur_sort_order = opts_sort_order[s].opt;
+            s = 0;
+         }
+      } else {
+         s = 0;
+      }
+
+      group.cur_sort_order = opts_sort_order[s].opt;
+
+      for (let i = 0; i < n; ++i) {
+         let f = FilterGroupPres.map_to_filter(params, i, true);
+         if (f != null) {
+            group.add_filter(f);
          }
       }
 
-      for (let i = 0; i < n; ++i) {
-         let f = FilterGroupPres.map_to_filter(params, i);
-         group.add_filter(f);
-      }
-
-      group.cur_filter = FilterGroupPres.map_to_filter(params, -1);
+      group.cur_filter = FilterGroupPres.map_to_filter(params, -1, false);
       if (group.cur_filter == null) {
          console.error('Could not find current filter');
          group.cur_filter = new FilterPres();
@@ -211,19 +282,38 @@ export class FilterGroupPres {
       return group;
    }
 
-   private static map_to_filter(params: ParamMap, i: number): FilterPres {
+   private static map_to_filter(params: ParamMap, i: number, ensure_valid: boolean): FilterPres {
 
       let type = +params[i < 0 ? 't' : `t${i}`];
       if (isNaN(type)) {
-         return null;
+         if (ensure_valid) {
+            return null;
+         } else {
+            type = 0;
+         }
       }
 
       let q = params[i < 0 ? 'q' : `q${i}`];
+      if (q === undefined) {
+         if (ensure_valid) {
+            return null;
+         } else {
+            q = '';
+         }
+      }
+
       let loc = +params[i < 0 ? 'l' : `l${i}`];
+      if (isNaN(loc)) {
+         loc = 0;
+      }
+
       let m = +params[i < 0 ? 'm' : `m${i}`];
+      if (isNaN(m)) {
+         m = 0;
+      }
 
       let f = new FilterPres();
-      f.set_term_type(opts_query_types[type]);
+      f.set_term_type(opts_query_types[type].opt);
       f.cur_search_term = q;
       f.cur_ayah_loc = opts_ayah_loc[loc].opt;
       f.cur_ayah_order = opts_ayah_order[m].opt;
@@ -253,9 +343,27 @@ export class FilterPres {
       this.id = ++FilterPres.g_id;
    }
 
-   show_settings(): boolean {
-      return this.show_ayah_loc && this.show_ayah_order && this.available_sort_order.length > 0;
+   copy(oth: FilterPres) {
+      this.set_term_type(oth.cur_term_type);
+      this.cur_ayah_loc = oth.cur_ayah_loc;
+      this.cur_ayah_order = oth.cur_ayah_order;
+      this.cur_search_term = oth.cur_search_term;
    }
+
+   show_settings(): boolean {
+      return this.show_ayah_loc || this.show_ayah_order;
+   }
+
+   show_ayah_loc_option(loc: string): boolean {
+      return this.available_loc_opts.indexOf(loc) != -1;
+   }
+
+   show_ayah_order_option(order: string): boolean {
+      return this.cur_ayah_order.indexOf(order) != -1;
+   }
+
+
+
 
    // Set the term type (term, root, category)
    set_term_type(type: string) {
@@ -342,6 +450,10 @@ export class FilterPres {
    }
 
    to_filter(quran: Quran): SearchFilter {
+      if (!this.is_valid(quran)) {
+         return null;
+      }
+      
       let opts = this.make_search_opts();
       switch (this.cur_term_type) {
          case 'word': {
@@ -387,6 +499,10 @@ export class FilterPres {
       this.cur_search_term = cat.name;
       this.set_term_type('category');
    }
+
+   is_valid(quran: Quran): boolean {
+      return this.validate(quran).length == 0;
+   }
    
    validate(quran: Quran): string {
       let err = '';
@@ -417,6 +533,16 @@ export class FilterPres {
             break;
          }
       }
+      if (err.length == 0) {
+         if (this.cur_search_term.length == 0) {
+            err = `أدخل كلمة لكي تبدأ البحث`;
+         }
+      }
       return err;
+   }
+
+   to_string(): string {
+      let idx = opts_query_types.findIndex(v => v.opt == this.cur_term_type);
+      return `<strong>${opts_query_types[idx].word}</strong>: ${this.cur_search_term}`;
    }
 }

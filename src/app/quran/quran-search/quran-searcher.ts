@@ -10,12 +10,10 @@ export class QuranSearchCriteria {
 
 export class QuranSearcher {
 
-   private quran_results = null;
    matches = new SearchResults();
    filters = new Set<SearchFilter>();
 
    constructor(private quran: Quran, private disp_opts: QuranSearchDisplayOpts) {
-      this.quran_results = this.prep_quran_as_results();
    }
 
    reset_filter(filter: SearchFilter) {
@@ -73,7 +71,7 @@ export class QuranSearcher {
       if (this.filters.size == 0) {
          this.matches = new SearchResults();
       } else {
-         this.matches = this.quran_results;
+         this.matches = this.prep_quran_as_results();;
          this.filters.forEach((filter: SearchFilter) => {
             filter.quran = this.quran;
             this.matches = filter.filter(this.matches);

@@ -21,13 +21,30 @@
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
-   align-items: baseline;
+   align-items: center;
 }
 
 .opts-row {
    border: 1px gray solid;
    border-radius: 0.2rem;
    margin-top: 0.2rem;
+}
+
+.opts-col {
+   border: 1px gray solid;
+   border-radius: 0.2rem;
+   margin-top: 0.2rem;
+   display: flex;
+   flex-direction: column;
+   width: 45%;
+}
+
+.opts-half-row {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: center;
+   align-content: center;
 }
 
 .opts-title {
@@ -46,17 +63,15 @@
 }
 
 .search-input {
-   text-align: right;
    width: 50%;
+   text-align: right;
 }
 
 .search-select {
-   text-align: right;
    width: 25%;
 }
 
 .search-term-select {
-   text-align: right;
    width: 25%;
 }
 

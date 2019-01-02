@@ -1,5 +1,5 @@
 
-<mat-card class="controls" *ngIf="show_toolbar">
+<mat-card class="controls" *ngIf="show_toolbar && !qService.isOpPending">
    <div class="controls-row search-input-row">
       <mat-form-field hintLabel="إبحث عن" class="search-select">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">
@@ -15,69 +15,83 @@
             [errorStateMatcher]="matcher"
             autofocus
             >
-            <mat-error *ngIf="searchFormControl.hasError('err')">
-               {{searchFormControl.getError('err')}}
-            </mat-error>
-         <button mat-icon-button matSuffix (click)="onOpenSettingsClicked()">
+         <mat-error *ngIf="searchFormControl.hasError('err')">
+            {{searchFormControl.getError('err')}}
+         </mat-error>
+         <button mat-icon-button matSuffix (click)="onClearCurrentClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.cur_search_term.length > 0">
+            <mat-icon>close</mat-icon>
+         </button>
+         <button mat-icon-button matSuffix (click)="onOpenSettingsClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.show_settings()">
             <mat-icon>settings</mat-icon>
          </button>
-         <button mat-icon-button matSuffix (click)="onFilterNewClicked()">
+         <button mat-icon-button matSuffix (click)="onFilterNewClicked()" [disabled]="disableNewFilterClick()">
             <mat-icon>add</mat-icon>
          </button>
       </mat-form-field>
-      <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()">
+      <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" [matBadgeHidden]="qService.searchCriteriaPres.filters.length == 0">
          <mat-icon>filter_list</mat-icon>
       </button>
    </div>
    
    <!-- Extra Options -->
-   <fieldset class="opts-row" *ngIf="show_extra_opts">
+   <fieldset class="opts-row" *ngIf="show_extra_opts && qService.searchCriteriaPres.cur_filter.show_settings()">
       <legend class="opts-title">
          <mat-icon class="opts-title-item">settings</mat-icon>
-         <span class="opts-title-item">إعدادات</span>
+         <span class="opts-title-item">إعدادات الكلمة الحالية</span>
       </legend>
       <div class="controls-row search-input-row">
-         <mat-form-field class="search-term-select" hintLabel="موقعها في الآية">
+         <mat-form-field hintLabel="موقعها في الآية" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc">
             <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_loc" (change)="onWordOrderChanged()">
-               <option value="any">أي مكان</option>
-               <option value="start_ayah_only">بداية الآيه فقط</option>
-               <option value="end_ayah_only">نهاية الآيه فقط</option>
+               <option value="any" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('any')">أي مكان</option>
+               <option value="start_ayah_only" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('start_ayah_only')">بداية الآيه فقط</option>
+               <option value="end_ayah_only" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('end_ayah_only')">نهاية الآيه فقط</option>
             </select>
          </mat-form-field>
-         <mat-form-field class="search-term-select" hintLabel="مطابقة و ترتيب الكلمات">
+         <mat-form-field hintLabel="مطابقة و ترتيب الكلمات" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order">
             <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_order" (change)="onMatchTypeChanged()">
-               <option value="same_order_full_word">نفس الترتيب (كلمات كاملة)</option>
-               <option value="same_order_any_word">نفس الترتيب</option>
-               <option value="any">أي ترتيب</option>
+               <option value="same_order_full_word" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('same_order_full_word')">نفس الترتيب (كلمات كاملة)</option>
+               <option value="same_order_any_word" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('same_order_any_word')">نفس الترتيب</option>
+               <option value="any" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('any')">أي ترتيب</option>
             </select>
          </mat-form-field>
       </div>
    </fieldset>
 
-   <fieldset class="opts-row" *ngIf="show_filter_list">
-      <legend class="opts-title">
-         <mat-icon class="opts-title-item">filter_list</mat-icon>
-         <span class="opts-title-item">التصفيات الحالية</span>
-      </legend>
+   <div class="opts-half-row" *ngIf="show_filter_list">
 
-      <div class="controls-row search-input-row">
-         <mat-chip-list>
-            <mat-chip *ngFor="let f of filters" selectable="true" removable="true" (removed)="remove(f)">
-               {{f}}
-               <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-         </mat-chip-list>
+      <fieldset class="opts-col" *ngIf="qService.searchCriteriaPres.filters.length > 0">
+         <legend class="opts-title">
+            <mat-icon class="opts-title-item">filter_list</mat-icon>
+            <span class="opts-title-item">التصفيات الحالية</span>
+         </legend>
 
-         <mat-form-field class="search-term-select" hintLabel="ترتيب النتائج">
+         <div class="controls-row search-input-row">
+            <mat-chip-list multiple="false" selectable="false" >
+               <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" removable="true" [(value)]="f" (removed)="onRemoveFilterClicked(f)">
+                  <span [innerHTML]="f.to_string()" (click)="onSelectFilterClicked(f)"></span>
+                  <mat-icon matChipRemove>cancel</mat-icon>
+               </mat-chip>
+            </mat-chip-list>
+         </div>
+      </fieldset>
+
+
+      <fieldset class="opts-col">
+         <legend class="opts-title">
+            <mat-icon class="opts-title-item">settings</mat-icon>
+            <span class="opts-title-item">إعدادات عامة</span>
+         </legend>
+
+         <mat-form-field hintLabel="ترتيب النتائج">
             <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
-               <option value="seq">حسب السورة</option>
-               <option value="occ">عدد الكلمات المتطابقة</option>
-               <option value="occ_seq">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
+               <option value="seq" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('seq')">حسب السورة</option>
+               <option value="occ" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('occ')">عدد الكلمات المتطابقة</option>
+               <option value="occ_seq" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('occ_seq')">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
             </select>
          </mat-form-field>
-      </div>
-      
-   </fieldset>
+      </fieldset>
+   
+   </div>
 </mat-card>
 
 <div *ngIf="qService.isOpPending">

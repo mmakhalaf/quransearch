@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { QuranService } from '../services/quran.service';
 import { ControlsResService } from '../services/controlres.service';
-import { SearchInputStateMatcher } from '../services/filter-pres';
+import { SearchInputStateMatcher, FilterPres } from '../services/filter-pres';
 import { FormControl, Validators } from '@angular/forms';
 import { Quran } from '../quran/quran';
 
@@ -33,14 +33,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    prevScrollPos = 0;
 
-   filters = [
-      'كلمتان', 
-      'خفيفتان', 
-      'على',
-      'اللسان'
-   ];
-
-   constructor(public qService: QuranService, private constrolService: ControlsResService) {
+   constructor(public qService: QuranService, private constrolService: ControlsResService, public change_det: ChangeDetectorRef) {
       this.matcher.filter_group = this.qService.searchCriteriaPres;
    }
    
@@ -68,6 +61,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    on_criteria_updated = () => {
       this.searchFormControl.setValue(this.qService.searchCriteriaPres.cur_filter.cur_search_term);
+      this.onSearch();
    }
 
    /// Events
@@ -95,20 +89,36 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       }
    }
 
-   onFilterNewClicked() {
-      console.log('TODO: Add the current search as a filter and clear the field');
+   disableNewFilterClick(): boolean {
+      return !this.qService.searchCriteriaPres.cur_filter.is_valid(this.qService.quran);
    }
 
-   onRemoveFilterClicked(filter: string): void {
-      console.log('TODO: Remove filter.');
-   }
-   
-   onScrollUpwardsClicked() {
-      this.constrolService.request_scroll_to_top();
+   onFilterNewClicked() {
+      this.qService.searchCriteriaPres.add_current_filter(this.qService.quran);
    }
 
    onOpenSettingsClicked() {
       this.show_extra_opts = !this.show_extra_opts;
+   }
+
+   onClearCurrentClicked() {
+      this.qService.searchCriteriaPres.cur_filter.cur_search_term = '';
+      this.qService.searchCriteriaPres.filter_updated();
+   }
+   
+   onSelectFilterClicked(filter: FilterPres) {
+      console.log(`selection changed`);
+      this.qService.searchCriteriaPres.make_current(filter, this.qService.quran);
+   }
+
+   onRemoveFilterClicked(filter: FilterPres): void {
+      console.log(`selection removed`);
+      this.qService.searchCriteriaPres.remove_filter(filter);
+      this.change_det.detectChanges();
+   }
+   
+   onScrollUpwardsClicked() {
+      this.constrolService.request_scroll_to_top();
    }
 
    onOpenFiltersClicked() {
@@ -133,9 +143,5 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
    onSortOrderChanged() {
       this.qService.searchCriteriaPres.filter_updated();
       this.onSearch();
-   }
-
-   private valid_input() {
-
    }
 }

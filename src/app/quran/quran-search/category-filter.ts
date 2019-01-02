@@ -17,18 +17,18 @@ export class CategorySearchFilter extends SearchFilter {
          return new SearchResults();
       }
 
-      let new_res = new SearchResults();
+      let matches = new SearchResults();
       let categories = this.category.get_children(true);
       for (let cat of categories) {
          for (let res of searchRes.results) {
             let catIdx = res.ayah.categories.indexOf(cat);
             if (catIdx != -1) {
                this.num_matches++;
-               new_res.add(res);
+               matches.add(res);
             }
          }
       }      
-      return new_res;
+      return matches;
    }
 
    number_matches(): number {
