@@ -4,15 +4,13 @@ import { QuranSearchOpts } from './search-opts';
 import { SearchResults } from './search-result';
 
 export class RootSearchFilter extends SearchFilter {
-   num_matches = 0;
 
-   constructor(id: number, searchOpts: QuranSearchOpts, private root: QuranRoot) {
-      super(id, searchOpts);
+   constructor(searchOpts: QuranSearchOpts, private root: QuranRoot) {
+      super(searchOpts);
    }
 
    filter(searchRes: SearchResults): SearchResults {
 
-      this.num_matches = 0;
       if (this.root == null) {
          return new SearchResults();
       }
@@ -29,7 +27,6 @@ export class RootSearchFilter extends SearchFilter {
                if (occ.size == 0) {
                   console.error(`Word ${w.imlaai} does not occur in the Ayah ${res.ayah.id}`);
                } else {
-                  this.num_matches++;
                   res.add_words(occ);
                   matches.add(res);
                }
@@ -40,8 +37,12 @@ export class RootSearchFilter extends SearchFilter {
       return matches;
    }
 
-   // Return the number of matches by the last filtering operation
-   number_matches(): number {
-      return this.num_matches;
+   equals(oth: SearchFilter): boolean {
+      let eq = super.equals(oth);
+      if (!eq) {
+         return false;
+      }
+
+      return this.root == (<RootSearchFilter>oth).root;
    }
 }

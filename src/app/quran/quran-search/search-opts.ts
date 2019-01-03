@@ -23,6 +23,10 @@ export enum QuranSearchMatchMode {
 export class QuranSearchOpts {
    place_mode = QuranSearchPlaceMode.Any;
    match_mode = QuranSearchMatchMode.ExactOrder;
+
+   equals(oth: QuranSearchOpts): boolean {
+      return this.place_mode == oth.place_mode && this.match_mode == oth.match_mode;
+   }
 }
 
 /**
@@ -30,4 +34,7 @@ export class QuranSearchOpts {
  */
 export class QuranSearchDisplayOpts {
    sort_mode = QuranSearchSortMode.Sequence;
+   equals(oth: QuranSearchDisplayOpts): boolean {
+      return this.sort_mode == oth.sort_mode;
+   }
 }

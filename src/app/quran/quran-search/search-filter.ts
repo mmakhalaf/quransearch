@@ -6,10 +6,14 @@ export abstract class SearchFilter
 {
    quran: Quran = null;
    
-   constructor(public id: number, protected searchOpts: QuranSearchOpts) {
+   constructor(protected searchOpts: QuranSearchOpts) {
    }
 
-   filter(searchRes: SearchResults): SearchResults {
-      return new SearchResults();
+   // Perform a search and return a NEW list with items from the list passed in
+   abstract filter(searchRes: SearchResults): SearchResults;
+
+   // Return true if the filters match perfectly
+   equals(oth: SearchFilter): boolean {
+      return this.searchOpts.equals(oth.searchOpts);
    }
 }

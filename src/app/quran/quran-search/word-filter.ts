@@ -1,19 +1,15 @@
 import { SearchFilter } from './search-filter';
 import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode } from './search-opts';
-import { Quran, Ayah } from '../quran';
 import { SearchResults } from './search-result';
 import * as QSearchUtils from './search-utils';
 
 export class WordSearchFilter extends SearchFilter {
 
-   num_matches = 0;
-   
-   constructor(id: number, searchOpts: QuranSearchOpts, private query: string) {
-      super(id, searchOpts);
+   constructor(searchOpts: QuranSearchOpts, private query: string) {
+      super(searchOpts);
    }
 
    filter(searchRes: SearchResults): SearchResults {
-      this.num_matches = 0;
       if (this.query.length == 0) {
          return new SearchResults();
       }
@@ -78,5 +74,14 @@ export class WordSearchFilter extends SearchFilter {
          }
       }
       return matches;
+   }
+
+   equals(oth: SearchFilter): boolean {
+      let eq = super.equals(oth);
+      if (!eq) {
+         return false;
+      }
+
+      return this.query == (<WordSearchFilter>oth).query;
    }
 }

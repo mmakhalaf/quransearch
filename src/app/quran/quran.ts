@@ -156,6 +156,22 @@ export class Category {
       parents.reverse();
       return parents;
    }
+
+   is_same_or_child_of(oth: Category): boolean {
+      if (this == oth) {
+         return true;
+      }
+
+      let p = this.parent;
+      while (p != null) {
+         if (p == oth) {
+            return true;
+         }
+         p = p.parent;
+      }
+      
+      return false;
+   }
 }
 
 //
@@ -215,6 +231,15 @@ export class QuranWordStore
       }
       return word;
    }
+
+   get_roots_as_sorted_strings(): Array<string> {
+      let arr = new Array<string>();
+      this.roots.forEach((v: QuranRoot, k: string) => {
+         arr.push(v.text);
+      });
+      arr.sort();
+      return arr;
+   }
 }
 
 export class Quran {
@@ -264,6 +289,15 @@ export class Quran {
          }
       });
       return found;
+   }
+   
+   get_categories_as_sorted_strings(): Array<string> {
+      let arr = new Array<string>();
+      this.categories.forEach((c: Category, k: number) => {
+         arr.push(c.name);
+      });
+      arr.sort();
+      return arr;
    }
 
    private static ayah_str_id(sura: number, ayah: number, incr_id: boolean) {

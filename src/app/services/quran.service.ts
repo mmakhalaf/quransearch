@@ -1,12 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
+import { Location } from '@angular/common';
 import { Quran, QuranRoot, Category } from '../quran/quran';
 import { QuranSearcher, QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
-import { Router } from '@angular/router';
 import { SearchResults } from '../quran/quran-search/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/quran-search/search-opts';
-import { SearchFilter } from '../quran/quran-search/search-filter';
-import { RootSearchFilter } from '../quran/quran-search/root-filter';
-import { FilterGroupPres } from './filter-pres';
+import { FilterGroupPres, SearchBlocker } from './filter-pres';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
@@ -31,7 +29,7 @@ export class QuranService {
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
-   constructor(private router: Router, private zone: NgZone) {
+   constructor(private zone: NgZone, private location: Location) {
       this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
    }
@@ -50,42 +48,50 @@ export class QuranService {
    }
 
    request_search_with_word_filter(word: string, reset: boolean) {
+      let blocker = new SearchBlocker();
       if (reset) {
          this.searchCriteriaPres.cur_filter.from_word(word);
          this.searchCriteriaPres.clear();
+         this.searchCriteriaPres.filter_updated();
       } else {
          this.searchCriteriaPres.add_current_filter(this.quran);
          this.searchCriteriaPres.cur_filter.from_word(word);
          this.searchCriteriaPres.filter_updated();
       }
+      blocker.dispose();
+
       this.request_search(this.searchCriteriaPres);
    }
 
    request_search_with_root_filter(root: QuranRoot, reset: boolean) {
+      let blocker = new SearchBlocker();
       if (reset) {
          this.searchCriteriaPres.cur_filter.from_root(root);
          this.searchCriteriaPres.clear();
+         this.searchCriteriaPres.filter_updated();
       } else {
          this.searchCriteriaPres.add_current_filter(this.quran);
          this.searchCriteriaPres.cur_filter.from_root(root);
          this.searchCriteriaPres.filter_updated();
       }
+      blocker.dispose();
+
       this.request_search(this.searchCriteriaPres);
    }
 
    request_search_with_cat_filter(cat: Category, reset: boolean) {
+      let blocker = new SearchBlocker();
       if (reset) {
          this.searchCriteriaPres.cur_filter.from_category(cat);
          this.searchCriteriaPres.clear();
+         this.searchCriteriaPres.filter_updated();
       } else {
          this.searchCriteriaPres.add_current_filter(this.quran);
          this.searchCriteriaPres.cur_filter.from_category(cat);
          this.searchCriteriaPres.filter_updated();
       }
-      this.request_search(this.searchCriteriaPres);
-   }
+      blocker.dispose();
 
-   request_repeat_search() {
       this.request_search(this.searchCriteriaPres);
    }
 
@@ -93,16 +99,24 @@ export class QuranService {
       if (this.quran == null) {
          return;
       }
-      let p = crit.to_params(this.quran);
-      this.router.navigate([''], {
-         queryParams: p
-      });
+
+      if (SearchBlocker.isBlocked()) {
+         return;
+      }
+
+      let blocker = new SearchBlocker();
+      this.perform_search(this.searchCriteriaPres);
+      blocker.dispose();
+
+      this.location.go('');
    }
 
    perform_search(crit: FilterGroupPres) {
+      let blocker = new SearchBlocker();
       if (this.searchCriteriaPres != crit) {
          this.searchCriteriaPres.copy(crit);
       }
+      blocker.dispose();
       this.repeat_search();
    }
 

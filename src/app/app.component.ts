@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { QuranService } from './services/quran.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { FilterGroupPres } from './services/filter-pres';
@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
    }
 
    on_query_change(params: ParamMap) {
+      console.log(`OnQueryChange From URL`);
       let filters = FilterGroupPres.from_params(params);
       if (filters != null) {
          this.qService.perform_search(filters);

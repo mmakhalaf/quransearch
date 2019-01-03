@@ -10,11 +10,17 @@
       </mat-form-field>
       <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
          <input matInput
-            (keyup)="onKeyUp()"
             [formControl]="searchFormControl"
             [errorStateMatcher]="matcher"
+            [matAutocomplete]="auto"
             autofocus
             >
+         
+         <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of autocomp_foptions | async" [value]="option">
+               {{option}}
+            </mat-option>
+         </mat-autocomplete>
          <mat-error *ngIf="searchFormControl.hasError('err')">
             {{searchFormControl.getError('err')}}
          </mat-error>
@@ -28,6 +34,9 @@
             <mat-icon>add</mat-icon>
          </button>
       </mat-form-field>
+      <button mat-icon-button mat-raised-button class="search-settings-toggle" ngxClipboard [cbContent]="onCopyFiltersClicked()">
+         <mat-icon>file_copy</mat-icon>
+      </button>
       <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" [matBadgeHidden]="qService.searchCriteriaPres.filters.length == 0">
          <mat-icon>filter_list</mat-icon>
       </button>

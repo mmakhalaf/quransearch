@@ -4,15 +4,11 @@ import { QuranSearchOpts } from './search-opts';
 import { SearchResults } from './search-result';
 
 export class CategorySearchFilter extends SearchFilter {
-
-   num_matches = 0;
-
-   constructor(id: number, searchOpts: QuranSearchOpts, private category: Category) {
-      super(id, searchOpts);
+   constructor(searchOpts: QuranSearchOpts, private category: Category) {
+      super(searchOpts);
    }
 
    filter(searchRes: SearchResults): SearchResults {
-      this.num_matches = 0;
       if (this.category == null) {
          return new SearchResults();
       }
@@ -23,15 +19,19 @@ export class CategorySearchFilter extends SearchFilter {
          for (let res of searchRes.results) {
             let catIdx = res.ayah.categories.indexOf(cat);
             if (catIdx != -1) {
-               this.num_matches++;
                matches.add(res);
             }
          }
       }      
       return matches;
    }
+   
+   equals(oth: SearchFilter): boolean {
+      let eq = super.equals(oth);
+      if (!eq) {
+         return false;
+      }
 
-   number_matches(): number {
-      return this.num_matches;
+      return this.category == (<CategorySearchFilter>oth).category;
    }
 }

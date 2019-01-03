@@ -31,6 +31,33 @@ const opts_sort_order = [
    { opt: 'occ_seq', e: QuranSearchSortMode.OccuranceSeqRes}
    ];
 
+
+// Blocks the search when we receive a filter update
+// This is to use when we have multiple operations that could
+// issue the callback but we only want to perform the search in the end
+// NOTE: We must call dispose() at the end because we can't rely on the GC
+//       to support this particular pattern
+export class SearchBlocker {
+   private static g_instances = 0;
+
+   constructor() {
+      SearchBlocker.g_instances++;
+   }
+
+   dispose() {
+      SearchBlocker.g_instances--;
+      if (SearchBlocker.g_instances < 0) {
+         console.error('dispose() called too many times');
+         SearchBlocker.g_instances = 0;
+      }
+   }
+
+   static isBlocked(): boolean {
+      return SearchBlocker.g_instances != 0;
+   }
+
+}
+
 export class SearchInputStateMatcher implements ErrorStateMatcher {
    filter_group: FilterGroupPres = null;
    quran: Quran = null;
@@ -58,7 +85,7 @@ export class FilterGroupPres {
    cur_filter = new FilterPres();
    filters = new Array<FilterPres>();
 
-   available_sort_order = [];
+   available_sort_order = new Array<string>();
    cur_sort_order = 'seq';
 
    onFiltersUpdated = new Map<any, ()=>void>();
@@ -130,9 +157,14 @@ export class FilterGroupPres {
       return true;
    }
 
-   clear() {
-      this.filters.splice(0, this.filters.length);
-      this.filter_updated();
+   clear(): boolean {
+      if (this.filters.length > 0) {
+         this.filters.splice(0, this.filters.length);
+         this.filter_updated();
+         return true;
+      } else {
+         return false;
+      }
    }
 
    to_display_opts(): QuranSearchDisplayOpts {
@@ -251,7 +283,7 @@ export class FilterGroupPres {
 
       let n = +params['n'];
       if (isNaN(n)) {
-         return null;
+         return group;
       }
       
       let s = +params['s'];
@@ -327,12 +359,12 @@ export class FilterPres {
    static g_id = 0;
 
    show_ayah_loc = true;
-   available_loc_opts = [];
+   available_loc_opts = new Array<string>();
 
    show_ayah_order = true;
-   available_ayah_order = [];
+   available_ayah_order = new Array<string>();
 
-   available_sort_order = [];
+   available_sort_order = new Array<string>();
 
    cur_term_type = 'word';
    cur_search_term = '';
@@ -359,7 +391,7 @@ export class FilterPres {
    }
 
    show_ayah_order_option(order: string): boolean {
-      return this.cur_ayah_order.indexOf(order) != -1;
+      return this.available_ayah_order.indexOf(order) != -1;
    }
 
 
@@ -373,9 +405,9 @@ export class FilterPres {
             valid = true;
             this.show_ayah_loc = true;
             this.show_ayah_order = true;
-            this.available_loc_opts = opts_ayah_loc.map((opt, e) => opt);
-            this.available_ayah_order = opts_ayah_order.map((opt, e) => opt);
-            this.available_sort_order = opts_sort_order.map((opt, e) => opt);
+            this.available_loc_opts = opts_ayah_loc.map((opt, e) => opt.opt);
+            this.available_ayah_order = opts_ayah_order.map((opt, e) => opt.opt);
+            this.available_sort_order = opts_sort_order.map((opt, e) => opt.opt);
             break;
          }
          case 'root': {
@@ -457,14 +489,14 @@ export class FilterPres {
       let opts = this.make_search_opts();
       switch (this.cur_term_type) {
          case 'word': {
-            return new WordSearchFilter(this.id, opts, this.cur_search_term);
+            return new WordSearchFilter(opts, this.cur_search_term);
          }
          case 'root': {
             let root = quran.word_store.get_root(this.cur_search_term);
             if (root == null) {
                console.error(`No root found ${this.cur_search_term}`);
             } else {
-               return new RootSearchFilter(this.id, opts, root);
+               return new RootSearchFilter(opts, root);
             }
             break;
          }
@@ -473,7 +505,7 @@ export class FilterPres {
             if (cat == null) {
                console.error(`No category found ${this.cur_search_term}`);
             } else {
-               return new CategorySearchFilter(this.id, opts, cat);
+               return new CategorySearchFilter(opts, cat);
             }
             break;
          }

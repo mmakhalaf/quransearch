@@ -4,6 +4,10 @@ import { ControlsResService } from '../services/controlres.service';
 import { SearchInputStateMatcher, FilterPres } from '../services/filter-pres';
 import { FormControl, Validators } from '@angular/forms';
 import { Quran } from '../quran/quran';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import * as HttpUtils from '../quran/utils/http-utils';
 
 let timer: any = 0;
 const debounce = (() => {
@@ -16,7 +20,8 @@ const debounce = (() => {
 @Component({
    selector: 'qsearch-controls',
    templateUrl: './search-controls.component.html',
-   styleUrls: ['./search-controls.component.css']
+   styleUrls: ['./search-controls.component.css'],
+   providers: [Location, {provide: LocationStrategy, useClass: PathLocationStrategy}],
 })
 export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -33,7 +38,15 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    prevScrollPos = 0;
 
-   constructor(public qService: QuranService, private constrolService: ControlsResService, public change_det: ChangeDetectorRef) {
+   autocomp_foptions: Observable<string[]>;
+   autocomp_options = new Array<string>();
+   autocomp_type = '';
+
+   constructor(
+      public qService: QuranService, 
+      private constrolService: ControlsResService, 
+      public change_det: ChangeDetectorRef,
+      private location: Location) {
       this.matcher.filter_group = this.qService.searchCriteriaPres;
    }
    
@@ -41,6 +54,14 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.qService.searchCriteriaPres.onFiltersUpdated.set(this, this.on_criteria_updated);
       this.qService.onQuranLoaded.set(this, this.on_quran_loaded);
       this.constrolService.onScroll.set(this, this.onScroll);
+
+      this.autocomp_foptions = this.searchFormControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value)),
+            );
+      this.searchFormControl.valueChanges.subscribe(() => {
+         this.onKeyUp();
+      });
    }
 
    ngOnDestroy() {
@@ -57,11 +78,44 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    on_quran_loaded = (q: Quran) => {
       this.matcher.quran = q;
+      this._update_filters();
    }
 
    on_criteria_updated = () => {
+      this._update_filters();
       this.searchFormControl.setValue(this.qService.searchCriteriaPres.cur_filter.cur_search_term);
       this.onSearch();
+   }
+
+   private _filter(value: string): string[] {
+      const filterValue = value.toLowerCase();
+      return this.autocomp_options.filter(option => option.toLowerCase().includes(filterValue));
+   }
+
+   private _update_filters() {
+      if (this.qService.quran == null) {
+         return;
+      }
+
+      if (this.qService.searchCriteriaPres.cur_filter.cur_term_type == this.autocomp_type) {
+         return;
+      }
+
+      this.autocomp_type = this.qService.searchCriteriaPres.cur_filter.cur_term_type;
+      switch (this.qService.searchCriteriaPres.cur_filter.cur_term_type) {
+         case "word": {
+            this.autocomp_options = [];
+            break;
+         }
+         case "root": {
+            this.autocomp_options = this.qService.quran.word_store.get_roots_as_sorted_strings();
+            break;
+         }
+         case "category": {
+            this.autocomp_options = this.qService.quran.get_categories_as_sorted_strings();
+            break;
+         }
+      }
    }
 
    /// Events
@@ -123,6 +177,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    onOpenFiltersClicked() {
       this.show_filter_list = !this.show_filter_list;
+   }
+
+   onCopyFiltersClicked(): string {
+      return `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`;
    }
 
    onTermTypeChanged() {
