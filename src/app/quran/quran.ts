@@ -254,7 +254,7 @@ export class Quran {
 
    static create(): Promise<Quran> {
       return Quran.loadFiles().then(() => {
-         console.log('Files Loaded.');
+         // console.log('Files Loaded.');
          let q = new Quran();
          q.load();
          return q;
@@ -262,7 +262,7 @@ export class Quran {
    }
 
    private static loadFiles(): Promise<any> {
-      console.log('Loading Files.');
+      // console.log('Loading Files.');
       let arr = new Array<Promise<any>>();
       for (let k in qurans) {
          arr.push(Quran.loadFile(k));
@@ -322,7 +322,7 @@ export class Quran {
          return;
       }
 
-      console.log('Processing...');
+      // console.log('Processing...');
 
       // Go through the Ayat and construct our Ayah list and Word/Root store
       let len = quran_len();
@@ -342,7 +342,7 @@ export class Quran {
       this.process_ibn_kathir_relations();
       this.process_index();
 
-      console.log('Done.');
+      // console.log('Done.');
    }
 
    private process_ibn_kathir_relations() {

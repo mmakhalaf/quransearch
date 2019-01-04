@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ChangeDetectorRef, Output, EventEmitter, NgZone } from '@angular/core';
 import { SearchResult } from '../quran/quran-search/search-result';
 import { QuranService } from '../services/quran.service';
-import { QuranWord, Category } from '../quran/quran';
+import { QuranWord, Category, Ayah } from '../quran/quran';
 import * as StringUtils from '../quran/utils/string-utils';
 
 
@@ -46,5 +46,9 @@ export class SearchResultComponent implements OnInit {
 
    panelChanged() {
       this.sizeChanged.emit();
+   }
+
+   copy_ayah(a: Ayah) {
+      this.qService.copy_text(a.uthmani);
    }
 }

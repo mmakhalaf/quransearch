@@ -159,6 +159,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.show_extra_opts = !this.show_extra_opts;
    }
 
+   onClearAllClicked() {
+      this.qService.searchCriteriaPres.clear();
+   }
+
    onClearCurrentClicked() {
       this.qService.searchCriteriaPres.cur_filter.cur_search_term = '';
       this.qService.searchCriteriaPres.filter_updated();
@@ -183,8 +187,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.show_filter_list = !this.show_filter_list;
    }
 
-   onCopyFiltersClicked(): string {
-      return `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`;
+   onCopyFiltersClicked() {
+      this.qService.copy_text(
+         `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`
+         );
    }
 
    onTermTypeChanged() {

@@ -6,6 +6,7 @@ import { SearchResults } from '../quran/quran-search/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/quran-search/search-opts';
 import { FilterGroupPres, SearchBlocker } from './filter-pres';
 import { CookieService } from 'ngx-cookie-service';
+import { ClipboardService } from 'ngx-clipboard';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
@@ -28,10 +29,17 @@ export class QuranService {
    onSearchCompleted = new Map<any, OnSearchCompleted>();
    onQuranLoaded = new Map<any, OnQuranLoaded>();
 
+   cbElem: any = null;
+
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
-   constructor(private zone: NgZone, private location: Location, private cookieService: CookieService) {
+   constructor(
+      private zone: NgZone, 
+      private location: Location, 
+      private cookieService: CookieService,
+      private cbService: ClipboardService
+      ) {
       this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
    }
@@ -51,6 +59,11 @@ export class QuranService {
       } else {
          this.load_cookies();
       }
+   }
+
+   copy_text(txt: string) {
+      let succ = this.cbService.copyFromContent(txt, this.cbElem);
+      this.cbService.destroy(this.cbElem);
    }
 
    request_search_with_word_filter(word: string, reset: boolean) {
@@ -127,7 +140,6 @@ export class QuranService {
    }
 
    private load_cookies() {
-      console.log('Loading cookies');
       if (this.cookieService.check('SortOrder')) {
          this.searchCriteriaPres.cur_sort_order = this.cookieService.get('SortOrder');
       }
@@ -157,7 +169,6 @@ export class QuranService {
    }
 
    private save_cookies() {
-      console.log('Saving cookies');
       this.cookieService.set('SortOrder', this.searchCriteriaPres.cur_sort_order);
       this.cookieService.set('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
       this.cookieService.set('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { QuranService } from './services/quran.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { FilterGroupPres } from './services/filter-pres';
@@ -11,6 +11,9 @@ import { FilterGroupPres } from './services/filter-pres';
 })
 export class AppComponent implements OnInit {
 
+   @ViewChild('cb')
+   cb: any;
+
    constructor(
       public qService: QuranService,
       private route: ActivatedRoute
@@ -18,13 +21,13 @@ export class AppComponent implements OnInit {
    }
 
    ngOnInit() {
+      this.qService.cbElem = this.cb.nativeElement;
       this.route.queryParams.subscribe((params: ParamMap) => {
          this.on_query_change(params);
       });
    }
 
    on_query_change(params: ParamMap) {
-      console.log(`OnQueryChange From URL`);
       let filters = FilterGroupPres.from_params(params);
       if (filters != null && filters.has_search()) {
          this.qService.perform_search(filters);

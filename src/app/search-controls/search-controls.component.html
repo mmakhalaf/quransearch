@@ -34,9 +34,6 @@
             <mat-icon>add</mat-icon>
          </button>
       </mat-form-field>
-      <button mat-icon-button mat-raised-button class="search-settings-toggle" ngxClipboard [cbContent]="onCopyFiltersClicked()">
-         <mat-icon>file_copy</mat-icon>
-      </button>
       <button mat-icon-button mat-raised-button class="search-settings-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" [matBadgeHidden]="qService.searchCriteriaPres.filters.length == 0">
          <mat-icon>filter_list</mat-icon>
       </button>
@@ -73,9 +70,12 @@
             <mat-icon class="opts-title-item">filter_list</mat-icon>
             <span class="opts-title-item">التصفيات الحالية</span>
          </legend>
-
+         
          <div class="controls-row search-input-row">
             <mat-chip-list multiple="false" selectable="false" >
+                  <button mat-icon-button (click)="onClearAllClicked()">
+                     <mat-icon>clear_all</mat-icon>
+                  </button>
                <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" removable="true" [(value)]="f" (removed)="onRemoveFilterClicked(f)">
                   <span [innerHTML]="f.to_string()" (click)="onSelectFilterClicked(f)"></span>
                   <mat-icon matChipRemove>cancel</mat-icon>
@@ -90,7 +90,9 @@
             <mat-icon class="opts-title-item">settings</mat-icon>
             <span class="opts-title-item">إعدادات عامة</span>
          </legend>
-
+         <button mat-icon-button mat-button-raised class="search-settings-toggle" (click)="onCopyFiltersClicked()">
+            <mat-icon>file_copy</mat-icon>
+         </button>
          <mat-form-field hintLabel="ترتيب النتائج">
             <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
                <option value="seq" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('seq')">حسب السورة</option>

@@ -151,7 +151,7 @@ export class FilterGroupPres {
          console.error(`Trying to remove filter not in group`);
          return false;
       }
-      console.log(`Removing ${idx}`);
+      
       this.filters.splice(idx, 1);
       this.filter_updated();
       return true;
@@ -293,7 +293,7 @@ export class FilterGroupPres {
       let s = +params['s'];
       if (!isNaN(s)) {
          if (s >= opts_sort_order.length) {
-            console.log(`Unsupported sort value ${s}`);
+            console.error(`Unsupported sort value ${s}`);
             s = 0;
          }
       } else {
@@ -562,7 +562,7 @@ export class FilterPres {
             break;
          }
          default: {
-            console.log(`The search term type ${this.cur_term_type} is not supported`);
+            console.error(`The search term type ${this.cur_term_type} is not supported`);
             break;
          }
       }
