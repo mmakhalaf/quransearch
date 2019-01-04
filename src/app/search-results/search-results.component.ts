@@ -77,6 +77,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       });
 
       this.scrollToTop();
+      this.scroll.refresh();
    }
 
    onItemUpdated(r: SearchResult, i: number) {
