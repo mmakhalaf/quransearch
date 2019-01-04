@@ -55,7 +55,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    on_search_complete = (results: SearchResults) => {
       this.roots = new Array<QuranRoot>();
       for (let res of results.results) {
-         res.word_indices.forEach((val: number, k: number) => {
+         for (let val of res.word_indices) {
             let w = res.ayah.words[val];
             let r = w.get_root();
             if (r != null) {
@@ -69,7 +69,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
                   this.roots.push(r);
                }
             }
-         });
+         }
       }
 
       this.roots.sort((a1: QuranRoot, a2: QuranRoot): number => {

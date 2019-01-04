@@ -29,7 +29,7 @@ export class SearchResultComponent implements OnInit {
    }
    
    should_highlight(index: number): boolean {
-      return this.result.word_indices.has(index);
+      return this.result.word_indices.indexOf(index) != -1;
    }
    
    onWordClicked(word: QuranWord) {

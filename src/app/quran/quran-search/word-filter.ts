@@ -24,15 +24,9 @@ export class WordSearchFilter extends SearchFilter {
 
       let qwords = q.trim().split(' ');
       if (this.searchOpts.match_mode == QuranSearchMatchMode.Any) {
-         regexes.push(QSearchUtils.prep_regex(q));
          for (let qw of qwords) {
             if (qw.length > 0) {
-               regexes.push(QSearchUtils.prep_regex(
-                  qw,
-                  this.searchOpts.place_mode == QuranSearchPlaceMode.BeginOnly,
-                  this.searchOpts.place_mode == QuranSearchPlaceMode.EndOnly,
-                  false
-                  ));
+               regexes.push(QSearchUtils.prep_regex(qw, false, false, false));
             }
          }
       } else {
@@ -45,9 +39,11 @@ export class WordSearchFilter extends SearchFilter {
       }
 
       let matches = new SearchResults();
+      let current_res = searchRes.clone(false);
       for (let re of regexes) {
-         let sub_matches = this.search_by_regex(re, searchRes);
+         let sub_matches = this.search_by_regex(re, current_res);
          matches.add_results(sub_matches);
+         current_res = sub_matches;
       }
       return matches;
    }
