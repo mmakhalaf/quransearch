@@ -238,6 +238,10 @@ export class FilterGroupPres {
       }
    }
 
+   has_search(): boolean {
+      return this.cur_filter.cur_search_term.length > 0 || this.filters.length > 0;
+   }
+
    sort_order_options(): Array<string> {
       let s = new Set<string>();
       for (let f of this.filters) {
@@ -381,7 +385,7 @@ export class FilterPres {
       this.cur_ayah_order = oth.cur_ayah_order;
       this.cur_search_term = oth.cur_search_term;
    }
-
+   
    show_settings(): boolean {
       return this.show_ayah_loc || this.show_ayah_order;
    }
@@ -393,9 +397,6 @@ export class FilterPres {
    show_ayah_order_option(order: string): boolean {
       return this.available_ayah_order.indexOf(order) != -1;
    }
-
-
-
 
    // Set the term type (term, root, category)
    set_term_type(type: string) {

@@ -74,21 +74,23 @@ export class QuranSearcher {
       return op;
    }
    
-   update_criteria(crit: QuranSearchCriteria): SearchResults {
+   update_criteria(crit: QuranSearchCriteria): boolean {
       let op = this.reset_filters(crit.filters, crit.disp_opts);
       switch (op) {
          case SearchOpMode.All: {
-            return this.search(this.prep_quran_as_results());
+            this.search(this.prep_quran_as_results());
+            return true;
          }
          case SearchOpMode.None: {
-            return this.matches;
+            return false;
          }
          case SearchOpMode.NoneSort: {
             this.matches.sort(this.disp_opts.sort_mode);
-            return this.matches;
+            return true;
          }
          case SearchOpMode.Subset: {
-            return this.search(this.matches);
+            this.search(this.matches);
+            return true;
          }
       }
    }

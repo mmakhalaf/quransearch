@@ -38,8 +38,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    prevScrollPos = 0;
 
-   autocomp_foptions: Observable<string[]>;
+   autocomp_foptions: Observable<Array<string>>;
    autocomp_options = new Array<string>();
+   autocomp_roots = new Array<string>();
+   autocomp_categories = new Array<string>();
    autocomp_type = '';
 
    constructor(
@@ -78,6 +80,8 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    on_quran_loaded = (q: Quran) => {
       this.matcher.quran = q;
+      this.autocomp_roots = this.qService.quran.word_store.get_roots_as_sorted_strings();
+      this.autocomp_categories = this.qService.quran.get_categories_as_sorted_strings();
       this._update_filters();
    }
 
@@ -108,11 +112,11 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
             break;
          }
          case "root": {
-            this.autocomp_options = this.qService.quran.word_store.get_roots_as_sorted_strings();
+            this.autocomp_options = this.autocomp_roots;
             break;
          }
          case "category": {
-            this.autocomp_options = this.qService.quran.get_categories_as_sorted_strings();
+            this.autocomp_options = this.autocomp_categories;
             break;
          }
       }

@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
    on_query_change(params: ParamMap) {
       console.log(`OnQueryChange From URL`);
       let filters = FilterGroupPres.from_params(params);
-      if (filters != null) {
+      if (filters != null && filters.has_search()) {
          this.qService.perform_search(filters);
       }
    }

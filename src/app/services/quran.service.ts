@@ -5,6 +5,7 @@ import { QuranSearcher, QuranSearchCriteria } from '../quran/quran-search/quran-
 import { SearchResults } from '../quran/quran-search/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/quran-search/search-opts';
 import { FilterGroupPres, SearchBlocker } from './filter-pres';
+import { CookieService } from 'ngx-cookie-service';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
@@ -19,6 +20,7 @@ export class QuranService {
    quran: Quran = null;
    searcher: QuranSearcher = null;
    isOpPending = false;
+   isSearchPending = false;
 
    matches = new SearchResults();
 
@@ -29,7 +31,7 @@ export class QuranService {
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
-   constructor(private zone: NgZone, private location: Location) {
+   constructor(private zone: NgZone, private location: Location, private cookieService: CookieService) {
       this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
    }
@@ -42,9 +44,13 @@ export class QuranService {
          fn(this.quran);
       });
 
-      this.zone.run(() => {
-         this.repeat_search();
-      });
+      if (this.isSearchPending) {
+         this.zone.run(() => {
+            this.repeat_search();
+         });
+      } else {
+         this.load_cookies();
+      }
    }
 
    request_search_with_word_filter(word: string, reset: boolean) {
@@ -120,17 +126,70 @@ export class QuranService {
       this.repeat_search();
    }
 
+   private load_cookies() {
+      console.log('Loading cookies');
+      if (this.cookieService.check('SortOrder')) {
+         this.searchCriteriaPres.cur_sort_order = this.cookieService.get('SortOrder');
+      }
+      if (this.cookieService.check('SearchType')) {
+         this.searchCriteriaPres.cur_filter.cur_term_type = this.cookieService.get('SearchType');
+      }
+      if (this.cookieService.check('SearchTerm')) {
+         this.searchCriteriaPres.cur_filter.cur_search_term = this.cookieService.get('SearchTerm');
+      }
+      if (this.cookieService.check('WordAyahLoc')) {
+         this.searchCriteriaPres.cur_filter.cur_ayah_loc = this.cookieService.get('WordAyahLoc');
+      }
+      if (this.cookieService.check('WordMatch')) {
+         this.searchCriteriaPres.cur_filter.cur_ayah_order = this.cookieService.get('WordMatch');
+      }
+      if (this.cookieService.check('CurSearch')) {
+         let j = this.cookieService.get('CurSearch');
+         let p = JSON.parse(j);
+         if (p !== undefined) {
+            let g = FilterGroupPres.from_params(p);
+            if (g != null && g.has_search()) {
+               this.searchCriteriaPres.copy(g);
+            }
+         }
+      }
+      this.searchCriteriaPres.filter_updated();
+   }
+
+   private save_cookies() {
+      console.log('Saving cookies');
+      this.cookieService.set('SortOrder', this.searchCriteriaPres.cur_sort_order);
+      this.cookieService.set('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
+      this.cookieService.set('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);
+      this.cookieService.set('WordAyahLoc', this.searchCriteriaPres.cur_filter.cur_ayah_loc);
+      this.cookieService.set('WordMatch', this.searchCriteriaPres.cur_filter.cur_ayah_order);
+      this.cookieService.set('CurSearch', JSON.stringify(this.searchCriteriaPres.to_params(this.quran)));
+   }
+
    private repeat_search() {
       if (this.quran == null) {
          // Quran not loaded yet, so return
+         if (this.searchCriteriaPres.has_search()) {
+            this.isSearchPending = true;
+         }
          return;
       }
+
       let crit = this.searchCriteriaPres.to_criteria(this.quran);
-      this.searcher.update_criteria(crit);
+      if (crit.filters.length == 0) {
+         return;
+      }
+
+      this.isSearchPending = false;
+      let updated: boolean = this.searcher.update_criteria(crit);
       this.matches = this.searcher.matches;
 
-      this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
-         cb(this.matches);
-      });
+      if (updated) {
+         this.onSearchCompleted.forEach((cb: OnSearchCompleted, k: any) => {
+            cb(this.matches);
+         });
+
+         this.save_cookies();
+      }
    }
 }
