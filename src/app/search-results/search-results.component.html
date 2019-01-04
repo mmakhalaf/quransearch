@@ -4,8 +4,8 @@
    #scroll
    [items]="qService.matches.results"
    [enableUnequalChildrenSizes]="true"
-   [stripedTable]="true"
-   [bufferAmount]="13"
+   [scrollThrottlingTime]="5"
+   [bufferAmount]="15"
    [parentScroll]="parent"
    (vsChange)="onScrollChanged($event)"
    >
