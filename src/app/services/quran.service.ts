@@ -7,6 +7,7 @@ import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/quran-search/s
 import { FilterGroupPres, SearchBlocker } from './filter-pres';
 import { CookieService } from 'ngx-cookie-service';
 import { ClipboardService } from 'ngx-clipboard';
+import { MatSnackBar } from '@angular/material';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
@@ -38,7 +39,8 @@ export class QuranService {
       private zone: NgZone, 
       private location: Location, 
       private cookieService: CookieService,
-      private cbService: ClipboardService
+      private cbService: ClipboardService,
+      private snackBar: MatSnackBar
       ) {
       this.isOpPending = true;
       Quran.create().then(this.on_quran_loaded);
@@ -61,9 +63,12 @@ export class QuranService {
       }
    }
 
-   copy_text(txt: string) {
+   copy_text(txt: string, message: string) {
       let succ = this.cbService.copyFromContent(txt, this.cbElem);
       this.cbService.destroy(this.cbElem);
+      this.snackBar.open(message, 'أغلق', {
+         duration: 2000,
+       });
    }
 
    request_search_with_word_filter(word: string, reset: boolean) {

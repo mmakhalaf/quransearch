@@ -49,6 +49,6 @@ export class SearchResultComponent implements OnInit {
    }
 
    copy_ayah(a: Ayah) {
-      this.qService.copy_text(a.uthmani);
+      this.qService.copy_text(a.uthmani, 'تم نسخ الآية');
    }
 }

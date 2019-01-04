@@ -189,7 +189,8 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
 
    onCopyFiltersClicked() {
       this.qService.copy_text(
-         `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`
+         `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`,
+         'تم نسخ رابط البحث'
          );
    }
 
