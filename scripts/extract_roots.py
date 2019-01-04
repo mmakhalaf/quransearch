@@ -10,9 +10,9 @@ for l in lines:
     m = re.match(r'(\d+)\:(\d+)\:(\d+)\:\d+', l)
     if m is None:
         raise Exception('Line "%s" not match the RE' % l)
-    s = int(m.group(1)) - 1
-    a = int(m.group(2)) - 1
-    w = int(m.group(3)) - 1
+    s = int(m.group(1))
+    a = int(m.group(2))
+    w = int(m.group(3))
     root = '_'
     m = re.match(r'(\d+)\:(\d+)\:(\d+)\:\d+.*ROOT:([^|]+)', l)
     if m is not None:

@@ -8,6 +8,7 @@ import { FilterGroupPres, SearchBlocker } from './filter-pres';
 import { CookieService } from 'ngx-cookie-service';
 import { ClipboardService } from 'ngx-clipboard';
 import { MatSnackBar } from '@angular/material';
+import { QuranLoader } from '../quran/quran-loader';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
@@ -43,7 +44,7 @@ export class QuranService {
       private snackBar: MatSnackBar
       ) {
       this.isOpPending = true;
-      Quran.create().then(this.on_quran_loaded);
+      QuranLoader.create().then(this.on_quran_loaded);
    }
 
    on_quran_loaded = (quran: Quran) => {
@@ -54,12 +55,19 @@ export class QuranService {
          fn(this.quran);
       });
 
-      if (this.isSearchPending) {
-         this.zone.run(() => {
-            this.repeat_search();
+      if (this.quran.error) {
+         this.snackBar.open('لقد حدثت مشكله أثناء تحميل القران، نرجو إعادة تحميل الصفحة. إذا استمرت المشكله، نرجو إبلاغنا', 'أغلق', {
+            duration: 0,
+            direction: "rtl"
          });
       } else {
-         this.load_cookies();
+         if (this.isSearchPending) {
+            this.zone.run(() => {
+               this.repeat_search();
+            });
+         } else {
+            this.load_cookies();
+         }
       }
    }
 
@@ -68,6 +76,7 @@ export class QuranService {
       this.cbService.destroy(this.cbElem);
       this.snackBar.open(message, 'أغلق', {
          duration: 2000,
+         direction: "rtl"
        });
    }
 
