@@ -32,6 +32,16 @@ export class Quran {
       });
       return found;
    }
+
+   get_surah(s: string): Surah {
+      let found = null;
+      this.suwar.forEach((val: Surah) => {
+         if (val.name == s) {
+            found = val;
+         }
+      });
+      return found;
+   }
    
    get_categories_as_sorted_strings(): Array<string> {
       let arr = new Array<string>();
@@ -39,6 +49,14 @@ export class Quran {
          arr.push(c.name);
       });
       arr.sort();
+      return arr;
+   }
+
+   get_suwar_strings(): Array<string> {
+      let arr = new Array<string>();
+      this.suwar.forEach((s: Surah) => {
+         arr.push(s.name);
+      });
       return arr;
    }
 }

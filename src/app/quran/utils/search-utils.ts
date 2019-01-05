@@ -1,5 +1,5 @@
 
-import * as MathUtils from '../utils/math-utils';
+import * as MathUtils from './math-utils';
 
 declare var XRegExp: any;
 

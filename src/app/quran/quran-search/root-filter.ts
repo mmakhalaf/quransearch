@@ -1,26 +1,35 @@
 import { SearchFilter } from './search-filter';
-import { Quran, QuranRoot } from '../quran';
+import { QuranRoot, QuranWord } from '../quran';
 import { QuranSearchOpts } from './search-opts';
 import { SearchResults } from './search-result';
+import * as SortUtils from '../utils/sort-utils';
 
 export class RootSearchFilter extends SearchFilter {
 
-   constructor(searchOpts: QuranSearchOpts, private root: QuranRoot) {
+   constructor(searchOpts: QuranSearchOpts, private roots: Array<QuranRoot>) {
       super(searchOpts);
+      this.roots.sort(SortUtils.sort_by_root);
    }
 
    filter(searchRes: SearchResults): SearchResults {
 
-      if (this.root == null) {
+      if (this.roots == null || this.roots.length == 0) {
          return new SearchResults();
       }
 
-      // For each search result => ayah
-      //  For each word deriving from the root
-      //   if the Ayah references the word, add it to our results
+      let words = new Set<QuranWord>();
+      for (let r of this.roots) {
+         for (let w of r.words) {
+            words.add(w);
+         }
+      }
+
+      // For each word deriving from the root
+      //  For each search result => ayah
+      //   If the Ayah references the word, add it to our results
       let matches = new SearchResults();
-      for (let res of searchRes.results) {
-         for (let w of this.root.words) {
+      words.forEach((w: QuranWord) => {
+         for (let res of searchRes.results) {
             let idx = w.ayat.indexOf(res.ayah);
             if (idx != -1) {
                let occ = res.ayah.word_occurances(w);
@@ -32,17 +41,31 @@ export class RootSearchFilter extends SearchFilter {
                }
             }
          }
-      }
+      });
 
       return matches;
    }
 
    equals(oth: SearchFilter): boolean {
+      if (!(oth instanceof RootSearchFilter)) {
+         return false;
+      }
       let eq = super.equals(oth);
       if (!eq) {
          return false;
       }
 
-      return this.root == (<RootSearchFilter>oth).root;
+      let poth = <RootSearchFilter>oth;
+      if (poth.roots.length != this.roots.length) {
+         return false;
+      }
+
+      for (let i = 0; i < this.roots.length; ++i) {
+         if (this.roots[i].text != poth.roots[i].text) {
+            return false;
+         }
+      }
+
+      return true;
    }
 }

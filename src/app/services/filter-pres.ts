@@ -2,18 +2,20 @@ import { SearchFilter } from '../quran/quran-search/search-filter';
 import { WordSearchFilter } from '../quran/quran-search/word-filter';
 import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode, QuranSearchDisplayOpts, QuranSearchSortMode } from '../quran/quran-search/search-opts';
 import { RootSearchFilter } from '../quran/quran-search/root-filter';
-import { Quran, QuranRoot, Category } from '../quran/quran';
+import { Quran, QuranRoot, Category, Surah } from '../quran/quran';
 import { CategorySearchFilter } from '../quran/quran-search/category-filter';
 import { ErrorStateMatcher } from '@angular/material';
 import { FormGroupDirective, NgForm, FormControl } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { ParamMap, Params } from '@angular/router';
+import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
 
 
 const opts_query_types = [
-   { opt: 'word', word: 'كلمة' },
-   { opt: 'root', word: 'جذر' },
-   { opt: 'category', word: 'موضوع' }
+   { opt: 'word', word: 'كلمات' },
+   { opt: 'root', word: 'جذور' },
+   { opt: 'category', word: 'مواضيع' },
+   { opt: 'surah', word: 'سور'}
    ];
 const opts_ayah_loc = [
    { opt: 'any', e: QuranSearchPlaceMode.Any }, 
@@ -31,6 +33,48 @@ const opts_sort_order = [
    { opt: 'occ_seq', e: QuranSearchSortMode.OccuranceSeqRes}
    ];
 
+
+function extract_roots(search_term: string, quran: Quran): Array<QuranRoot> {
+   let roots = new Array<QuranRoot>();
+   let terms: Array<string> = search_term.split(',');
+   for (let term of terms) {
+      let root = quran.word_store.get_root(term.trim());
+      if (root == null) {
+         console.error(`No root found ${search_term}`);
+      } else {
+         roots.push(root);
+      }
+   }
+   return roots;
+}
+
+function extract_categories(search_term: string, quran: Quran): Array<Category> {
+   let cats = new Array<Category>();
+   let terms = search_term.split(',');
+   for (let term of terms) {
+      let cat = quran.get_category(term.trim());
+      if (cat == null) {
+         console.error(`No category found ${term}`);
+      } else {
+         cats.push(cat);
+      }
+   }
+   return cats;
+}
+
+function extract_suwar(search_term: string, quran: Quran): Array<Surah> {
+   let ss = new Array<Surah>();
+   let terms = search_term.split(',');
+   for (let term of terms) {
+      let s = quran.get_surah(term.trim());
+      if (s == null) {
+         console.error(`No surah found ${term}`);
+      } else {
+         ss.push(s);
+      }
+   }
+   return ss;
+}
 
 // Blocks the search when we receive a filter update
 // This is to use when we have multiple operations that could
@@ -429,6 +473,15 @@ export class FilterPres {
             this.available_sort_order = [ 'seq' ];
             break;
          }
+         case 'surah': {
+            valid = true;
+            this.show_ayah_loc = false;
+            this.show_ayah_order = false;
+            this.available_loc_opts = [];
+            this.available_ayah_order = [];
+            this.available_sort_order = [ 'seq' ];
+            break;
+         }
          default: {
             console.error(`Invalid term type ${type}`);
          }
@@ -493,20 +546,23 @@ export class FilterPres {
             return new WordSearchFilter(opts, this.cur_search_term);
          }
          case 'root': {
-            let root = quran.word_store.get_root(this.cur_search_term);
-            if (root == null) {
-               console.error(`No root found ${this.cur_search_term}`);
-            } else {
-               return new RootSearchFilter(opts, root);
+            let roots = extract_roots(this.cur_search_term, quran);
+            if (roots.length > 0) {
+               return new RootSearchFilter(opts, roots);
             }
             break;
          }
          case 'category': {
-            let cat = quran.get_category(this.cur_search_term);
-            if (cat == null) {
-               console.error(`No category found ${this.cur_search_term}`);
-            } else {
-               return new CategorySearchFilter(opts, cat);
+            let cats = extract_categories(this.cur_search_term, quran);
+            if (cats.length > 0) {
+               return new CategorySearchFilter(opts, cats);
+            }
+            break;
+         }
+         case 'surah': {
+            let ss = extract_suwar(this.cur_search_term, quran);
+            if (ss.length > 0) {
+               return new SurahSearcFilter(opts, ss);
             }
             break;
          }
@@ -533,6 +589,11 @@ export class FilterPres {
       this.set_term_type('category');
    }
 
+   from_surah(surah: Surah) {
+      this.cur_search_term = surah.name;
+      this.set_term_type('surah');
+   }
+
    is_valid(quran: Quran): boolean {
       return this.validate(quran).length == 0;
    }
@@ -544,20 +605,23 @@ export class FilterPres {
             break;
          }
          case 'root': {
-            let root = quran.word_store.get_root(this.cur_search_term);
-            if (root == null) {
-               if (this.cur_search_term.includes(' ')) {
-                  err = 'الجذر لابد أن يكون كلمة واحدة بدون مسافات';
-               } else {
-                  err = 'هذا الجذر لا يوجد لدينا';
-               }
+            let roots = extract_roots(this.cur_search_term, quran);
+            if (roots.length == 0) {
+               err = 'هذا الجذر لا يوجد لدينا';
             }
             break;
          }
          case 'category': {
-            let cat = quran.get_category(this.cur_search_term);
-            if (cat == null) {
+            let cats = extract_categories(this.cur_search_term, quran);
+            if (cats.length == 0) {
                err = 'هذا الموضوع لا يوجد لدينا';
+            }
+            break;
+         }
+         case 'surah': {
+            let ss = extract_suwar(this.cur_search_term, quran);
+            if (ss.length == 0) {
+               err = 'إسم السورة غير مطابق';
             }
             break;
          }

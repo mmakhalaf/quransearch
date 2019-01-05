@@ -3,9 +3,10 @@
    <div class="controls-row search-input-row">
       <mat-form-field hintLabel="إبحث عن" class="search-select">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">
-            <option value="word">كلمة</option>
-            <option value="root">جذر</option>
-            <option value="category">موضوع</option>
+            <option value="word">كلمات</option>
+            <option value="root">جذور</option>
+            <option value="category">مواضيع</option>
+            <option value="surah">سور</option>
          </select>
       </mat-form-field>
       <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">

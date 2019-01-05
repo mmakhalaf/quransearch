@@ -1,7 +1,7 @@
 import { SearchFilter } from './search-filter';
 import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode } from './search-opts';
 import { SearchResults } from './search-result';
-import * as QSearchUtils from './search-utils';
+import * as QSearchUtils from '../utils/search-utils';
 
 export class WordSearchFilter extends SearchFilter {
 
@@ -39,11 +39,9 @@ export class WordSearchFilter extends SearchFilter {
       }
 
       let matches = new SearchResults();
-      let current_res = searchRes.clone(false);
       for (let re of regexes) {
-         let sub_matches = this.search_by_regex(re, current_res);
+         let sub_matches = this.search_by_regex(re, searchRes);
          matches.add_results(sub_matches);
-         current_res = sub_matches;
       }
       return matches;
    }
@@ -73,6 +71,9 @@ export class WordSearchFilter extends SearchFilter {
    }
 
    equals(oth: SearchFilter): boolean {
+      if (!(oth instanceof WordSearchFilter)) {
+         return false;
+      }
       let eq = super.equals(oth);
       if (!eq) {
          return false;

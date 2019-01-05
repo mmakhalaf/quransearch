@@ -42,6 +42,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
    autocomp_options = new Array<string>();
    autocomp_roots = new Array<string>();
    autocomp_categories = new Array<string>();
+   autocomp_suwar = new Array<string>();
    autocomp_type = '';
 
    constructor(
@@ -82,6 +83,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
       this.matcher.quran = q;
       this.autocomp_roots = this.qService.quran.word_store.get_roots_as_sorted_strings();
       this.autocomp_categories = this.qService.quran.get_categories_as_sorted_strings();
+      this.autocomp_suwar = this.qService.quran.get_suwar_strings();
       this._update_filters();
    }
 
@@ -117,6 +119,14 @@ export class SearchControlsComponent implements OnInit, OnDestroy, AfterViewInit
          }
          case "category": {
             this.autocomp_options = this.autocomp_categories;
+            break;
+         }
+         case "surah": {
+            this.autocomp_options = this.autocomp_suwar;
+            break;
+         }
+         default: {
+            console.error('Unsupported term type');
             break;
          }
       }

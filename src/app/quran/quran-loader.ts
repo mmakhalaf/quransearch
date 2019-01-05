@@ -1,6 +1,6 @@
 import { Quran, Ayah, Category, Surah, QuranWord } from './quran';
-import * as MathUtils from './utils/math-utils';
 import * as StringUtils from './utils/string-utils';
+import * as SortUtils from './utils/sort-utils';
 import { isNullOrUndefined } from 'util';
 
 function all_quran_loaded(): boolean {
@@ -313,7 +313,7 @@ export class QuranLoader extends Quran {
       });
 
       cat_map.forEach((val: Array<Ayah>, k: Category) => {
-         val = val.sort(StringUtils.sort_ayah_by_id);
+         val = val.sort(SortUtils.sort_ayah_by_id);
          k.ayat = val;
       });
 
