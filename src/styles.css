@@ -46,34 +46,56 @@ body {
 .mat-card {
    font-family: inherit;
    font-size: inherit;
-   /* background: inherit; */
 }
 
 .mat-card-content {
    font-family: inherit;
    font-size: inherit;
-   /* background: inherit; */
 }
 
 .mat-expansion-panel {
    font: inherit;
    font-size: inherit;
-   /* background: inherit; */
 }
 
 .mat-expansion-panel-content {
    font: inherit;
    font-family: inherit;
    font-size: inherit;
-   /* background: inherit; */
 }
 .mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
    font: inherit;
    font-family: inherit;
    font-size: inherit;
-   /* background: inherit; */
 }
 
 .controls .mat-form-field-infix {
    border-top: none;
+}
+
+/*** Option groups ***/
+
+.opts {
+   width: 100%;
+   border: 1px gray solid;
+   border-radius: 0.2rem;
+   margin-top: 0.2rem;
+}
+
+.opts-group {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   flex-wrap: wrap;
+}
+
+.opts-title {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+}
+
+.opts-title-item {
+   margin-right: 0.1rem;
+   margin-left: 0.1rem;
 }

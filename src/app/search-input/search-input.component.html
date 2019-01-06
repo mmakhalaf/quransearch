@@ -1,0 +1,39 @@
+<div class="controls-row search-input-row">
+   <mat-form-field hintLabel="إبحث عن" class="search-select">
+      <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">
+         <option value="word">كلمات</option>
+         <option value="root">جذور</option>
+         <option value="category">مواضيع</option>
+         <option value="surah">سور</option>
+      </select>
+   </mat-form-field>
+   <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
+      <input matInput
+         [formControl]="searchFormControl"
+         [errorStateMatcher]="matcher"
+         [matAutocomplete]="auto"
+         autofocus
+         >
+      
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutoCompOptSelected($event)">
+         <mat-option *ngFor="let option of autocomp_foptions | async" [value]="option">
+            {{option}}
+         </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="searchFormControl.hasError('err')">
+         {{searchFormControl.getError('err')}}
+      </mat-error>
+      <button mat-icon-button matSuffix (click)="onClearCurrentClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.cur_search_term.length > 0">
+         <mat-icon>close</mat-icon>
+      </button>
+      <button mat-icon-button matSuffix (click)="onOpenSettingsClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.show_settings()">
+         <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-icon-button matSuffix (click)="onFilterNewClicked()" [disabled]="disableNewFilterClick()">
+         <mat-icon>add</mat-icon>
+      </button>
+   </mat-form-field>
+   <button mat-icon-button mat-raised-button class="search-filters-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" [matBadgeHidden]="qService.searchCriteriaPres.filters.length == 0">
+      <mat-icon>filter_list</mat-icon>
+   </button>
+</div>

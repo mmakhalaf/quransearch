@@ -1,0 +1,19 @@
+
+<fieldset class="opts">
+   <legend class="opts-title">
+      <mat-icon class="opts-title-item">settings</mat-icon>
+      <span class="opts-title-item">إعدادات عامة</span>
+   </legend>
+   <div class="opts-group">
+      <button mat-icon-button mat-button-raised class="copy-settings-toggle" (click)="onCopyFiltersClicked()">
+         <mat-icon>file_copy</mat-icon>
+      </button>
+      <mat-form-field hintLabel="ترتيب النتائج">
+         <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_sort_order" (change)="onSortOrderChanged()">
+            <option value="seq" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('seq')">حسب السورة</option>
+            <option value="occ" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('occ')">عدد الكلمات المتطابقة</option>
+            <option value="occ_seq" *ngIf="qService.searchCriteriaPres.show_sort_order_opt('occ_seq')">عدد الكلمات المطابقة (الأولوية للجمل المطابقة)</option>
+         </select>
+      </mat-form-field>
+   </div>
+</fieldset>

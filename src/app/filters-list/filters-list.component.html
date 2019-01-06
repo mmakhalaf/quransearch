@@ -1,0 +1,19 @@
+
+<fieldset class="opts">
+   <legend class="opts-title">
+      <mat-icon class="opts-title-item">filter_list</mat-icon>
+      <span class="opts-title-item">التصفيات الحالية</span>
+   </legend>
+   
+   <div class="opts-group">
+      <mat-chip-list multiple="false" selectable="false" >
+            <button mat-icon-button (click)="onClearAllClicked()">
+               <mat-icon>clear_all</mat-icon>
+            </button>
+         <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" removable="true" [(value)]="f" (removed)="onRemoveFilterClicked(f)">
+            <span [innerHTML]="f.to_string()" (click)="onSelectFilterClicked(f)"></span>
+            <mat-icon matChipRemove>cancel</mat-icon>
+         </mat-chip>
+      </mat-chip-list>
+   </div>
+</fieldset>

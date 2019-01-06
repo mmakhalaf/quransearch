@@ -24,65 +24,9 @@
    align-items: center;
 }
 
-.opts-row {
-   border: 1px gray solid;
-   border-radius: 0.2rem;
-   margin-top: 0.2rem;
-}
-
-.opts-col {
-   border: 1px gray solid;
-   border-radius: 0.2rem;
-   margin-top: 0.2rem;
-   /* display: flex;
-   flex-direction: column; */
-   width: 100%;
-}
-
-.opts-half-row {
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   justify-content: center;
-   align-content: center;
-}
-
-.opts-title {
-   display: flex;
-   flex-direction: row;
-   align-items: center;
-}
-
-.opts-title-item {
-   margin-right: 0.1rem;
-   margin-left: 0.1rem;
-}
-
-.search-input-row {
-   justify-content: space-between;
-}
-
-.search-input {
-   width: 50%;
-   text-align: right;
-}
-
-.search-select {
-   width: 25%;
-}
-
-.search-term-select {
-   width: 25%;
-}
-
-.search-settings-toggle {
-   float: left;
-}
-
 .scroll-up-btn {
    position: absolute;
    z-index: 999;
    margin-top: 0.1rem;
    margin-right: 0.1rem;
-   /* margin-left: 0.2rem; */
 }
