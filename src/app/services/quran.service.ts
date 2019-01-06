@@ -45,6 +45,7 @@ export class QuranService {
       ) {
       this.isOpPending = true;
       QuranLoader.create().then(this.on_quran_loaded);
+      this.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
    }
 
    on_quran_loaded = (quran: Quran) => {
@@ -69,6 +70,10 @@ export class QuranService {
             this.load_cookies();
          }
       }
+   }
+
+   private on_filters_updated() {
+      this.request_search(this.searchCriteriaPres);
    }
 
    copy_text(txt: string, message: string) {
@@ -128,7 +133,7 @@ export class QuranService {
       this.request_search(this.searchCriteriaPres);
    }
 
-   request_search(crit: FilterGroupPres) {
+   private request_search(crit: FilterGroupPres) {
       if (this.quran == null) {
          return;
       }

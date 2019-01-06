@@ -35,6 +35,7 @@ export class SearchInputComponent implements OnInit, OnDestroy {
    autocomp_suwar = new Array<string>();
    autocomp_type = '';
 
+   update_input = true;
    prev_value = '';
 
    @Output()
@@ -71,7 +72,7 @@ export class SearchInputComponent implements OnInit, OnDestroy {
 
    onInputChanged(val: string) {
       debounce(() => {
-         this.onSearch();
+         this.perform_search();
       }, 500);
    }
 
@@ -120,18 +121,22 @@ export class SearchInputComponent implements OnInit, OnDestroy {
    onFilterNewClicked() {
       this.qService.searchCriteriaPres.add_current_filter(this.qService.quran);
    }
-      
+   
    ///
    /// Callbacks
 
    private on_criteria_updated() {
       this.prev_value = this.input_value_from_current_search();
       this._update_filters();
-      this.searchFormControl.setValue(
-         this.qService.searchCriteriaPres.cur_filter.cur_search_term, {
-            emitEvent: false
+      if (this.update_input) {
+         this.searchFormControl.setValue(
+            this.qService.searchCriteriaPres.cur_filter.cur_search_term, {
+               emitEvent: false
          });
+      }
+      this.update_input = true;
    }
+
    private on_quran_loaded(q: Quran) {
       this.matcher.quran = q;
       this.autocomp_roots = this.qService.quran.word_store.get_roots_as_sorted_strings();
@@ -143,11 +148,12 @@ export class SearchInputComponent implements OnInit, OnDestroy {
    //
    /// Functions
 
-   private onSearch() {
+   private perform_search() {
       this.qService.searchCriteriaPres.cur_filter.cur_search_term = this.searchFormControl.value;
       this.prev_value = this.input_value_from_current_search();
       this.qService.searchCriteriaPres.cur_filter.cur_search_term = this.prev_value;
-      this.qService.request_search(this.qService.searchCriteriaPres);
+      this.update_input = false;
+      this.qService.searchCriteriaPres.filter_updated();
    }
    
    private _filter(value: string): string[] {
@@ -193,7 +199,7 @@ export class SearchInputComponent implements OnInit, OnDestroy {
       }
    }
 
-   input_value_from_current_search(): string {
+   private input_value_from_current_search(): string {
       let arr = extract_term_strings(
          this.qService.searchCriteriaPres.cur_filter.cur_search_term, 
          this.qService.searchCriteriaPres.cur_filter.cur_term_type
