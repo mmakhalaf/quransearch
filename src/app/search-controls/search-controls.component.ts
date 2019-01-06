@@ -9,9 +9,10 @@ import { ControlsResService } from '../services/controlres.service';
 })
 export class SearchControlsComponent implements OnInit, OnDestroy {
 
-   show_filter_list = false;
-   show_extra_opts = false;
    show_toolbar = true;
+   show_term_opts = false;
+   show_global_opts = false;
+   show_filter_list = false;
    show_up_arrow = false;
    
    constructor(
@@ -36,15 +37,20 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
          this.show_toolbar = true;
          this.show_up_arrow = false;
       } else {
-         this.show_toolbar = false;
          this.show_up_arrow = true;
-         this.show_extra_opts = false;
+         this.show_toolbar = false;
+         this.show_term_opts = false;
+         this.show_global_opts = false;
          this.show_filter_list = false;
       }
    }
 
-   onOpenSettingsClicked() {
-      this.show_extra_opts = !this.show_extra_opts;
+   onOpenGlobOptsClicked() {
+      this.show_global_opts = !this.show_global_opts;
+   }
+
+   onOpenTermOptsClicked() {
+      this.show_term_opts = !this.show_term_opts;
    }
 
    onOpenFiltersClicked() {

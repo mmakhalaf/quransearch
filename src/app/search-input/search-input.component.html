@@ -14,7 +14,6 @@
          [matAutocomplete]="auto"
          autofocus
          >
-      
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutoCompOptSelected($event)">
          <mat-option *ngFor="let option of autocomp_foptions | async" [value]="option">
             {{option}}
@@ -26,14 +25,17 @@
       <button mat-icon-button matSuffix (click)="onClearCurrentClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.cur_search_term.length > 0">
          <mat-icon>close</mat-icon>
       </button>
-      <button mat-icon-button matSuffix (click)="onOpenSettingsClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.show_settings()">
+      <button mat-icon-button matSuffix (click)="onOpenTermOptsClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.show_settings()">
          <mat-icon>settings</mat-icon>
       </button>
       <button mat-icon-button matSuffix (click)="onFilterNewClicked()" [disabled]="disableNewFilterClick()">
          <mat-icon>add</mat-icon>
       </button>
    </mat-form-field>
-   <button mat-icon-button mat-raised-button class="search-filters-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" [matBadgeHidden]="qService.searchCriteriaPres.filters.length == 0">
+   <button mat-icon-button mat-raised-button class="search-filters-toggle" (click)="onOpenGlobOptsClicked()">
+      <mat-icon>settings</mat-icon>
+   </button>
+   <button mat-icon-button mat-raised-button class="search-filters-toggle" (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" *ngIf="qService.searchCriteriaPres.show_filters()">
       <mat-icon>filter_list</mat-icon>
    </button>
 </div>

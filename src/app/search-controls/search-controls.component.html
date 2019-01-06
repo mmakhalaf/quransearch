@@ -1,12 +1,9 @@
 
 <mat-card class="controls" *ngIf="show_toolbar">
-   <qsearch-input (onOpenSettings)="onOpenSettingsClicked()" (onOpenFilters)="onOpenFiltersClicked()"></qsearch-input>
-
-   <qterm-settings *ngIf="show_extra_opts && qService.searchCriteriaPres.cur_filter.show_settings()"></qterm-settings>
-   
-   <qfilters-list *ngIf="show_filter_list && qService.searchCriteriaPres.filters.length > 0"></qfilters-list>
-
-   <qsearch-settings *ngIf="show_filter_list"></qsearch-settings>
+   <qsearch-input (onOpenGlobOpts)="onOpenGlobOptsClicked()" (onOpenTermOpts)="onOpenTermOptsClicked()" (onOpenFilters)="onOpenFiltersClicked()"></qsearch-input>
+   <qterm-settings *ngIf="show_term_opts && qService.searchCriteriaPres.cur_filter.show_settings()"></qterm-settings>
+   <qsearch-settings *ngIf="show_global_opts"></qsearch-settings>
+   <qfilters-list *ngIf="show_filter_list && qService.searchCriteriaPres.show_filters()"></qfilters-list>
 </mat-card>
 
 <div *ngIf="qService.isOpPending">

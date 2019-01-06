@@ -315,6 +315,10 @@ export class FilterGroupPres {
       }
    }
 
+   show_filters(): boolean {
+      return this.filters.length > 0;
+   }
+
    has_search(): boolean {
       return this.cur_filter.cur_search_term.length > 0 || this.filters.length > 0;
    }

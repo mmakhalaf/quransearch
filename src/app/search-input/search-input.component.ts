@@ -39,7 +39,10 @@ export class SearchInputComponent implements OnInit, OnDestroy {
    prev_value = '';
 
    @Output()
-   onOpenSettings = new EventEmitter<void>();
+   onOpenTermOpts = new EventEmitter<void>();
+
+   @Output()
+   onOpenGlobOpts = new EventEmitter<void>();
 
    @Output()
    onOpenFilters = new EventEmitter<void>();
@@ -105,9 +108,13 @@ export class SearchInputComponent implements OnInit, OnDestroy {
       this.qService.searchCriteriaPres.cur_filter.cur_search_term = '';
       this.qService.searchCriteriaPres.filter_updated();
    }
+   
+   onOpenTermOptsClicked() {
+      this.onOpenTermOpts.emit();
+   }
 
-   onOpenSettingsClicked() {
-      this.onOpenSettings.emit();
+   onOpenGlobOptsClicked() {
+      this.onOpenGlobOpts.emit();
    }
 
    onOpenFiltersClicked() {
