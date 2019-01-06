@@ -16,6 +16,9 @@ import { SearchInputComponent } from './search-input/search-input.component';
 import { TermSettingsComponent } from './term-settings/term-settings.component';
 import { FiltersListComponent } from './filters-list/filters-list.component';
 import { SearchSettingsComponent } from './search-settings/search-settings.component';
+import { InputFieldComponent } from './search-input/input-field/input-field.component';
+import { TypeSelectComponent } from './search-input/type-select/type-select.component';
+import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.component';
 
 @NgModule({
    declarations: [
@@ -26,7 +29,10 @@ import { SearchSettingsComponent } from './search-settings/search-settings.compo
       SearchInputComponent,
       TermSettingsComponent,
       FiltersListComponent,
-      SearchSettingsComponent
+      SearchSettingsComponent,
+      InputFieldComponent,
+      TypeSelectComponent,
+      OptsButtonsComponent
    ],
    imports: [
       BrowserModule,

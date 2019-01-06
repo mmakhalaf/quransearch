@@ -1,0 +1,28 @@
+
+<div style="width: 100%">
+   <mat-form-field hintLabel="أدخل كلمات البحث لتظهر نتائج" class="search-input">
+      <input matInput
+         [formControl]="searchFormControl"
+         [errorStateMatcher]="matcher"
+         [matAutocomplete]="auto"
+         autofocus
+         >
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutoCompOptSelected($event)">
+         <mat-option *ngFor="let option of autocomp_foptions | async" [value]="option">
+            {{option}}
+         </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="searchFormControl.hasError('err')">
+         {{searchFormControl.getError('err')}}
+      </mat-error>
+      <button mat-icon-button matSuffix (click)="onClearCurrentClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.cur_search_term.length > 0">
+         <mat-icon>close</mat-icon>
+      </button>
+      <button mat-icon-button matSuffix (click)="onOpenTermOptsClicked()" *ngIf="qService.searchCriteriaPres.cur_filter.show_settings()">
+         <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-icon-button matSuffix (click)="onFilterNewClicked()" [disabled]="disableNewFilterClick()">
+         <mat-icon>add</mat-icon>
+      </button>
+   </mat-form-field>
+</div>

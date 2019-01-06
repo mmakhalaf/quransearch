@@ -1,0 +1,7 @@
+
+<button class="opt-btn" mat-icon-button mat-raised-button (click)="onOpenGlobOptsClicked()">
+   <mat-icon>settings</mat-icon>
+</button>
+<button class="opt-btn" mat-icon-button mat-raised-button (click)="onOpenFiltersClicked()" [(matBadge)]="qService.searchCriteriaPres.filters.length" *ngIf="qService.searchCriteriaPres.show_filters()">
+   <mat-icon>filter_list</mat-icon>
+</button>

@@ -1,0 +1,9 @@
+
+<mat-form-field hintLabel="إبحث عن" style="width: 100%">
+   <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_term_type" (change)="onTermTypeChanged()">
+      <option value="word">كلمات</option>
+      <option value="root">جذور</option>
+      <option value="category">مواضيع</option>
+      <option value="surah">سور</option>
+   </select>
+</mat-form-field>
