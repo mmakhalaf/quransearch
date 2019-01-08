@@ -6,9 +6,9 @@
    <qfilters-list *ngIf="show_filter_list && qService.searchCriteriaPres.show_filters()"></qfilters-list>
 </mat-card>
 
-<div *ngIf="qService.isOpPending">
+<ng-container *ngIf="qService.isOpPending">
    <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>
-</div>
+</ng-container>
 
 <button mat-icon-button mat-raised-button class="scroll-up-btn" (click)="onScrollUpwardsClicked()" *ngIf="show_up_arrow">
    <mat-icon>arrow_upward</mat-icon>

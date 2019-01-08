@@ -46,6 +46,8 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
+      console.log('OnInit');
+
       this.autocomp_foptions = this.searchFormControl.valueChanges.pipe(
          startWith(''),
          map(value => this._filter(value)),
@@ -57,9 +59,13 @@ export class InputFieldComponent implements OnInit, OnDestroy {
 
       this.qService.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_criteria_updated(); });
       this.qService.onQuranLoaded.set(this, (q: Quran) => { this.on_quran_loaded(q); });
+
+      this.on_quran_loaded(this.qService.quran);
+      this.on_criteria_updated();
    }
 
    ngOnDestroy() {
+      console.log('OnDestroy');
       this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
       this.qService.onQuranLoaded.delete(this);
    }
@@ -127,6 +133,9 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    }
 
    private on_quran_loaded(q: Quran) {
+      if (q == null) {
+         return;
+      }
       this.matcher.quran = q;
       this.autocomp_roots = this.qService.quran.word_store.get_roots_as_sorted_strings();
       this.autocomp_categories = this.qService.quran.get_categories_as_sorted_strings();

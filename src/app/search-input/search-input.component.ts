@@ -42,12 +42,10 @@ export class SearchInputComponent {
    /// Functions
 
    private make_single_line() {
-      console.log('Make Single Line');
       this.displayMode = DisplayMode.SingleLine;
    }
 
    private make_multi_line() {
-      console.log('Make Multi Line');
       this.displayMode = DisplayMode.MultiLine;
    }
 }

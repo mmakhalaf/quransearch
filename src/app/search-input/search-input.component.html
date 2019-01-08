@@ -1,14 +1,6 @@
 
-<div *ngIf="displayMode == DisplayMode.SingleLine" class="controls-group controls-group-row">
-   <qinput-type-select class="select-single-line"></qinput-type-select>
-   <qinput-input-field class="input-single-line" (onOpenTermOpts)="onOpenTermOpts.emit()"></qinput-input-field>
-   <qinput-opts-buttons (onOpenGlobOpts)="onOpenGlobOpts.emit()" (onOpenFilters)="onOpenFilters.emit()"></qinput-opts-buttons>
-</div>
-
-<div *ngIf="displayMode == DisplayMode.MultiLine" class="controls-group controls-group-col">
-   <div class="controls-group controls-group-row">
-      <qinput-type-select></qinput-type-select>
-      <qinput-opts-buttons (onOpenGlobOpts)="onOpenGlobOpts.emit()" (onOpenFilters)="onOpenFilters.emit()"></qinput-opts-buttons>
-   </div>
-   <qinput-input-field style="width: 100%" (onOpenTermOpts)="onOpenTermOpts.emit()"></qinput-input-field>
+<div [ngClass]="{'controls-group': true, 'controls-group-single-line': displayMode == DisplayMode.SingleLine, 'controls-group-multi-line': displayMode == DisplayMode.MultiLine}">
+   <qinput-type-select class="select-area"></qinput-type-select>
+   <qinput-input-field class="input-area" (onOpenTermOpts)="onOpenTermOpts.emit()"></qinput-input-field>
+   <qinput-opts-buttons class="buttons-area" (onOpenGlobOpts)="onOpenGlobOpts.emit()" (onOpenFilters)="onOpenFilters.emit()"></qinput-opts-buttons>
 </div>

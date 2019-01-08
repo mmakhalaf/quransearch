@@ -1,24 +1,35 @@
 
 .controls-group {
    width: 100%;
-   display: flex;
-   flex-wrap: wrap;
-   align-items: center;
-   justify-content: space-around;
+   display: grid;
+   grid-gap: 0.5rem;
+   justify-items: stretch;
+   justify-content: center;
 }
 
-.controls-group-row {
-   flex-direction: row;
+.controls-group-single-line {
+   grid-template-columns: 20% 50% 20%;
+   grid-template-areas: "select input buttons";
 }
 
-.controls-group-col {
-   flex-direction: column;
+.controls-group-multi-line {
+   grid-template-rows: auto;
+   grid-template-columns: 40% 40%;
+   grid-template-areas:
+      "select buttons"
+      "input input";
 }
 
-.select-single-line {
-   width: 20%;
+.select-area {
+   grid-area: select;
 }
 
-.input-single-line {
-   width: 60%;
+.input-area {
+   grid-area: input;
+}
+
+.buttons-area {
+   grid-area: buttons;
+   align-self: center;
+   justify-self: left;
 }

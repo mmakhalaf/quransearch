@@ -6,7 +6,7 @@
             <mat-icon mini-fab-icon>file_copy_outline</mat-icon>
          </button>
          <span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
-            <div *ngIf="should_highlight(i); then Highlighted; else NotHighlighted"></div>
+            <ng-container *ngIf="should_highlight(i); then Highlighted; else NotHighlighted"></ng-container>
             <ng-template #Highlighted>
                <strong class="highlighted-ayah-word">{{result.ayah.uthmani_words[i]}} </strong>
             </ng-template>
