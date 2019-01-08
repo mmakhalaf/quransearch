@@ -27,9 +27,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
       private constrolService: ControlsResService,
       private bottomSheet: MatBottomSheet,
       breakpointObserver: BreakpointObserver
-      ) {
+      ) {      
       breakpointObserver.observe([
-         Breakpoints.Handset
+         Breakpoints.Handset,
+         Breakpoints.XSmall
       ]).subscribe((result: BreakpointState) => {
          if (result.matches) {
             this.show_opts_one_at_time = true;

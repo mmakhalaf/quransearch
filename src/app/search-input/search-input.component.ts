@@ -28,7 +28,8 @@ export class SearchInputComponent {
    
    constructor(public qService: QuranService, breakpointObserver: BreakpointObserver) {
       breakpointObserver.observe([
-         Breakpoints.HandsetPortrait
+         Breakpoints.HandsetPortrait,
+         Breakpoints.XSmall
       ]).subscribe((result: BreakpointState) => {
          if (result.matches) {
             this.make_multi_line();
