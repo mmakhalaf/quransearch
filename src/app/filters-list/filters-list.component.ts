@@ -7,7 +7,7 @@ import { FilterPres } from '../services/filter-pres';
    templateUrl: './filters-list.component.html',
    styleUrls: ['./filters-list.component.css'],
    host: {
-      'style': 'display: flex'
+      'style': 'display: flex; direction: rtl;'
    }
 })
 export class FiltersListComponent {

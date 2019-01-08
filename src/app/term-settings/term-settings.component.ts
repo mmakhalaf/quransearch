@@ -6,7 +6,7 @@ import { QuranService } from '../services/quran.service';
    templateUrl: './term-settings.component.html',
    styleUrls: ['./term-settings.component.css'],
    host: {
-      'style': 'display: flex'
+      'style': 'display: flex; direction: rtl;'
    }
 })
 export class TermSettingsComponent {

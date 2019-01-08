@@ -8,7 +8,7 @@ import * as HttpUtils from '../quran/utils/http-utils';
    templateUrl: './search-settings.component.html',
    styleUrls: ['./search-settings.component.css'],
    host: {
-      'style': 'display: flex'
+      'style': 'display: flex; direction: rtl;'
    }
 })
 export class SearchSettingsComponent {

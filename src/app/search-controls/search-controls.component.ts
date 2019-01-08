@@ -2,6 +2,10 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { QuranService } from '../services/quran.service';
 import { ControlsResService } from '../services/controlres.service';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { MatBottomSheet } from '@angular/material';
+import { TermSettingsComponent } from '../term-settings/term-settings.component';
+import { SearchSettingsComponent } from '../search-settings/search-settings.component';
+import { FiltersListComponent } from '../filters-list/filters-list.component';
 
 @Component({
    selector: 'qsearch-controls',
@@ -20,8 +24,8 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
    
    constructor(
       public qService: QuranService, 
-      private constrolService: ControlsResService, 
-      change_det: ChangeDetectorRef,
+      private constrolService: ControlsResService,
+      private bottomSheet: MatBottomSheet,
       breakpointObserver: BreakpointObserver
       ) {
       breakpointObserver.observe([
@@ -61,26 +65,34 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
    }
 
    onOpenTermOptsClicked() {
-      this.show_term_opts = !this.show_term_opts;
-      if (this.show_term_opts && this.show_opts_one_at_time) {
-         this.show_global_opts = false;
-         this.show_filter_list = false;
+      if (!this.qService.searchCriteriaPres.cur_filter.show_settings()) {
+         return;
+      }
+      
+      if (this.show_opts_one_at_time) {
+         this.bottomSheet.open(TermSettingsComponent);
+      } else {
+         this.show_term_opts = !this.show_term_opts;
       }
    }
 
    onOpenGlobOptsClicked() {
-      this.show_global_opts = !this.show_global_opts;
-      if (this.show_global_opts && this.show_opts_one_at_time) {
-         this.show_term_opts = false;
-         this.show_filter_list = false;
+      if (this.show_opts_one_at_time) {
+         this.bottomSheet.open(SearchSettingsComponent);
+      } else {
+         this.show_global_opts = !this.show_global_opts;
       }
    }
 
    onOpenFiltersClicked() {
-      this.show_filter_list = !this.show_filter_list;
-      if (this.show_filter_list && this.show_opts_one_at_time) {
-         this.show_global_opts = false;
-         this.show_term_opts = false;
+      if (!this.qService.searchCriteriaPres.show_filters()) {
+         return;
+      }
+
+      if (this.show_opts_one_at_time) {
+         this.bottomSheet.open(FiltersListComponent);
+      } else {
+         this.show_filter_list = !this.show_filter_list;
       }
    }
    
@@ -90,19 +102,11 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
 
    update_options_layout() {
       if (this.show_opts_one_at_time) {
-         // Determine which one to keep
-         let arr = [
-            { flag: this.show_term_opts, fn: () => { this.onOpenTermOptsClicked(); } },
-            { flag: this.show_global_opts, fn: () => { this.onOpenGlobOptsClicked(); } }, 
-            { flag: this.show_filter_list, fn: () => { this.onOpenFiltersClicked(); } }
-         ];
-         arr = arr.filter(val => val.flag == true);
-         if (arr.length > 1) {
-            console.log(`${arr.length} Shown`);
-            for (let i = 1; i < arr.length; ++i) {
-               arr[i].fn();
-            }
-         }
+         this.show_term_opts = false;
+         this.show_global_opts = false;
+         this.show_filter_list = false;
+      } else {
+         this.bottomSheet.dismiss();
       }
    }
 }
