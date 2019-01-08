@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { QuranService } from '../services/quran.service';
 import { ControlsResService } from '../services/controlres.service';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 
 @Component({
    selector: 'qsearch-controls',
@@ -10,15 +11,29 @@ import { ControlsResService } from '../services/controlres.service';
 export class SearchControlsComponent implements OnInit, OnDestroy {
 
    show_toolbar = true;
+   show_up_arrow = false;
+
+   show_opts_one_at_time = true;
    show_term_opts = false;
    show_global_opts = false;
    show_filter_list = false;
-   show_up_arrow = false;
    
    constructor(
       public qService: QuranService, 
       private constrolService: ControlsResService, 
-      public change_det: ChangeDetectorRef) {
+      change_det: ChangeDetectorRef,
+      breakpointObserver: BreakpointObserver
+      ) {
+      breakpointObserver.observe([
+         Breakpoints.Handset
+      ]).subscribe((result: BreakpointState) => {
+         if (result.matches) {
+            this.show_opts_one_at_time = true;
+         } else {
+            this.show_opts_one_at_time = false;
+         }
+         this.update_options_layout();
+      });
    }
    
    ngOnInit() {
@@ -45,20 +60,49 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
       }
    }
 
-   onOpenGlobOptsClicked() {
-      this.show_global_opts = !this.show_global_opts;
-   }
-
    onOpenTermOptsClicked() {
       this.show_term_opts = !this.show_term_opts;
+      if (this.show_term_opts && this.show_opts_one_at_time) {
+         this.show_global_opts = false;
+         this.show_filter_list = false;
+      }
+   }
+
+   onOpenGlobOptsClicked() {
+      this.show_global_opts = !this.show_global_opts;
+      if (this.show_global_opts && this.show_opts_one_at_time) {
+         this.show_term_opts = false;
+         this.show_filter_list = false;
+      }
    }
 
    onOpenFiltersClicked() {
       this.show_filter_list = !this.show_filter_list;
+      if (this.show_filter_list && this.show_opts_one_at_time) {
+         this.show_global_opts = false;
+         this.show_term_opts = false;
+      }
    }
    
    onScrollUpwardsClicked() {
       this.constrolService.request_scroll_to_top();
    }
 
+   update_options_layout() {
+      if (this.show_opts_one_at_time) {
+         // Determine which one to keep
+         let arr = [
+            { flag: this.show_term_opts, fn: () => { this.onOpenTermOptsClicked(); } },
+            { flag: this.show_global_opts, fn: () => { this.onOpenGlobOptsClicked(); } }, 
+            { flag: this.show_filter_list, fn: () => { this.onOpenFiltersClicked(); } }
+         ];
+         arr = arr.filter(val => val.flag == true);
+         if (arr.length > 1) {
+            console.log(`${arr.length} Shown`);
+            for (let i = 1; i < arr.length; ++i) {
+               arr[i].fn();
+            }
+         }
+      }
+   }
 }

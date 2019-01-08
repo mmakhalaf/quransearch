@@ -46,8 +46,6 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
-      console.log('OnInit');
-
       this.autocomp_foptions = this.searchFormControl.valueChanges.pipe(
          startWith(''),
          map(value => this._filter(value)),
@@ -65,7 +63,6 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    }
 
    ngOnDestroy() {
-      console.log('OnDestroy');
       this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
       this.qService.onQuranLoaded.delete(this);
    }
