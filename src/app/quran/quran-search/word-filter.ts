@@ -14,19 +14,23 @@ export class WordSearchFilter extends SearchFilter {
          return new SearchResults();
       }
 
+      console.log(`Q: ${this.query}`);
+
       let q = QSearchUtils.remove_diacritic(this.query);
       if (q.length == 0) {
          return new SearchResults();
       }
-      
+
+      console.log(`Q (D): ${q}`);
+
       // Regular expressions in order of display
       let regexes = new Array<RegExp>();
 
       let qwords = q.trim().split(' ');
       if (this.searchOpts.match_mode == QuranSearchMatchMode.Any) {
          for (let qw of qwords) {
-            if (qw.length > 0) {
-               regexes.push(QSearchUtils.prep_regex(qw, false, false, false));
+            if (qw.length > 0 && qw != 'و') {
+               regexes.push(QSearchUtils.prep_regex(qw, false, false, true));
             }
          }
       } else {

@@ -13,7 +13,7 @@ const multi_match_map_any = {
 const multi_match_map_end = {
    ة: '[ةته]',   // END ONLY
    ت: '[تة]',    // END ONLY
-   ه: '[هة]',    // END ONLY
+   ه: '[تهة]',   // END ONLY
    ى: '[ىي]',    // END ONLY
    ي: '[ىي]'     // END ONLY
 };
@@ -84,28 +84,29 @@ export function prep_regex(q: string, start_only?: boolean, end_only?: boolean, 
       } else {
          new_q += replace_any(q, i);
       }
-      let c = q.charAt(i);
    }
 
-   new_q = new_q.replace(' ', '\\s*');
-   // new_q = `(${new_q})`;
+   // Sometimes و is linked to the word after, so make the space optional
+   new_q = new_q.replace('و ', 'و\\s*');
    
+   // Add an optional و for full words (or beginning of Ayah) in case
+   // the word is linked with it.
    let re = `(${new_q})`;
    if (start_only !== undefined && start_only) {
       if (full_word !== undefined && full_word) {
-         re = `^(${new_q})(\\s|$)`;
+         re = `^و?(${new_q})(\\s|$)`;
       } else {
-         re = `^(${new_q})`;
+         re = `^و?(${new_q})`;
       }
    } else if (end_only !== undefined && end_only) {
       if (full_word !== undefined && full_word) {
-         re = `(^|\\s)(${new_q})$`;
+         re = `و?(^|\\s)(${new_q})$`;
       } else {
          re = `(${new_q})$`;
       }
    } else {
       if (full_word !== undefined && full_word) {
-         re = `(^|\\s)(${new_q})(\\s|$)`;
+         re = `(^|\\s|و)(${new_q})(\\s|$)`;
       } else {
          re = `(${new_q})`;
       }

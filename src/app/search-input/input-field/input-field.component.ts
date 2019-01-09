@@ -96,23 +96,25 @@ export class InputFieldComponent implements OnInit, OnDestroy {
       this.searchFormControl.setValue(this.prev_value);
    }
 
-   onClearCurrentClicked() {
+   onClearCurrentClicked(e: MouseEvent) {
+      e.stopPropagation();
       this.qService.searchCriteriaPres.cur_filter.cur_search_term = '';
       this.qService.searchCriteriaPres.filter_updated();
    }
 
-   onOpenTermOptsClicked() {
+   onOpenTermOptsClicked(e: MouseEvent) {
+      e.stopPropagation();
       this.onOpenTermOpts.emit();
+   }
+
+   onFilterNewClicked(e: MouseEvent) {
+      e.stopPropagation();
+      this.qService.searchCriteriaPres.add_current_filter(this.qService.quran);
    }
 
    disableNewFilterClick(): boolean {
       return !this.qService.searchCriteriaPres.cur_filter.is_valid(this.qService.quran);
    }
-
-   onFilterNewClicked() {
-      this.qService.searchCriteriaPres.add_current_filter(this.qService.quran);
-   }
-
 
    ///
    /// Callbacks

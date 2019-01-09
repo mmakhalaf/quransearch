@@ -19,6 +19,7 @@ import { SearchSettingsComponent } from './search-settings/search-settings.compo
 import { InputFieldComponent } from './search-input/input-field/input-field.component';
 import { TypeSelectComponent } from './search-input/type-select/type-select.component';
 import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.component';
+import { AyahComponent } from './ayah/ayah.component';
 
 @NgModule({
    declarations: [
@@ -32,7 +33,8 @@ import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.c
       SearchSettingsComponent,
       InputFieldComponent,
       TypeSelectComponent,
-      OptsButtonsComponent
+      OptsButtonsComponent,
+      AyahComponent
    ],
    entryComponents: [
       TermSettingsComponent,
