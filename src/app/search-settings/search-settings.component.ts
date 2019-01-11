@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { QuranService } from '../services/quran.service';
-import { Location } from '@angular/common';
 import * as HttpUtils from '../quran/utils/http-utils';
+import { Router } from '@angular/router';
 
 @Component({
    selector: 'qsearch-settings',
@@ -13,7 +13,9 @@ import * as HttpUtils from '../quran/utils/http-utils';
 })
 export class SearchSettingsComponent {
 
-   constructor(public qService: QuranService, private location: Location) {
+   constructor(
+      public qService: QuranService,
+      private router: Router) {
    }
 
    onSortOrderChanged() {
@@ -21,8 +23,12 @@ export class SearchSettingsComponent {
    }
 
    onCopyFiltersClicked() {
+      let params = this.qService.searchCriteriaPres.to_params(this.qService.quran);
+      let params_str = `?${HttpUtils.params_to_string(params)}`;
+      let rel_url = this.router.url;
+      let url = `${location.origin}`;
       this.qService.copy_text(
-         `${location.href}${this.location.path()}?${HttpUtils.params_to_string(this.qService.searchCriteriaPres.to_params(this.qService.quran))}`,
+         `${url}/${rel_url}${params_str}`,
          'تم نسخ رابط البحث'
          );
    }

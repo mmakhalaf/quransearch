@@ -8,6 +8,7 @@
 
 .root-card {
    margin: 0.5rem;
+   width: calc(100% - 1rem);
 }
 
 .root-word {

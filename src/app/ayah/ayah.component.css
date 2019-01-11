@@ -1,0 +1,26 @@
+
+.related-ayah-style {
+   font-family: Scheherazade;
+   list-style-type: none;
+   margin-left: 0;
+   text-indent: -1em;
+   font-size: 1.2rem;
+   line-height: 2rem;
+}
+
+.cat-style {
+   font-family: Scheherazade;
+   font-size: 1.2rem;
+   line-height: 2rem;
+   cursor: pointer;
+   text-decoration: underline;
+}
+
+.cat-delim-style {
+   cursor: default;
+   text-decoration: none;
+}
+
+.link-btn {
+   position: inherit;
+}

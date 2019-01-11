@@ -10,9 +10,9 @@
             <button mat-icon-button (click)="onClearAllClicked()">
                <mat-icon>clear_all</mat-icon>
             </button>
-         <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" removable="true" [(value)]="f" (removed)="onRemoveFilterClicked(f)">
+         <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" [(value)]="f" disableRipple="true">
             <span [innerHTML]="f.to_string()" (click)="onSelectFilterClicked(f)"></span>
-            <mat-icon matChipRemove>cancel</mat-icon>
+            <mat-icon matChipRemove (click)="onRemoveFilterClicked(f)">cancel</mat-icon>
          </mat-chip>
       </mat-chip-list>
    </div>

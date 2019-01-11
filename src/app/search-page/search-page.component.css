@@ -1,0 +1,9 @@
+
+.search-page {
+   height: 100vh;
+   overflow-y: hidden;
+   overflow-x: hidden;
+   scroll-behavior: smooth;
+   display: grid;
+   grid-template-rows: auto 100fr;
+}

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule, MatChipsModule, MatSelectModule, MatButtonToggleModule, MatDividerModule, MatBadgeModule, MatAutocompleteModule, MatSnackBarModule, MatBottomSheetModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatInputModule, MatTabsModule, MatCardModule, MatIconModule, MatExpansionModule, MatGridListModule, MatProgressSpinnerModule, MatProgressBarModule, MatChipsModule, MatSelectModule, MatButtonToggleModule, MatDividerModule, MatBadgeModule, MatAutocompleteModule, MatSnackBarModule, MatBottomSheetModule, MatDialogModule } from '@angular/material';
 import { ClipboardModule } from 'ngx-clipboard';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { CookieService } from 'ngx-cookie-service';
@@ -19,11 +19,15 @@ import { SearchSettingsComponent } from './search-settings/search-settings.compo
 import { InputFieldComponent } from './search-input/input-field/input-field.component';
 import { TypeSelectComponent } from './search-input/type-select/type-select.component';
 import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.component';
-import { AyahComponent } from './ayah/ayah.component';
+import { AyahComponent, AyahDialogComponent } from './ayah/ayah.component';
+import { SearchPageComponent } from './search-page/search-page.component';
 
 @NgModule({
    declarations: [
       AppComponent,
+      SearchPageComponent,
+      AyahComponent,
+      AyahDialogComponent,
       SearchResultComponent,
       SearchControlsComponent,
       SearchResultsComponent,
@@ -33,13 +37,13 @@ import { AyahComponent } from './ayah/ayah.component';
       SearchSettingsComponent,
       InputFieldComponent,
       TypeSelectComponent,
-      OptsButtonsComponent,
-      AyahComponent
+      OptsButtonsComponent
    ],
    entryComponents: [
       TermSettingsComponent,
       SearchSettingsComponent,
-      FiltersListComponent
+      FiltersListComponent,
+      AyahDialogComponent
    ],
    imports: [
       BrowserModule,
@@ -49,21 +53,17 @@ import { AyahComponent } from './ayah/ayah.component';
       BrowserAnimationsModule,
       MatIconModule,
       MatButtonModule,
-      MatCheckboxModule,
+      // MatCheckboxModule,
       MatTabsModule,
-      MatCardModule,
-      MatExpansionModule,
-      MatGridListModule,
       MatInputModule,
-      MatProgressSpinnerModule,
       MatProgressBarModule,
       MatChipsModule,
       MatSelectModule,
-      MatButtonToggleModule,
       MatBadgeModule,
       MatAutocompleteModule,
       MatSnackBarModule,
       MatBottomSheetModule,
+      MatDialogModule,
       VirtualScrollerModule,
       AppRoutingModule
    ],

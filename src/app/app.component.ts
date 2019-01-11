@@ -1,7 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { QuranService } from './services/quran.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { FilterGroupPres } from './services/filter-pres';
+import { Component } from '@angular/core';
 
 // Consts
 @Component({
@@ -9,28 +6,10 @@ import { FilterGroupPres } from './services/filter-pres';
    templateUrl: './app.component.html',
    styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-
-   @ViewChild('cb')
-   cb: any;
+export class AppComponent {
 
    constructor(
-      public qService: QuranService,
-      private route: ActivatedRoute
       ) {
    }
 
-   ngOnInit() {
-      this.qService.cbElem = this.cb.nativeElement;
-      this.route.queryParams.subscribe((params: ParamMap) => {
-         this.on_query_change(params);
-      });
-   }
-
-   on_query_change(params: ParamMap) {
-      let filters = FilterGroupPres.from_params(params);
-      if (filters != null && filters.has_search()) {
-         this.qService.perform_search(filters);
-      }
-   }
 }

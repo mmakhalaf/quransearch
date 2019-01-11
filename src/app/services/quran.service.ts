@@ -9,11 +9,12 @@ import { CookieService } from 'ngx-cookie-service';
 import { ClipboardService } from 'ngx-clipboard';
 import { MatSnackBar } from '@angular/material';
 import { QuranLoader } from '../quran/quran-loader';
+import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export type OnQuranLoaded = (q: Quran) => void;
 export type OnSearchValUpdated = (val: string) => void;
 export type OnSearchCompleted = (res: SearchResults) => void;
-
 
 @Injectable({
    providedIn: 'root'
@@ -36,9 +37,13 @@ export class QuranService {
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
+   // For debugging only
+   disable_defaults = false;
+
    constructor(
       private zone: NgZone, 
       private location: Location, 
+      private router: Router,
       private cookieService: CookieService,
       private cbService: ClipboardService,
       private snackBar: MatSnackBar
@@ -46,6 +51,12 @@ export class QuranService {
       this.isOpPending = true;
       QuranLoader.create().then(this.on_quran_loaded);
       this.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
+
+      if (environment.production) {
+         console.log('Is production');
+         this.disable_defaults = false;
+      }
+
    }
 
    on_quran_loaded = (quran: Quran) => {
@@ -145,8 +156,6 @@ export class QuranService {
       let blocker = new SearchBlocker();
       this.perform_search(this.searchCriteriaPres);
       blocker.dispose();
-
-      this.location.go('');
    }
 
    perform_search(crit: FilterGroupPres) {
@@ -159,6 +168,10 @@ export class QuranService {
    }
 
    private load_cookies() {
+      if (this.disable_defaults) {
+         return;
+      }
+
       if (this.cookieService.check('SortOrder')) {
          this.searchCriteriaPres.cur_sort_order = this.cookieService.get('SortOrder');
       }
@@ -184,10 +197,18 @@ export class QuranService {
             }
          }
       }
+
+      console.log(`Loading Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
       this.searchCriteriaPres.filter_updated();
    }
 
    private save_cookies() {
+      if (this.disable_defaults) {
+         return;
+      }
+      
+      console.log(`Saving Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
+
       this.cookieService.set('SortOrder', this.searchCriteriaPres.cur_sort_order);
       this.cookieService.set('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
       this.cookieService.set('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);

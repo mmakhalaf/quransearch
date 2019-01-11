@@ -1,3 +1,47 @@
-<p>
-  ayah works!
-</p>
+<ng-template let-argAyah="ayah" #ayahTemp>
+   <span style="margin-right: 10px">
+      <button mat-icon-button (click)="onNavAyahLink(argAyah)" class="link-btn">
+         <mat-icon>link_outline</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onCopyAyah(argAyah)" class="link-btn">
+         <mat-icon>file_copy_outline</mat-icon>
+      </button>
+   </span>
+   <span class="ayah-style">
+      <span class="ayah-word-click" *ngFor="let w of argAyah.words; let i = index" (click)="onWordClicked(w)">
+         {{argAyah.uthmani_words[i]}}
+      </span>
+      <a class="ayah-ref" target="_blank" href="https://furqan.co/{{argAyah.surah_num()}}/{{argAyah.surah_ayah_num()}}">
+         [ {{argAyah.surah_name()}} {{argAyah.surah_aya_num_ar()}} ]
+      </a>
+   </span>
+</ng-template>
+
+<div mat-dialog-title>
+   <ng-container *ngTemplateOutlet="ayahTemp; context: {ayah: ayah}"></ng-container>
+</div>
+
+<!-- Extra Info -->
+<mat-tab-group dynamicHeight mat-stretch-tabs *ngIf="show_tabs()">
+   <mat-tab label="آيات متعلقه" *ngIf="show_related()">
+      <ul class="related-ayah-style">
+         <li *ngFor="let r of ayah.related_ayat">
+            <ng-container *ngTemplateOutlet="ayahTemp; context: {ayah: r.ayah}"></ng-container>
+         </li>
+      </ul>
+   </mat-tab>
+   
+   <mat-tab label="مواضيع متعلقه" *ngIf="show_categories()">
+      <ul>
+         <li *ngFor="let c of ayah.categories">
+            <span *ngFor="let p of c.get_parents(true); last as isLast">
+               <span class="cat-style" (click)="onCategoryClicked(p)">{{p.name}}</span>
+               <span class="cat-delim-style" *ngIf="!isLast">
+                  <!-- ،&nbsp; -->
+                  &larr;
+               </span>
+            </span>
+         </li>
+      </ul>
+   </mat-tab>
+</mat-tab-group>

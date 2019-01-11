@@ -1,10 +1,11 @@
-
-<mat-card class="controls" *ngIf="show_toolbar">
-   <qsearch-input (onOpenGlobOpts)="onOpenGlobOptsClicked()" (onOpenTermOpts)="onOpenTermOptsClicked()" (onOpenFilters)="onOpenFiltersClicked()"></qsearch-input>
-   <qterm-settings *ngIf="show_term_opts && qService.searchCriteriaPres.cur_filter.show_settings()"></qterm-settings>
-   <qsearch-settings *ngIf="show_global_opts"></qsearch-settings>
-   <qfilters-list *ngIf="show_filter_list && qService.searchCriteriaPres.show_filters()"></qfilters-list>
-</mat-card>
+<div class="card controls" *ngIf="show_toolbar">
+   <div class="card-container">
+      <qsearch-input (onOpenGlobOpts)="onOpenGlobOptsClicked()" (onOpenTermOpts)="onOpenTermOptsClicked()" (onOpenFilters)="onOpenFiltersClicked()"></qsearch-input>
+      <qterm-settings *ngIf="show_term_opts && qService.searchCriteriaPres.cur_filter.show_settings()"></qterm-settings>
+      <qsearch-settings *ngIf="show_global_opts"></qsearch-settings>
+      <qfilters-list *ngIf="show_filter_list && qService.searchCriteriaPres.show_filters()"></qfilters-list>
+   </div>
+</div>
 
 <ng-container *ngIf="qService.isOpPending">
    <mat-progress-bar class="loading-spinner" mode="indeterminate"></mat-progress-bar>

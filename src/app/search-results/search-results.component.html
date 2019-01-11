@@ -13,16 +13,14 @@
       عدد الآيات: {{num_results()}}
    </div>
    
-   <mat-expansion-panel *ngIf="roots.length > 0" class="root-card">
-      <mat-expansion-panel-header>
-         <mat-panel-title>
-            الجذور
-         </mat-panel-title>
-      </mat-expansion-panel-header>
+   <fieldset class="opts root-card">
+      <legend class="opts-title">
+         <span class="opts-title-item">الجذور</span>
+      </legend>
       <span *ngFor="let r of roots" class="root-word" (click)="onRootClicked(r)">
          {{r.text}}
       </span>
-   </mat-expansion-panel>
+   </fieldset>
    
    <div #container>
       <qsearch-result

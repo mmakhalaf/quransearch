@@ -3,6 +3,8 @@ import { SearchResult } from '../quran/quran-search/search-result';
 import { QuranService } from '../services/quran.service';
 import { QuranWord, Category, Ayah } from '../quran/quran';
 import * as StringUtils from '../quran/utils/string-utils';
+import { Router } from '@angular/router';
+import { NavService } from '../services/nav-service.service';
 
 
 @Component({
@@ -18,11 +20,15 @@ export class SearchResultComponent implements OnInit {
 
    @Input()
    result: SearchResult;
-
+   
    @Output()
    sizeChanged = new EventEmitter<void>();
 
-   constructor(private qService: QuranService, private change_det: ChangeDetectorRef, private zone: NgZone) {
+   constructor(
+      private router: Router,
+      private qService: QuranService,
+      private navService: NavService
+      ) {
    }
 
    ngOnInit() {
@@ -32,23 +38,15 @@ export class SearchResultComponent implements OnInit {
       return this.result.word_indices.indexOf(index) != -1;
    }
    
-   onWordClicked(word: QuranWord) {
-      this.qService.request_search_with_word_filter(word.imlaai, false);
+   onAyahClicked() {
+      this.navService.open_ayah(this.result.ayah.id);
    }
 
-   onCategoryClicked(cat: Category) {
-      this.qService.request_search_with_cat_filter(cat, false);
-   }
-   
    number_en_to_ar(num: number): string {
       return StringUtils.number_en_to_ar(num);
    }
 
-   panelChanged() {
-      this.sizeChanged.emit();
-   }
-
-   copy_ayah(a: Ayah) {
-      this.qService.copy_text(a.uthmani, 'تم نسخ الآية');
+   OnNavAyahLink(ayah: Ayah) {
+      this.navService.open_ayah_and_copy_link(ayah.id);
    }
 }

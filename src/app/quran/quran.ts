@@ -59,6 +59,16 @@ export class Quran {
       });
       return arr;
    }
+
+   get_ayah(id: number): Ayah {
+      let ayah: Ayah = null;
+      this.for_each_ayah((a: Ayah) => {
+         if (ayah == null && a.id == id) {
+            ayah = a;
+         }
+      });
+      return ayah;
+   }
 }
 
 

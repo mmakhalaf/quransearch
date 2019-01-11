@@ -1,71 +1,24 @@
-<mat-card class="result-row">
-   <mat-card-content>
+<div class="card result-row">
+   <div class="card-container">
       <!-- Ayah -->
       <div class="ayah-style">
-         <button mat-icon-button (click)="copy_ayah(result.ayah)">
-            <mat-icon mini-fab-icon>file_copy_outline</mat-icon>
+         <button mat-icon-button (click)="OnNavAyahLink(result.ayah)">
+            <mat-icon mini-fab-icon>link_outline</mat-icon>
          </button>
-         <span class="ayah-word" *ngFor="let w of result.ayah.words; let i = index" (click)="onWordClicked(w)">
-            <ng-container *ngIf="should_highlight(i); then Highlighted; else NotHighlighted"></ng-container>
-            <ng-template #Highlighted>
-               <strong class="highlighted-ayah-word">{{result.ayah.uthmani_words[i]}} </strong>
-            </ng-template>
-            <ng-template #NotHighlighted>
-               {{result.ayah.uthmani_words[i]}}
-            </ng-template>
+         <span (click)="onAyahClicked()">
+            <span class="ayah-word-click" *ngFor="let w of result.ayah.words; let i = index">
+               <ng-container *ngIf="should_highlight(i); then Highlighted; else NotHighlighted"></ng-container>
+               <ng-template #Highlighted>
+                  <strong class="ayah-word-highlight">{{result.ayah.uthmani_words[i]}} </strong>
+               </ng-template>
+               <ng-template #NotHighlighted>
+                  {{result.ayah.uthmani_words[i]}}
+               </ng-template>
+            </span>
          </span>
          <a class="ayah-ref" target="_blank" href="https://furqan.co/{{result.ayah.surah_num()}}/{{result.ayah.surah_ayah_num()}}">
             [ {{result.ayah.surah_name()}} {{result.ayah.surah_aya_num_ar()}} ]
          </a>
       </div>
-
-      <!-- Extra Info -->
-      <mat-accordion>
-         <mat-expansion-panel *ngIf="result.ayah.related_ayat.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
-            <mat-expansion-panel-header>
-               <mat-panel-title>
-                  آيات متعلقه
-               </mat-panel-title>
-               <mat-panel-description>
-                  {{number_en_to_ar(result.ayah.related_ayat.length)}}
-               </mat-panel-description>
-            </mat-expansion-panel-header>
-            
-            <ul class="related-ayah-style">
-               <li *ngFor="let r of result.ayah.related_ayat">
-                  <button mat-icon-button (click)="copy_ayah(r.ayah)">
-                     <mat-icon mini-fab-icon>file_copy_outline</mat-icon>
-                  </button>
-                  {{r.ayah.uthmani}}
-                  <a class="ayah-ref" target="_blank" href="https://furqan.co/{{r.ayah.surah_num()}}/{{r.ayah.surah_ayah_num()}}">
-                     [ {{r.ayah.surah_name()}} {{r.ayah.surah_aya_num_ar()}} ]
-                  </a>
-               </li>
-            </ul>
-         </mat-expansion-panel>
-
-         <mat-expansion-panel *ngIf="result.ayah.categories.length" (afterCollapse)="panelChanged()" (afterExpand)="panelChanged()">
-            <mat-expansion-panel-header>
-               <mat-panel-title>
-                  مواضيع متعلقه
-               </mat-panel-title>
-               <mat-panel-description>
-                  {{number_en_to_ar(result.ayah.categories.length)}}
-               </mat-panel-description>
-            </mat-expansion-panel-header>
-            
-            <ul>
-               <li *ngFor="let c of result.ayah.categories">
-                  <span *ngFor="let p of c.get_parents(true); last as isLast">
-                     <span class="cat-style" (click)="onCategoryClicked(p)">{{p.name}}</span>
-                     <span class="cat-delim-style" *ngIf="!isLast">
-                        <!-- ،&nbsp; -->
-                        &larr;
-                     </span>
-                  </span>
-               </li>
-            </ul>
-         </mat-expansion-panel>
-      </mat-accordion>
-   </mat-card-content>
-</mat-card>
+   </div>
+</div>

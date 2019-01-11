@@ -681,6 +681,6 @@ export class FilterPres {
 
    to_string(): string {
       let idx = opts_query_types.findIndex(v => v.opt == this.cur_term_type);
-      return `<strong>${opts_query_types[idx].word}</strong>: ${this.cur_search_term}`;
+      return `<strong>${opts_query_types[idx].word}:</strong> ${this.cur_search_term}`;
    }
 }

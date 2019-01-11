@@ -43,35 +43,34 @@ body {
    margin: 0 auto;
 }
 
-.mat-card {
-   font-family: inherit;
-   font-size: inherit;
-}
+/** Angular Material Overrides **/
 
-.mat-card-content {
-   font-family: inherit;
-   font-size: inherit;
-}
-
-.mat-expansion-panel {
-   font: inherit;
-   font-size: inherit;
-}
-
-.mat-expansion-panel-content {
-   font: inherit;
-   font-family: inherit;
-   font-size: inherit;
-}
-.mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
-   font: inherit;
-   font-family: inherit;
-   font-size: inherit;
+.controls .mat-standard-chip .mat-chip-remove, .controls .mat-standard-chip .mat-chip-trailing-icon {
+   /* Respect 'rtl' */
+   margin-right: 8px;
+   margin-left: 0px;
 }
 
 .controls .mat-form-field-infix {
-   border-top: none;
+   border-top: 0.2rem;
 }
+
+/** Raised card **/
+.card {
+   /* Add shadows to create the "card" effect */
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+   transition: 0.3s;
+ }
+ 
+ /* On mouse-over, add a deeper shadow */
+ .card:hover {
+   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+ }
+ 
+ /* Add some padding inside the card container */
+ .card-container {
+   padding: 0.2rem 0.1rem;
+ }
 
 /*** Option groups ***/
 
@@ -98,4 +97,27 @@ body {
 .opts-title-item {
    margin-right: 0.1rem;
    margin-left: 0.1rem;
+}
+
+/** Ayah **/
+
+.ayah-style {
+   font-family: Scheherazade;
+   font-size: 1.3rem;
+   padding: 0.5rem 0.3rem;
+}
+
+.ayah-word-highlight {
+   color: hsla(0, 85%, 50%, 1);
+}
+
+.ayah-word-click {
+    cursor: pointer;
+}
+
+.ayah-ref {
+   color: #888;
+   font-size: 0.9rem;
+   text-decoration: none;
+   padding: 0.2rem;
 }
