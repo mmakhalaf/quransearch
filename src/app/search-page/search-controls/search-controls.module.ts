@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { SearchControlsComponent } from './search-controls/search-controls.component';
 import { SearchInputComponent } from './search-input/search-input.component';
@@ -9,10 +8,9 @@ import { SearchSettingsComponent } from './search-settings/search-settings.compo
 import { InputFieldComponent } from './search-input/input-field/input-field.component';
 import { TypeSelectComponent } from './search-input/type-select/type-select.component';
 import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatProgressBarModule, MatIconModule, MatFormFieldModule, MatChipsModule, MatOptionModule, MatAutocompleteModule, MatInputModule, MatBadgeModule, MatSelectModule, MatButtonModule, MatBottomSheetModule } from '@angular/material';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
    declarations: [
@@ -27,10 +25,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
    ],
    imports: [
       CommonModule,
-      BrowserModule,
       FormsModule,
       ReactiveFormsModule,
-      BrowserAnimationsModule,
       MatProgressBarModule,
       MatIconModule,
       MatFormFieldModule,

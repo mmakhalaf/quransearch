@@ -14,15 +14,11 @@ export class WordSearchFilter extends SearchFilter {
          return new SearchResults();
       }
 
-      console.log(`Q: ${this.query}`);
-
       let q = QSearchUtils.remove_diacritic(this.query);
       if (q.length == 0) {
          return new SearchResults();
       }
-
-      console.log(`Q (D): ${q}`);
-
+      
       // Regular expressions in order of display
       let regexes = new Array<RegExp>();
 

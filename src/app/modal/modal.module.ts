@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AyahComponent, AyahDialogComponent } from './ayah/ayah.component';
+import { MatDialogModule, MatTabsModule, MatButtonModule, MatIconModule } from '@angular/material';
+import { ModalRoutingModule } from './modal-routing.module';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { MatDialogModule, MatSnackBarModule, MatTabsModule, MatButtonModule, MatIconModule } from '@angular/material';
 
 @NgModule({
    declarations: [
@@ -12,13 +12,12 @@ import { MatDialogModule, MatSnackBarModule, MatTabsModule, MatButtonModule, Mat
    ],
    imports: [
       CommonModule,
-      BrowserModule,
       FormsModule,
       MatIconModule,
       MatButtonModule,
       MatTabsModule,
-      MatSnackBarModule,
-      MatDialogModule
+      MatDialogModule,
+      ModalRoutingModule
    ],
    entryComponents: [
       AyahDialogComponent

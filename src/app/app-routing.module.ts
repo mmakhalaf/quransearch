@@ -1,26 +1,25 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AyahComponent } from './modal/ayah/ayah.component';
-import { SearchPageComponent } from './search-page/search-page.component';
+import { AppComponent } from './app.component';
 
 const routes: Routes = [
    {
-      path: 'ayah/:id',
-      component: AyahComponent,
+      path: 'ayah',
+      loadChildren: './modal/modal.module#ModalModule',
       outlet: 'primary'
    },
    {
-      path: 'ayah/:id',
-      component: AyahComponent,
+      path: 'ayah',
+      loadChildren: './modal/modal.module#ModalModule',
       outlet: "modal"
    },
    {
       path: 'search',
-      component: SearchPageComponent
+      loadChildren: './search-page/search-page.module#SearchPageModule',
    },
    {
       path: '',
-      component: SearchPageComponent
+      component: AppComponent
    }
 ];
 

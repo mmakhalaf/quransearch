@@ -28,7 +28,7 @@ export class SearchSettingsComponent {
       let rel_url = this.router.url;
       let url = `${location.origin}`;
       this.qService.copy_text(
-         `${url}/${rel_url}${params_str}`,
+         `${url}${rel_url}${params_str}`,
          'تم نسخ رابط البحث'
          );
    }
