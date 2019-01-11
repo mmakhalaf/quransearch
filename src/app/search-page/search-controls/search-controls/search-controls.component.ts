@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { QuranService } from '../services/quran.service';
-import { ControlsResService } from '../services/controlres.service';
+import { QuranService } from '../../../services/quran.service';
+import { ControlsResService } from '../../../services/controlres.service';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { MatBottomSheet } from '@angular/material';
 import { TermSettingsComponent } from '../term-settings/term-settings.component';

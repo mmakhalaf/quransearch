@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { QuranService } from '../services/quran.service';
+import { QuranService } from '../../../services/quran.service';
 import { VirtualScrollerComponent, ChangeEvent } from 'ngx-virtual-scroller';
-import { SearchResult, SearchResults } from '../quran/quran-search/search-result';
-import { QuranRoot } from '../quran/quran';
-import * as StringUtils from '../quran/utils/string-utils';
-import { ControlsResService } from '../services/controlres.service';
+import { SearchResult, SearchResults } from '../../../quran/quran-search/search-result';
+import { QuranRoot } from '../../../quran/quran';
+import * as StringUtils from '../../../quran/utils/string-utils';
+import { ControlsResService } from '../../../services/controlres.service';
 
 @Component({
    selector: 'qsearch-results',

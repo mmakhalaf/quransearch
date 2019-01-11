@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { QuranService } from '../services/quran.service';
-import * as HttpUtils from '../quran/utils/http-utils';
+import { QuranService } from '../../../services/quran.service';
+import * as HttpUtils from '../../../quran/utils/http-utils';
 import { Router } from '@angular/router';
 
 @Component({

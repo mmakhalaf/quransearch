@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { QuranService } from 'src/app/services/quran.service';
+import { QuranService } from '../../../../services/quran.service';
 
 @Component({
    selector: 'qinput-type-select',

@@ -1,5 +1,5 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { QuranService } from 'src/app/services/quran.service';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { QuranService } from '../../../../services/quran.service';
 
 @Component({
    selector: 'qinput-opts-buttons',

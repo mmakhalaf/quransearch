@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { QuranService } from '../services/quran.service';
+import { QuranService } from '../../../services/quran.service';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 
 export enum DisplayMode {

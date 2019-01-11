@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { QuranService } from 'src/app/services/quran.service';
-import { SearchInputStateMatcher, extract_term_strings } from 'src/app/services/filter-pres';
+import { SearchInputStateMatcher, extract_term_strings } from '../../../../services/filter-pres';
 import { FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';

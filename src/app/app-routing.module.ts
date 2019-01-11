@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AyahComponent } from './ayah/ayah.component';
+import { AyahComponent } from './modal/ayah/ayah.component';
 import { SearchPageComponent } from './search-page/search-page.component';
 
 const routes: Routes = [

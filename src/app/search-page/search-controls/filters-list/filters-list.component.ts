@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { QuranService } from '../services/quran.service';
-import { FilterPres } from '../services/filter-pres';
+import { QuranService } from '../../../services/quran.service';
+import { FilterPres } from '../../../services/filter-pres';
 
 @Component({
    selector: 'qfilters-list',

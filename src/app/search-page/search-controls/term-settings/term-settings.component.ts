@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { QuranService } from '../services/quran.service';
+import { Component } from '@angular/core';
+import { QuranService } from '../../../services/quran.service';
 
 @Component({
    selector: 'qterm-settings',

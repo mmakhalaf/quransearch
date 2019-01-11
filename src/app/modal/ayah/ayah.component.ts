@@ -1,11 +1,10 @@
-import { Component, OnInit, Inject, AfterViewInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Ayah, Surah, Quran, QuranWord, Category } from '../quran/quran';
+import { Ayah, Surah, Quran, QuranWord, Category } from '../../quran/quran';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { isNullOrUndefined } from 'util';
-import { QuranService } from '../services/quran.service';
-import * as StringUtils from '../quran/utils/string-utils';
-import { NavService } from '../services/nav-service.service';
+import { QuranService } from '../../services/quran.service';
+import { NavService } from '../../services/nav-service.service';
 
 @Component({
    selector: 'qmodal-ayah-dialog',

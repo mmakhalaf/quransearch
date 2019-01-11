@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { QuranService } from '../services/quran.service';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { FilterGroupPres } from '../services/filter-pres';
 
 @Component({
@@ -15,8 +15,7 @@ export class SearchPageComponent implements OnInit {
 
    constructor(
       public qService: QuranService,
-      private route: ActivatedRoute,
-      private router: Router
+      private route: ActivatedRoute
       ) { 
          
       }
