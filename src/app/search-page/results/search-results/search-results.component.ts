@@ -79,17 +79,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       this.scrollToTop();
       this.scroll.refresh();
    }
-
-   onItemUpdated(r: SearchResult, i: number) {
-      if (i > 0) {
-         this.scroll.invalidateCachedMeasurementAtIndex(i - 1);
-      }
-      if (i < this.qService.matches.length() - 1) {
-         this.scroll.invalidateCachedMeasurementAtIndex(i + 1);
-      }
-      this.scroll.invalidateCachedMeasurementAtIndex(i);
-   }
-
+   
    onRootClicked(root: QuranRoot) {
       this.qService.request_search_with_root_filter(root, false);
    }

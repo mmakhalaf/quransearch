@@ -33,7 +33,5 @@ export class SearchPageComponent implements OnInit {
       if (filters != null && filters.has_search()) {
          this.qService.perform_search(filters);
       }
-      // console.log('Search Page Query Change');
-      // this.router.navigate([{outlets: {'primary': 'search'}}]);
    }
 }

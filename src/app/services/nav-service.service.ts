@@ -16,7 +16,7 @@ export class NavService {
       if (route.outlet == 'modal') {
          this.router.navigate([{ outlets: { 'modal': null }}]);
       } else {
-         this.router.navigate([{ outlets: { 'primary': 'search' }}]);
+         this.router.navigate([{ outlets: { 'primary': 'search', 'modal': null }}]);
       }
    }
 
@@ -36,5 +36,9 @@ export class NavService {
 
    ayah_url(ayah_id: number): string {
       return `${location.origin}/ayah/${ayah_id}`;
+   }
+
+   search() {
+      this.router.navigateByUrl('/search');
    }
 }

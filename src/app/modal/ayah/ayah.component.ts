@@ -81,9 +81,9 @@ export class AyahComponent implements OnInit, OnDestroy {
    }
    
    ngOnInit() {
-      console.log('Ayah Component Created');
+      // console.log('Ayah Component Created');
       this.route.params.subscribe((params: {id: string}) => {
-         console.log('Ayah Query');
+         // console.log('Ayah Query');
          this.id = +params.id;
          setTimeout(() => {
             this.on_quran_loaded(this.qService.quran);
@@ -96,7 +96,7 @@ export class AyahComponent implements OnInit, OnDestroy {
    }
 
    ngOnDestroy() {
-      console.log('Ayah Component Destroyed');
+      // console.log('Ayah Component Destroyed');
       if (!isNullOrUndefined(this.dialogRef)) {
          this.dialogRef.close();
       }

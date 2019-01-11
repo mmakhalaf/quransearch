@@ -11,7 +11,6 @@ import { NavService } from '../../../services/nav-service.service';
    selector: 'qsearch-result',
    templateUrl: './search-result.component.html',
    styleUrls: ['./search-result.component.css'],
-   // changeDetection: ChangeDetectionStrategy.OnPush,
    host: {
       '[id]': 'result.ayah.id'
    }
@@ -21,9 +20,6 @@ export class SearchResultComponent implements OnInit {
    @Input()
    result: SearchResult;
    
-   @Output()
-   sizeChanged = new EventEmitter<void>();
-
    constructor(
       private router: Router,
       private qService: QuranService,

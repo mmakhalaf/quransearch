@@ -79,15 +79,20 @@ export function prep_regex(q: string, start_only?: boolean, end_only?: boolean, 
    let new_q = '';
    let q_len = q.length;
    for (let i = 0; i < q_len; ++i) {
-      if (is_char_end_word(q, i)) {
-         new_q += replace_end(q, i);
+      let c = q.charAt(i);
+      if (c == ' ') {
+         new_q += '\\s*';
       } else {
-         new_q += replace_any(q, i);
+         if (is_char_end_word(q, i)) {
+            new_q += replace_end(q, i);
+         } else {
+            new_q += replace_any(q, i);
+         }
       }
    }
 
    // Sometimes و is linked to the word after, so make the space optional
-   new_q = new_q.replace('و ', 'و\\s*');
+   // new_q = new_q.replace('و ', 'و\\s*');
    
    // Add an optional و for full words (or beginning of Ayah) in case
    // the word is linked with it.

@@ -26,7 +26,6 @@
       <qsearch-result
          *ngFor="let r of scroll.viewPortItems; let i = index"
          [result]="r"
-         (sizeChanged)="onItemUpdated(r, i)"
          >
       </qsearch-result>
    </div>
