@@ -30,8 +30,7 @@ export class RootSearchFilter extends SearchFilter {
       let matches = new SearchResults();
       words.forEach((w: QuranWord) => {
          for (let res of searchRes.results) {
-            let idx = w.ayat.indexOf(res.ayah);
-            if (idx != -1) {
+            if (w.ayah == res.ayah) {
                let occ = res.ayah.word_occurances(w);
                if (occ.size == 0) {
                   console.error(`Word ${w.imlaai} does not occur in the Ayah ${res.ayah.id}`);

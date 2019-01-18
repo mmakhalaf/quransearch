@@ -250,25 +250,40 @@ export class SimilarAyah {
 export class QuranWordStore {
    private words = new Map<string, QuranWord>();
    private roots = new Map<string, QuranRoot>();
+   public part_of_speech = new Array<PartOfSpeech>();
+   public verb_forms = new Array<VerbForm>();
+
    constructor() {
    }
 
-   add_word(iml: string, root: QuranRoot): QuranWord {
-      let w = this.words.get(iml);
-      if (w !== undefined) {
-         if (w.get_root() == root) {
-            return w;
-         }
+   private add_word(
+      iml: string, 
+      uth: string, 
+      root: QuranRoot,
+      vf: VerbForm,
+      tags: Array<PartOfSpeech>, 
+      ayah: Ayah, 
+      word_index: number
+   ): QuranWord {
+      let id = `${ayah.id}:${word_index}`;
+      if (this.words.has(id)) {
+         console.error(`Word ${id} already defined`);
       }
-      w = new QuranWord(iml);
+      let w = new QuranWord(iml, uth, ayah);
       if (root != null) {
          w.set_root(root);
       }
-      this.words.set(iml, w);
+      if (vf != null) {
+         w.verb_form = vf;
+      }
+      if (tags != null) {
+         w.parts_of_speech = tags;
+      }
+      this.words.set(id, w);
       return w;
    }
 
-   add_root(root: string): QuranRoot {
+   private add_root(root: string): QuranRoot {
       if (root == null) {
          return null;
       }
@@ -283,21 +298,37 @@ export class QuranWordStore {
       return r;
    }
 
+   add(
+      iml: string, 
+      uth: string, 
+      root: string,
+      vf: number,
+      tags: Array<number>,
+      ayah: Ayah, 
+      word_index: number
+   ): QuranWord {
+      let qroot = this.add_root(root);
+
+      let tag_objs = new Array<PartOfSpeech>();
+      for (let t of tags) {
+         tag_objs.push(this.part_of_speech[t]);
+      }
+
+      let vf_obj: VerbForm = null;
+      if (vf != -1) {
+         vf_obj = this.verb_forms[vf];
+      }
+
+      let word: QuranWord = this.add_word(iml, uth, qroot, vf_obj, tag_objs, ayah, word_index);
+      return word;
+   }
+
    get_root(r: string): QuranRoot {
       let rt = this.roots.get(r);
       if (rt !== undefined) {
          return rt;
       }
       return null;
-   }
-
-   add(iml: string, root: string, ayah: Ayah): QuranWord {
-      let qroot = this.add_root(root);
-      let word: QuranWord = this.add_word(iml, qroot);
-      if (word != null) {
-         word.ayat.push(ayah);
-      }
-      return word;
    }
 
    get_roots_as_sorted_strings(): Array<string> {
@@ -321,14 +352,38 @@ export class QuranRoot {
    }
 }
 
+
+//
+// Part of speech for a word
+//
+export class PartOfSpeech {
+   constructor(public sym: string, public ar: string, public en: string) {
+
+   }
+}
+
+
+//
+// Form of a verb
+//
+export class VerbForm {
+   constructor(public id: number, public form: string) {
+
+   }
+}
+
+
 //
 // Represent a word in the Quran
 // They should reference back the Ayah which they reside in
 // 
 export class QuranWord {
-   public ayat = new Array<Ayah>();
+
    private root: QuranRoot = null;
-   constructor(public imlaai: string) {
+   public verb_form: VerbForm = null;
+   public parts_of_speech = new Array<PartOfSpeech>();
+
+   constructor(public imlaai: string, public uthmani: string, public ayah: Ayah) {
    }
 
    set_root(root: QuranRoot): boolean {

@@ -185,4 +185,4 @@ for k, ayah_obj in ayah_dict.items():
 output_dict['ayat'] = ayah_list
 
 with open(out_file, 'w') as f:
-    json.dump(output_dict, f, cls=CatEncoderJson, ensure_ascii=False, indent=2)
+    json.dump(output_dict, f, cls=CatEncoderJson, ensure_ascii=False)
