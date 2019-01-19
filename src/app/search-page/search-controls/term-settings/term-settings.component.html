@@ -7,16 +7,23 @@
    <div class="opts-group">
       <mat-form-field hintLabel="مطابقة و ترتيب الكلمات" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_order" (change)="onMatchTypeChanged()">
-            <option value="same_order_full_word" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('same_order_full_word')">نفس الترتيب (كلمات كاملة)</option>
-            <option value="same_order_any_word" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('same_order_any_word')">نفس الترتيب</option>
-            <option value="any" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option('any')">أي ترتيب</option>
+            <ng-container *ngFor="let opt of opts_ayah_order()">
+               <option [value]="opt.opt" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order_option(opt.opt)">
+                  {{opt.text}}
+               </option>
+            </ng-container>
          </select>
       </mat-form-field>
       <mat-form-field hintLabel="موقعها في الآية" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_loc" (change)="onWordOrderChanged()">
-            <option value="any" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('any')">أي مكان</option>
+            <ng-container *ngFor="let opt of opts_ayah_loc()">
+               <option [value]="opt.opt" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option(opt.opt)">
+                  {{opt.text}}
+               </option>
+            </ng-container>
+            <!-- <option value="any" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('any')">أي مكان</option>
             <option value="start_ayah_only" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('start_ayah_only')">بداية الآيه فقط</option>
-            <option value="end_ayah_only" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('end_ayah_only')">نهاية الآيه فقط</option>
+            <option value="end_ayah_only" *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_loc_option('end_ayah_only')">نهاية الآيه فقط</option> -->
          </select>
       </mat-form-field>
    </div>

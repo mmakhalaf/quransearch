@@ -1,6 +1,6 @@
 import { SearchFilter } from './search-filter';
 import { QuranRoot, QuranWord } from '../quran';
-import { QuranSearchOpts } from './search-opts';
+import { QuranSearchOpts, QuranSearchPlaceMode } from './search-opts';
 import { SearchResults } from './search-result';
 import * as SortUtils from '../utils/sort-utils';
 
@@ -35,8 +35,12 @@ export class RootSearchFilter extends SearchFilter {
                if (occ.size == 0) {
                   console.error(`Word ${w.imlaai} does not occur in the Ayah ${res.ayah.id}`);
                } else {
-                  res.add_words(occ);
-                  matches.add(res);
+                  if (this.searchOpts.place_mode == QuranSearchPlaceMode.Any ||
+                      this.searchOpts.place_mode == QuranSearchPlaceMode.BeginOnly && occ.has(0) ||
+                      this.searchOpts.place_mode == QuranSearchPlaceMode.EndOnly && occ.has(res.ayah.uthmani_words.length - 1)) {
+                     res.add_words(occ);
+                     matches.add(res);
+                  }
                }
             }
          }

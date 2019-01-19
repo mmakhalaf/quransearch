@@ -9,26 +9,25 @@ import { FormGroupDirective, NgForm, FormControl } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { ParamMap, Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
-import { isNullOrUndefined } from 'util';
 
 
-const opts_query_types = [
+export const opts_query_types = [
    { opt: 'word', word: 'كلمات' },
    { opt: 'root', word: 'جذور' },
    { opt: 'category', word: 'مواضيع' },
    { opt: 'surah', word: 'سور'}
    ];
-const opts_ayah_loc = [
-   { opt: 'any', e: QuranSearchPlaceMode.Any }, 
-   { opt: 'start_ayah_only', e: QuranSearchPlaceMode.BeginOnly }, 
-   { opt: 'end_ayah_only', e: QuranSearchPlaceMode.EndOnly }
+export const opts_ayah_loc = [
+   { opt: 'any', e: QuranSearchPlaceMode.Any, text: 'أي مكان' }, 
+   { opt: 'start_ayah_only', e: QuranSearchPlaceMode.BeginOnly, text: 'بداية الآيه فقط' }, 
+   { opt: 'end_ayah_only', e: QuranSearchPlaceMode.EndOnly, text: 'نهاية الآيه فقط' }
    ];
-const opts_ayah_order = [
-   { opt: 'any', e: QuranSearchMatchMode.Any }, 
-   { opt: 'same_order_any_word', e: QuranSearchMatchMode.ExactOrder },
-   { opt: 'same_order_full_word', e: QuranSearchMatchMode.ExactOrderFullWord }
+export const opts_ayah_order = [
+   { opt: 'any', e: QuranSearchMatchMode.Any, text: 'أي ترتيب' }, 
+   { opt: 'same_order_any_word', e: QuranSearchMatchMode.ExactOrder, text: 'نفس الترتيب' },
+   { opt: 'same_order_full_word', e: QuranSearchMatchMode.ExactOrderFullWord, text: 'نفس الترتيب (كلمات كاملة)' }
    ];
-const opts_sort_order = [
+export const opts_sort_order = [
    { opt: 'seq', e: QuranSearchSortMode.Sequence }, 
    { opt: 'occ', e: QuranSearchSortMode.Occurances},
    { opt: 'occ_seq', e: QuranSearchSortMode.OccuranceSeqRes}

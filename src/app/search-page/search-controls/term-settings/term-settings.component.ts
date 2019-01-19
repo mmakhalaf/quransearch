@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { QuranService } from '../../../services/quran.service';
+import { opts_ayah_order, opts_ayah_loc } from 'src/app/services/filter-pres';
 
 @Component({
    selector: 'qterm-settings',
@@ -22,4 +23,11 @@ export class TermSettingsComponent {
       this.qService.searchCriteriaPres.filter_updated();
    }
 
+   opts_ayah_order(): Array<any> {
+      return opts_ayah_order;
+   }
+
+   opts_ayah_loc(): Array<any> {
+      return opts_ayah_loc;
+   }
 }
