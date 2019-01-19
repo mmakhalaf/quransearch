@@ -11,6 +11,7 @@ import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.c
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatProgressBarModule, MatIconModule, MatFormFieldModule, MatChipsModule, MatOptionModule, MatAutocompleteModule, MatInputModule, MatBadgeModule, MatSelectModule, MatButtonModule, MatBottomSheetModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
+import { BidiModule } from '@angular/cdk/bidi';
 
 @NgModule({
    declarations: [
@@ -27,6 +28,7 @@ import { CommonModule } from '@angular/common';
       CommonModule,
       FormsModule,
       ReactiveFormsModule,
+      BidiModule,
       MatProgressBarModule,
       MatIconModule,
       MatFormFieldModule,

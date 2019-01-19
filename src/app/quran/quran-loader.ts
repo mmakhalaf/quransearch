@@ -1,4 +1,4 @@
-import { Quran, Ayah, Category, Surah, QuranWord, PartOfSpeech, VerbForm } from './quran';
+import { Quran, Ayah, Category, Surah, QuranWord, PartOfSpeech, VerbForm, PartOfSpeechGroup } from './quran';
 import * as StringUtils from './utils/string-utils';
 import * as SortUtils from './utils/sort-utils';
 import { isNullOrUndefined } from 'util';
@@ -169,9 +169,18 @@ export class QuranLoader extends Quran {
    }
 
    private process_morph(): boolean {
-      // Store the tags
+      // Store the part of speech tags
       for (let p of qurans.morph.tags.pos) {
          this.word_store.part_of_speech.push(new PartOfSpeech(p.s, p.ar, p.en));
+      }
+
+      // Part of speech groupings
+      for (let g of qurans.morph.tags.pos_groups) {
+         let gr = new PartOfSpeechGroup(g.ar, g.en);
+         for (let pi of g.ch) {
+            gr.parts.push(this.word_store.part_of_speech[pi]);
+         }
+         this.word_store.part_of_speech_groups.push(gr);
       }
 
       // Store the verb forms

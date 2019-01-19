@@ -45,15 +45,24 @@ body {
 
 /** Angular Material Overrides **/
 
+/* Respect 'rtl' */
 .controls .mat-standard-chip .mat-chip-remove, .controls .mat-standard-chip .mat-chip-trailing-icon {
-   /* Respect 'rtl' */
    margin-right: 8px;
    margin-left: 0px;
 }
 
-.controls .mat-form-field-infix {
+/* .controls .mat-form-field-infix {
    border-top: 0.2rem;
+} */
+
+.opts .mat-form-field {
+   text-align: right;
 }
+
+.mat-select-panel .mat-optgroup-label, .mat-select-panel .mat-option {
+   text-align: right;
+}
+
 
 /** Raised card **/
 .card {

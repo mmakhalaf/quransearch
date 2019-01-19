@@ -81,7 +81,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    }
    
    onRootClicked(root: QuranRoot) {
-      this.qService.request_search_with_root_filter(root, false);
+      this.qService.request_search_with_root_filter(root, true);
    }
 
    curPos = 0;

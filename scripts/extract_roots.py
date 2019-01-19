@@ -7,6 +7,15 @@ import re
 import json
 
 tags = {
+    "pos_groups": [
+        {"ar": "الأسماء", "en": "Nouns", "ch": [0, 1]},
+        {"ar": "الاسماء المشتقة", "en": "Derived Nominals", "ch": [2, 3]},
+        {"ar": "الضمائر", "en": "Pronouns", "ch": [4, 5, 6]},
+        {"ar": "ظرف حال", "en": "Adverbs", "ch": [7, 8]},
+        {"ar": "الأفعال", "en": "Verbs", "ch": [9]},
+        {"ar": "الحروف", "en": "Particles", "ch": [x for x in range(10, 43)]},
+        {"ar": "الحروف المقطعة", "en": "Disconnected Letters", "ch": [43]}
+    ],
     "pos": [
         {"s": "N", "ar": "اسم", "en": "Noun"},
         {"s": "PN", "ar": "اسم علم", "en": "Proper noun"},
@@ -105,8 +114,10 @@ class Word:
         if w.vf != 0 and self.vf != 0:
             raise Exception('Word has 2 verb forms?')
 
-        self.r = w.r
-        self.vf = w.vf
+        if len(w.r) > 0:
+            self.r = w.r
+        if w.vf != 0:
+            self.vf = w.vf
         for t in w.tags:
             if t not in self.tags:
                 self.tags.append(t)

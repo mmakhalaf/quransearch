@@ -250,6 +250,7 @@ export class SimilarAyah {
 export class QuranWordStore {
    private words = new Map<string, QuranWord>();
    private roots = new Map<string, QuranRoot>();
+   public part_of_speech_groups = new Array<PartOfSpeechGroup>();
    public part_of_speech = new Array<PartOfSpeech>();
    public verb_forms = new Array<VerbForm>();
 
@@ -352,6 +353,13 @@ export class QuranRoot {
    }
 }
 
+
+export class PartOfSpeechGroup {
+   public parts = new Array<PartOfSpeech>();
+   constructor(public ar: string, public en: string) {
+
+   }
+}
 
 //
 // Part of speech for a word

@@ -30,12 +30,12 @@ export class AyahDialogComponent implements OnInit {
    }
 
    onWordClicked(word: QuranWord) {
-      this.qService.request_search_with_word_filter(word.imlaai, false);
+      this.qService.request_search_with_word_filter(word.imlaai, true);
       this.dialogRef.close();
    }
 
    onCategoryClicked(cat: Category) {
-      this.qService.request_search_with_cat_filter(cat, false);
+      this.qService.request_search_with_cat_filter(cat, true);
       this.dialogRef.close();
    }
 
