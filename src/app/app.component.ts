@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { QuranService } from './services/quran.service';
 
 // Consts
 @Component({
@@ -6,9 +7,16 @@ import { Component } from '@angular/core';
    templateUrl: './app.component.html',
    styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
-   constructor() {
+   @ViewChild('cb')
+   cb: any;
 
+   constructor(private qService: QuranService) {
+
+   }
+
+   ngOnInit() {
+      this.qService.cbElem = this.cb.nativeElement;
    }
 }

@@ -10,9 +10,6 @@ import { FilterGroupPres } from '../services/filter-pres';
 })
 export class SearchPageComponent implements OnInit {
 
-   @ViewChild('cb')
-   cb: any;
-
    constructor(
       public qService: QuranService,
       private route: ActivatedRoute
@@ -21,7 +18,6 @@ export class SearchPageComponent implements OnInit {
       }
 
    ngOnInit() {
-      this.qService.cbElem = this.cb.nativeElement;
       this.route.queryParams.subscribe((params: ParamMap) => {
          this.on_query_change(params);
       });
