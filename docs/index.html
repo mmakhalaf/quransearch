@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <title>بحث</title>
+   <base href="/">
+   <style>
+      .app-loader {
+         position: absolute;
+         left: 50%;
+         top: 50%;
+         z-index: 1;
+         width: 150px;
+         height: 150px;
+         margin: -75px 0 0 -75px;
+         border: 16px none #f3f3f3;
+         border-radius: 50%;
+         border-top: 16px solid blue;
+         -webkit-animation: spin 2s linear infinite;
+         animation: spin 2s linear infinite;
+      }
+
+      .app-loader-msg-frame {
+         display: flex;
+         position: absolute;
+         left: 50%;
+         top: 50%;
+         z-index: 1;
+         width: 150px;
+         height: 150px;
+         margin: -75px 0 0 -75px;
+         border: 16px none #f3f3f3;
+         border-radius: 50%;
+         border-top: 16px solid red;
+         -webkit-animation: cspin 2s linear infinite;
+         animation: cspin 2s linear infinite;
+
+         text-align: center;
+         justify-content: center;
+      }
+
+      .app-loader-msg {
+         align-self: center;
+         font-size: 30px;
+         color: #999;
+      }
+
+      @-webkit-keyframes spin {
+         0% {
+            -webkit-transform: rotate(180deg);
+         }
+
+         100% {
+            -webkit-transform: rotate(-180deg);
+         }
+      }
+
+      @-webkit-keyframes cspin {
+         0% {
+            -webkit-transform: rotate(-180deg);
+         }
+
+         100% {
+            -webkit-transform: rotate(180deg);
+         }
+      }
+
+      @keyframes spin {
+         0% {
+            transform: rotate(180deg);
+         }
+
+         100% {
+            transform: rotate(-180deg);
+         }
+      }
+
+      @keyframes cspin {
+         0% {
+            transform: rotate(-180deg);
+         }
+
+         100% {
+            transform: rotate(180deg);
+         }
+      }
+   </style>
+<link rel="stylesheet" href="styles.fa7a2d9a6e65ce090d1f.css"></head>
+
+<body>
+   <app-root>
+      <div class="app-loader"></div>
+      <div class="app-loader-msg-frame">
+         <span class="app-loader-msg">
+            جاري <br />
+            التحميل
+         </span>
+      </div>
+   </app-root>
+<script type="text/javascript" src="runtime.33c441ccc33fc1e9b039.js"></script><script type="text/javascript" src="polyfills.27c0a258dd2079b59726.js"></script><script type="text/javascript" src="vendor.d8cab751cbaa9cb370cb.js"></script><script type="text/javascript" src="main.3ce2d6b104a636de3fc9.js"></script></body>
+
+</html>
