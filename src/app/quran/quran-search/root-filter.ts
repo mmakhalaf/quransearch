@@ -100,22 +100,24 @@ export class RootSearchFilter extends SearchFilter {
          let idx = this.vforms.indexOf(w.verb_form);
          if (idx == -1) {
             return false;
-         } else {
-            return true;
          }
       }
 
       if (this.pospeech.length > 0) {
+         let found = false;
          for (let ps of this.pospeech) {
             let idx = w.parts_of_speech.indexOf(ps);
             if (idx != -1) {
-               return true;   // If we match any of those (because we're OR'ing in a single filter)
+               found = true;   // If we match any of those (because we're OR'ing in a single filter)
+               break;
             }
          }
-         // Nothing found
-         return false;
+         if (!found) {
+            // Nothing found
+            return false;
+         }
       }
-
+      
       return true;
    }
 }

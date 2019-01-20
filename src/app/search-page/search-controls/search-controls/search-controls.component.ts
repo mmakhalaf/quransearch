@@ -59,9 +59,6 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
       } else {
          this.show_up_arrow = true;
          this.show_toolbar = false;
-         this.show_term_opts = false;
-         this.show_global_opts = false;
-         this.show_filter_list = false;
       }
    }
 
