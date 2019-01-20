@@ -2,7 +2,7 @@ import { SearchFilter } from '../quran/quran-search/search-filter';
 import { WordSearchFilter } from '../quran/quran-search/word-filter';
 import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode, QuranSearchDisplayOpts, QuranSearchSortMode } from '../quran/quran-search/search-opts';
 import { RootSearchFilter } from '../quran/quran-search/root-filter';
-import { Quran, QuranRoot, Category, Surah } from '../quran/quran';
+import { Quran, QuranRoot, Category, Surah, VerbForm, PartOfSpeech } from '../quran/quran';
 import { CategorySearchFilter } from '../quran/quran-search/category-filter';
 import { ErrorStateMatcher } from '@angular/material';
 import { FormGroupDirective, NgForm, FormControl } from '@angular/forms';
@@ -82,6 +82,28 @@ function extract_roots(search_term: string, quran: Quran): Array<QuranRoot> {
       }
    }
    return roots;
+}
+
+function extract_vforms(vforms: Array<number>, quran: Quran): Array<VerbForm> {
+   let vforms_arr = new Array<VerbForm>();
+   for (let vf of vforms) {
+      let vfo = quran.word_store.get_verb_form(vf);
+      if (vfo != null) {
+         vforms_arr.push(vfo);
+      }
+   }
+   return vforms_arr;
+}
+
+function extract_partofspeech(pos: Array<string>, quran: Quran): Array<PartOfSpeech> {
+   let pos_arr = new Array<PartOfSpeech>();
+   for (let p of pos) {
+      let po = quran.word_store.get_part_of_speech(p);
+      if (po != null) {
+         pos_arr.push(po);
+      }
+   }
+   return pos_arr;
 }
 
 function extract_categories(search_term: string, quran: Quran): Array<Category> {
@@ -360,6 +382,8 @@ export class FilterGroupPres {
       map[i < 0 ? 'q' : `q${i}`] = f.cur_search_term;
       map[i < 0 ? 'l' : `l${i}`] = opts_ayah_loc.findIndex(v => v.opt == f.cur_ayah_loc);
       map[i < 0 ? 'm' : `m${i}`] = opts_ayah_order.findIndex(v => v.opt == f.cur_ayah_order);
+      map[i < 0 ? 'pos' : `pos${i}`] = f.cur_part_of_speech.join(',');
+      map[i < 0 ? 'vf': `vf${i}`] = f.cur_verb_form.join(',');
    }
 
    static from_params(params: ParamMap): FilterGroupPres {
@@ -433,6 +457,17 @@ export class FilterGroupPres {
       f.cur_search_term = q;
       f.cur_ayah_loc = opts_ayah_loc[loc].opt;
       f.cur_ayah_order = opts_ayah_order[m].opt;
+      
+      let pos = params[i < 0 ? 'pos' : `pos${i}`];
+      if (pos !== undefined) {
+         f.cur_part_of_speech = pos.split(',');
+      }
+
+      let vf = params[i < 0 ? 'vf' : `vf${i}`];
+      if (vf !== undefined) {
+         f.cur_verb_form = vf.split(',').map(x => +x);
+      }
+      
       return f;
    }
 }
@@ -458,7 +493,7 @@ export class FilterPres {
    cur_ayah_loc = 'any';
    cur_ayah_order = 'same_order_full_word';
    cur_part_of_speech = [ 'any' ];
-   cur_verb_form = [ 'any' ];
+   cur_verb_form = [ 0 ];
    
    constructor() {
       this.id = ++FilterPres.g_id;
@@ -601,8 +636,10 @@ export class FilterPres {
          }
          case 'root': {
             let roots = extract_roots(this.cur_search_term, quran);
+            let vforms = extract_vforms(this.cur_verb_form, quran);
+            let pospeech = extract_partofspeech(this.cur_part_of_speech, quran);
             if (roots.length > 0) {
-               return new RootSearchFilter(opts, roots);
+               return new RootSearchFilter(opts, roots, vforms, pospeech);
             }
             break;
          }

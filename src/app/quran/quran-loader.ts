@@ -192,43 +192,39 @@ export class QuranLoader extends Quran {
       // NOTE: It is essential that the number of words match in uthmani and imlaai
       let succ = true;
       this.ayat.forEach((ayah: Ayah, k: string) => {
-         let iml_arr = ayah.imlaai.split(' ')
-         let uth_arr = ayah.uthmani.split(' ')
+         let iml_arr = ayah.imlaai_words;
+         let uth_arr = ayah.uthmani_words;
          if (iml_arr.length != uth_arr.length) {
             console.error('Ayat imlaai and uthmani lengths do not match');
             succ = false;
             return;
          }
-   
-         let word_index = 1;
+         
          for (let i = 0; i < iml_arr.length; ++i) {
             let iml = iml_arr[i];
             let uth = uth_arr[i];
             let root = null;
             let vf = -1;
             let tags = new Array<number>();
-            if (iml != '۩' && iml != '۞') {
-               // Exclude the sajda and hezb symbols from the root
-               let morph_id = `${ayah.surah.surah_num}:${ayah.ayah_surah_idx}:${word_index}`;
-               let morph = qurans.morph.w[morph_id];
-               if (isNullOrUndefined(morph)) {
-                  if (morph_excluded.indexOf(morph_id) == -1) {
-                     // Repor the error if it's not just a previously detected false positive
-                     console.error(`Ayah word ${morph_id} does not have root in ${ayah.imlaai}`);
-                     succ = false;
-                  }
-               } else {
-                  if (!isNullOrUndefined(morph.r)) {
-                     root = morph.r;
-                  }
-                  if (!isNullOrUndefined(morph.vf)) {
-                     vf = morph.vf;
-                  }
-                  if (!isNullOrUndefined(morph.t)) {
-                     tags = morph.t;
-                  }
+            // Exclude the sajda and hezb symbols from the root
+            let morph_id = `${ayah.surah.surah_num}:${ayah.ayah_surah_idx}:${i+1}`;
+            let morph = qurans.morph.w[morph_id];
+            if (isNullOrUndefined(morph)) {
+               if (morph_excluded.indexOf(morph_id) == -1) {
+                  // Repor the error if it's not just a previously detected false positive
+                  console.error(`Ayah word ${morph_id} does not have root in ${ayah.imlaai}`);
+                  succ = false;
                }
-               ++word_index;
+            } else {
+               if (!isNullOrUndefined(morph.r)) {
+                  root = morph.r;
+               }
+               if (!isNullOrUndefined(morph.vf)) {
+                  vf = morph.vf;
+               }
+               if (!isNullOrUndefined(morph.t)) {
+                  tags = morph.t;
+               }
             }
             let word: QuranWord = this.word_store.add(iml, uth, root, vf, tags, ayah, i);
             if (word != null) {

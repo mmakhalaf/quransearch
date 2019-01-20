@@ -48,7 +48,6 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    }
 
    onPOSChanged(e: Array<string>) {
-      console.log(e);
       let idx = e.indexOf("any");
       if (idx != -1 && e.length > 1) {
          // We have 'any' with other options, so decide whether we want
@@ -63,28 +62,36 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
          }
          this.pos.setValue(e);
          return;
+      } else if (e.length == 0) {
+         e = [ "any" ];
+         this.pos.setValue(e);
+         return;
       }
       this.qService.searchCriteriaPres.cur_filter.cur_part_of_speech = e;
       this.qService.searchCriteriaPres.filter_updated();
    }
 
-   onVFChanged(e: Array<string>) {
-      console.log(e);
-      let idx = e.indexOf("any");
+   onVFChanged(e: Array<number>) {
+      let idx = e.indexOf(0);
       if (idx != -1 && e.length > 1) {
          // We have 'any' with other options, so decide whether we want
          // just 'any' or the other 'options' before proceeding.
-         let had_any = this.qService.searchCriteriaPres.cur_filter.cur_verb_form.indexOf("any") != -1;
+         let had_any = this.qService.searchCriteriaPres.cur_filter.cur_verb_form.indexOf(0) != -1;
          if (had_any) {
             // IF we had 'any', we want to now remove it because a new option was added.
             e.splice(idx, 1);
          } else {
             // IF we didn't, then we remove everything else because that was added
-            e = [ "any" ];
+            e = [ 0 ];
          }
          this.vf.setValue(e);
          return;
+      } else if (e.length == 0) {
+         e = [ 0 ];
+         this.vf.setValue(e);
+         return;
       }
+
       this.qService.searchCriteriaPres.cur_filter.cur_verb_form = e;
       this.qService.searchCriteriaPres.filter_updated();
    }
@@ -98,14 +105,8 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    }
 
    on_filters_updated() {
-      this.pos.setValue(
-         this.qService.searchCriteriaPres.cur_filter.cur_part_of_speech, {
-            emitEvent: false
-         });
-      this.vf.setValue(
-         this.qService.searchCriteriaPres.cur_filter.cur_verb_form, {
-            emitEvent: false
-         });
+      this.pos.setValue(this.qService.searchCriteriaPres.cur_filter.cur_part_of_speech, { emitEvent: false });
+      this.vf.setValue(this.qService.searchCriteriaPres.cur_filter.cur_verb_form, { emitEvent: false });
    }
 
    opts_ayah_order(): Array<any> {

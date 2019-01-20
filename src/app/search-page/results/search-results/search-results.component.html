@@ -10,7 +10,8 @@
    (vsChange)="onScrollChanged($event)"
    >
    <div *ngIf="qService.matches.length() > 0" class="data-msg">
-      عدد الآيات: {{num_results()}}
+      عدد الآيات: {{num_results()}}،
+      وردت: {{num_occurances()}} مرة
    </div>
    
    <fieldset class="opts root-card" *ngIf="roots.length > 0">

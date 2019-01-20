@@ -21,7 +21,6 @@ export class SearchPageComponent implements OnInit {
       }
 
    ngOnInit() {
-      console.log('Search Page Component Created');
       this.qService.cbElem = this.cb.nativeElement;
       this.route.queryParams.subscribe((params: ParamMap) => {
          this.on_query_change(params);

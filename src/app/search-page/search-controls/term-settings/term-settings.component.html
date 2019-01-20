@@ -70,7 +70,7 @@
 <ng-template #NotNativeVF>
    <mat-form-field *ngIf="qService.searchCriteriaPres.cur_filter.show_verb_forms" hintLabel="شكل الفعل">
       <mat-select [formControl]="vf" multiple>
-         <mat-option value="any" selected>أي شكل</mat-option>
+         <mat-option [value]="0" selected>أي شكل</mat-option>
          <mat-option *ngFor="let vf of qService.quran.word_store.verb_forms" [value]="vf.id">
             {{vf.form}}
          </mat-option>

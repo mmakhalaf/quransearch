@@ -107,6 +107,7 @@ export class Ayah {
    ayah_surah_idx: number = -1;
    uthmani: string;
    uthmani_words: Array<string>;
+   imlaai_words: Array<string>;
    imlaai: string;
    words = new Array<QuranWord>();
    related_ayat = new Array<SimilarAyah>();
@@ -117,8 +118,23 @@ export class Ayah {
       this.surah = surah;
       this.ayah_surah_idx = ayah;
       this.uthmani = uth;
-      this.imlaai = iml
+      this.imlaai = iml;
+      
+      // Remove sajda and hizb
+      let sym = [ '۩', '۞' ];
+      for (let s of sym) {
+         this.uthmani = this.uthmani.replace(s, '');
+         this.imlaai = this.imlaai.replace(s, '');
+      }
+      this.uthmani = this.uthmani.trim();
+      this.imlaai = this.imlaai.trim();
+
+      // Divide into words
       this.uthmani_words = this.uthmani.split(' ');
+      this.imlaai_words = this.imlaai.split(' ');
+      if (this.uthmani_words.length != this.imlaai_words.length) {
+         console.error(`Ayah ${this.id} mismatching uthmani / imlaai lengths`);
+      }
    }
 
    check(): boolean {
@@ -339,6 +355,24 @@ export class QuranWordStore {
       });
       arr.sort();
       return arr;
+   }
+
+   get_verb_form(vfi: number): VerbForm {
+      for (let vfo of this.verb_forms) {
+         if (vfo.id === vfi) {
+            return vfo;
+         }
+      }
+      return null;
+   }
+
+   get_part_of_speech(pos_sym: string): PartOfSpeech {
+      for (let pos of this.part_of_speech) {
+         if (pos.sym === pos_sym) {
+            return pos;
+         }
+      }
+      return null;
    }
 }
 

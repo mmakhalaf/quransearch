@@ -44,6 +44,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    num_results() {
       return StringUtils.number_en_to_ar(this.qService.matches.length())
    }
+
+   num_occurances() {
+      return StringUtils.number_en_to_ar(this.qService.matches.num_occurances());
+   }
    
    scrollToTop = () => {
       // Scroll to the top of the search when a new query is done

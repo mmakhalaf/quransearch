@@ -105,7 +105,7 @@ class Word:
         self.id = id
         self.r = ''
         self.vf = 0
-        self.tags = []
+        self.tags = set()
 
     def merge(self, w):
         if len(w.r) > 0 and len(self.r) > 0:
@@ -118,9 +118,7 @@ class Word:
             self.r = w.r
         if w.vf != 0:
             self.vf = w.vf
-        for t in w.tags:
-            if t not in self.tags:
-                self.tags.append(t)
+        self.tags = self.tags.union(w.tags)
 
 
 def serial_word(w):
@@ -130,7 +128,7 @@ def serial_word(w):
     if w.vf > 0:
         d["vf"] = w.vf
     if len(w.tags) > 0:
-        d["t"] = w.tags
+        d["t"] = [x for x in w.tags]
     return d
 
 
@@ -152,6 +150,7 @@ def process_line(line):
     w = int(m.group(3))
 
     seg_parts = line_parts[3].split('|')
+    seg_parts.append(line_parts[2])
 
     cur_w_id = '%d:%d:%d' % (s, a, w)
     w = Word(cur_w_id)
@@ -171,7 +170,7 @@ def process_line(line):
         elif seg.find(':') == -1 and not re.search(r'\d', seg):
             tagi = get_pos_index(seg)
             if tagi != -1:
-                w.tags.append(tagi)
+                w.tags.add(tagi)
             else:
                 # print('Can not find pos %s' % seg)
                 pass

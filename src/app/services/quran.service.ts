@@ -53,7 +53,6 @@ export class QuranService {
       this.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
 
       if (environment.production) {
-         console.log('Is production');
          this.disable_defaults = false;
       }
 
@@ -181,12 +180,6 @@ export class QuranService {
       if (this.cookieService.check('SearchTerm')) {
          this.searchCriteriaPres.cur_filter.cur_search_term = this.cookieService.get('SearchTerm');
       }
-      if (this.cookieService.check('WordAyahLoc')) {
-         this.searchCriteriaPres.cur_filter.cur_ayah_loc = this.cookieService.get('WordAyahLoc');
-      }
-      if (this.cookieService.check('WordMatch')) {
-         this.searchCriteriaPres.cur_filter.cur_ayah_order = this.cookieService.get('WordMatch');
-      }
       if (this.cookieService.check('CurSearch')) {
          let j = this.cookieService.get('CurSearch');
          let p = JSON.parse(j);
@@ -198,7 +191,7 @@ export class QuranService {
          }
       }
 
-      console.log(`Loading Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
+      // console.log(`Loading Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
       this.searchCriteriaPres.filter_updated();
    }
 
@@ -207,13 +200,11 @@ export class QuranService {
          return;
       }
       
-      console.log(`Saving Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
+      // console.log(`Saving Defaults: ${this.searchCriteriaPres.cur_filter.cur_search_term}`);
 
       this.cookieService.set('SortOrder', this.searchCriteriaPres.cur_sort_order);
       this.cookieService.set('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
       this.cookieService.set('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);
-      this.cookieService.set('WordAyahLoc', this.searchCriteriaPres.cur_filter.cur_ayah_loc);
-      this.cookieService.set('WordMatch', this.searchCriteriaPres.cur_filter.cur_ayah_order);
       this.cookieService.set('CurSearch', JSON.stringify(this.searchCriteriaPres.to_params(this.quran)));
    }
 
