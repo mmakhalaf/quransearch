@@ -9,7 +9,7 @@ import { InputFieldComponent } from './search-input/input-field/input-field.comp
 import { TypeSelectComponent } from './search-input/type-select/type-select.component';
 import { OptsButtonsComponent } from './search-input/opts-buttons/opts-buttons.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatProgressBarModule, MatIconModule, MatFormFieldModule, MatChipsModule, MatOptionModule, MatAutocompleteModule, MatInputModule, MatBadgeModule, MatSelectModule, MatButtonModule, MatBottomSheetModule } from '@angular/material';
+import { MatProgressBarModule, MatIconModule, MatFormFieldModule, MatChipsModule, MatOptionModule, MatAutocompleteModule, MatInputModule, MatBadgeModule, MatSelectModule, MatButtonModule, MatBottomSheetModule, MatSlideToggleModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { BidiModule } from '@angular/cdk/bidi';
 
@@ -39,6 +39,7 @@ import { BidiModule } from '@angular/cdk/bidi';
       MatBadgeModule,
       MatSelectModule,
       MatButtonModule,
+      MatSlideToggleModule,
       MatBottomSheetModule
    ],
    exports: [

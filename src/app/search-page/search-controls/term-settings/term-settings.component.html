@@ -5,6 +5,10 @@
       <span class="opts-title-item">إعدادات الكلمة الحالية</span>
    </legend>
    <div class="opts-group">
+      <mat-slide-toggle *ngIf="qService.searchCriteriaPres.cur_filter.show_with_tashkeel" [checked]="qService.searchCriteriaPres.cur_filter.cur_with_tashkeel" (change)="onTashkeelOptChanged($event)">
+         موافق للتشكيل
+     </mat-slide-toggle>
+
       <mat-form-field *ngIf="qService.searchCriteriaPres.cur_filter.show_ayah_order" hintLabel="مطابقة و ترتيب الكلمات">
          <select matNativeControl [(ngModel)]="qService.searchCriteriaPres.cur_filter.cur_ayah_order" (change)="onMatchTypeChanged()">
             <ng-container *ngFor="let opt of opts_ayah_order()">
@@ -67,6 +71,7 @@
       </select>
    </mat-form-field>
 </ng-template>
+
 <ng-template #NotNativeVF>
    <mat-form-field *ngIf="qService.searchCriteriaPres.cur_filter.show_verb_forms" hintLabel="شكل الفعل">
       <mat-select [formControl]="vf" multiple>

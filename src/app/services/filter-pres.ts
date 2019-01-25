@@ -483,6 +483,7 @@ export class FilterPres {
    show_ayah_order = true;
    available_ayah_order = new Array<string>();
 
+   show_with_tashkeel = true;
    show_part_of_speech = true;
    show_verb_forms = true;
 
@@ -494,6 +495,7 @@ export class FilterPres {
    cur_ayah_order = 'same_order_full_word';
    cur_part_of_speech = [ 'any' ];
    cur_verb_form = [ 0 ];
+   cur_with_tashkeel = true;
    
    constructor() {
       this.id = ++FilterPres.g_id;
@@ -506,13 +508,15 @@ export class FilterPres {
       this.cur_part_of_speech = oth.cur_part_of_speech;
       this.cur_verb_form = oth.cur_verb_form;
       this.cur_search_term = oth.cur_search_term;
+      this.cur_with_tashkeel = oth.cur_with_tashkeel;
    }
    
    show_settings(): boolean {
       return this.show_ayah_loc 
          || this.show_ayah_order 
          || this.show_part_of_speech 
-         || this.show_verb_forms;
+         || this.show_verb_forms
+         || this.show_with_tashkeel;
    }
 
    show_ayah_loc_option(loc: string): boolean {
@@ -533,6 +537,7 @@ export class FilterPres {
             this.show_ayah_order = true;
             this.show_part_of_speech = false;
             this.show_verb_forms = false;
+            this.show_with_tashkeel = true;
             this.available_loc_opts = opts_ayah_loc.map((opt, e) => opt.opt);
             this.available_ayah_order = opts_ayah_order.map((opt, e) => opt.opt);
             this.available_sort_order = opts_sort_order.map((opt, e) => opt.opt);
@@ -544,6 +549,7 @@ export class FilterPres {
             this.show_ayah_order = false;
             this.show_part_of_speech = true;
             this.show_verb_forms = true;
+            this.show_with_tashkeel = false;
             this.available_loc_opts = [ 'any', 'start_ayah_only', 'end_ayah_only' ];
             this.available_ayah_order = [ ];
             this.available_sort_order = [ 'seq', 'occ' ];
@@ -555,6 +561,7 @@ export class FilterPres {
             this.show_ayah_order = false;
             this.show_part_of_speech = false;
             this.show_verb_forms = false;
+            this.show_with_tashkeel = false;
             this.available_loc_opts = [];
             this.available_ayah_order = [];
             this.available_sort_order = [ 'seq' ];
@@ -566,6 +573,7 @@ export class FilterPres {
             this.show_ayah_order = false;
             this.show_part_of_speech = false;
             this.show_verb_forms = false;
+            this.show_with_tashkeel = false;
             this.available_loc_opts = [];
             this.available_ayah_order = [];
             this.available_sort_order = [ 'seq' ];
@@ -582,6 +590,7 @@ export class FilterPres {
 
    make_search_opts(): QuranSearchOpts {
       let opts = new QuranSearchOpts();
+      opts.with_tashkeel = this.cur_with_tashkeel;
 
       switch (this.cur_ayah_loc) {
          case 'any': {

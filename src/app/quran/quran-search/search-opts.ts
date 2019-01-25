@@ -23,9 +23,12 @@ export enum QuranSearchMatchMode {
 export class QuranSearchOpts {
    place_mode = QuranSearchPlaceMode.Any;
    match_mode = QuranSearchMatchMode.ExactOrder;
+   with_tashkeel = true;
 
    equals(oth: QuranSearchOpts): boolean {
-      return this.place_mode == oth.place_mode && this.match_mode == oth.match_mode;
+      return this.with_tashkeel == oth.with_tashkeel
+         && this.place_mode == oth.place_mode
+         && this.match_mode == oth.match_mode;
    }
 }
 

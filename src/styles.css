@@ -63,6 +63,10 @@ body {
    text-align: right;
 }
 
+.opts .mat-slide-toggle-bar {
+   margin-right: 0px;
+   margin-left: 8px;
+}
 
 /** Raised card **/
 .card {

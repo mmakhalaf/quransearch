@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QuranService } from '../../../services/quran.service';
 import { opts_ayah_order, opts_ayah_loc } from 'src/app/services/filter-pres';
 import { FormControl } from '@angular/forms';
 import { Platform } from '@angular/cdk/platform';
-import { MatSelect } from '@angular/material';
+import { MatSlideToggleChange } from '@angular/material';
 
 @Component({
    selector: 'qterm-settings',
@@ -101,6 +101,11 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    }
 
    onMatchTypeChanged() {
+      this.qService.searchCriteriaPres.filter_updated();
+   }
+
+   onTashkeelOptChanged(e: MatSlideToggleChange) {
+      this.qService.searchCriteriaPres.cur_filter.cur_with_tashkeel = e.checked;
       this.qService.searchCriteriaPres.filter_updated();
    }
 
