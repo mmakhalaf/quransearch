@@ -54,6 +54,14 @@ function start_tests(done: any) {
    expect_word_search('يا موسى', 8, 8, exact_match_end_ayah_opts);
    
    expect_word_search('يأبى', 1, 1, exact_match_opts);
+
+   expect_word_search('وأجر عظيم', 2, 4, exact_match_opts);
+   expect_word_search('و أجر عظيم', 2, 4, exact_match_opts);
+   expect_word_search('و أجر عظيم', 0, 0, exact_match_start_ayah_opts);
+   expect_word_search('و أجر عظيم', 2, 4, exact_match_end_ayah_opts);
+   expect_word_search('أجر عظيم', 7, 14, exact_match_opts);
+   expect_word_search('أجر عظيم', 0, 0, exact_match_start_ayah_opts);
+   expect_word_search('أجر عظيم', 7, 14, exact_match_end_ayah_opts);
    
    
    // Roots
