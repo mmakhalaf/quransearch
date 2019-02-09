@@ -1,113 +1,39 @@
+"""
+This normalizes the Quran's text to make it more searchable.
+TODO:
+- convert تاء to تاء مربوطة in رحمت and similar
+- ىٰ[^ۤۖ-ۜ \n] (ىٰ in middle of word)
+- spelling of some individual words
+"""
 
+import re
 import json
-import sys
+
+dbg_line = 5443
+dbg_word = 1
+
+remove_ranges = [
+    [0x064B, 0x065F],
+    [0x06D6, 0x06ED],
+    [0x08E0, 0x08FF]
+]
+remove_exclude = [
+    0x0654,
+    0x0655,
+    0x06DE,
+    0x06E9
+]
 
 
-def remove_wasl(w):
-    """Remove alef wasl without replace in Ra7man"""
-    if w.startswith('ذ'):
-        return True
-    if 'رحم' in w:
-        return True
-    if 'كن' in w:
-        return True
-    if 'ذا' in w:
-        return True
-    if 'ذه' in w:
-        return True
-    return False
-
-
-def replace_wasl_with_alef(w):
-    return True
-
-
-def keep_hamza(w):
-    return w.endswith('ء')
-
-
-def replace_hamza(w):
-    return w.startswith('ء')
-
-
-def keep_alef_maksura(w):
-    return ord(w[len(w)-1]) ==  0x670
-
-
-def replace_alef_maksura_with_alef(w):
-    return True
-
-
-
-cmap_readable = {
-    '0x648 0x6df 0x644 0x64e 0x640 0x670 0x6e4 0x649 0x655 0x650 0x643': [{ 'r': '0x648 0x644 0x626 0x643' }],
-    '0x645 0x64e 0x644 0x64e 0x640 0x670 0x6e4 0x649 0x655 0x650 0x643': [{ 'r': '0x645 0x644 0x627 0x626 0x643' }],
-    '0x64e 0x200a 0x670 0x2060 0x6e4 0x621 0x650': [{ 'r': '0x627 0x626' }],
-    '0x6cc 0x64e 0x640 0x670 0x6e4': [{ 'r': '0x64a 0x627' }],
-    #
-    '0x640 0x654 0x64e 0x627': [{ 'r': '0x622' }],
-    '0x64e 0x640 0x670 0x6e4': [{ 'r': ''}],
-    #
-    '0x6e1 0x6cc 0x650 0x6e6': [{ 'r': '0x64a 0x64a' }],
-    '0x200a 0x670 0x2060': [
-        { 'r': '',      'fn': remove_wasl },
-        { 'r': '0x627', 'fn': replace_wasl_with_alef }
-    ],
-    '0x621 0x64e 0x627': [{ 'r': '0x622' }],
-    '0x640 0x654 0x64f': [{ 'r': '0x626' }],
-    '0x649 0x655 0x650': [{ 'r': '0x626' }],
-    #
-    '0x640 0x670': [
-        { 'r': '',      'fn': remove_wasl },
-        { 'r': '0x627', 'fn': replace_wasl_with_alef }
-        ],
-    '0x648 0x670': [{ 'r': '0x627' }],
-    '0x649 0x670': [
-        { 'r': '0x649', 'fn': keep_alef_maksura },
-        { 'r': '0x627', 'fn': replace_alef_maksura_with_alef }
-    ],     # ى
-    # '0x649 0x655': [{ 'r': '0x626' }],     # ى
-    '0x650 0x621': [{ 'r': '0x626' }],
-    #
-    '0x621': [
-        { 'r': '0x621', 'fn': keep_hamza },
-        { 'r': '0x623', 'fn': replace_hamza }
-        ],            # ء
-    '0x671': [{ 'r': '0x627' }],           # ٱ
-    '0x6cc': [{ 'r': '0x64a' }],           # ی farsi
-}
-
-conversion_map = {}
-for k,v in cmap_readable.items():
-    ks_arr = k.split(' ')
-    ks = ''
-    for ks_item in ks_arr:
-        ks += chr(int(ks_item,0))
-
-    for vi in v:
-        vs_arr = vi['r'].split(' ')
-        vs = ''
-        for vs_item in vs_arr:
-            if vs_item == '':
-                continue
-            vs += chr(int(vs_item,0))
-        vi['r'] = vs
-    conversion_map[ks] = v
-
-def serial_cmap(o):
-    return o.__name__
-
-print(json.dumps(conversion_map, ensure_ascii=False, default=serial_cmap))
-
-
-def get_word(w):
+def word2unicode(w):
     if len(w) == 0:
         return ''
     if len(w) == 1:
         return ord(w[0])
     s = []
     for c in w:
-        s.append(f'{hex(ord(c))}')
+        sw = f'{hex(ord(c))}'
+        s.append(sw[2:])
     return ' '.join(s)
 
 
@@ -116,89 +42,205 @@ def remove_tashkil(w):
     ow = ''
     for l in w:
         uchar = ord(l)
-        if uchar == 0x06DE or uchar == 0x06E9:
+        add = True
+        for r in remove_ranges:
+            if r[0] <= uchar <= r[1]:
+                if uchar not in remove_exclude:
+                    add = False
+                    break
+        if add:
             ow += l
-            continue
-        if 0x064B <= uchar <= 0x065F or 0x06D6 <= uchar <= 0x06ED or 0x08E0 <= uchar <= 0x08FF:
-            continue
-        ow += l
     return ow
 
 
-def convert_uthmani(i, uth, iml):
-    """Convert the uthmani 'u' to imlaai"""
-    uth_arr = uth.split(' ')
-    targ_arr = []
+keep_sm_alif = [
+    ['رحمان', 'رحمن'],
+    ['إلاه', 'إله'],
+    ['لاكن', 'لكن'],
+    ['ذالك', 'ذلك'],
+    ['أولائك', 'أولئك'],
+    ['هاذا', 'هذا'],
+    ['هاذه', 'هذه'],
+    ['هاؤلاء', 'هؤلاء']
+    ]
 
-    # Remove diacritics
-    for uth_word in uth_arr:
-        targ_word = uth_word
-        uth_no_tashkil = remove_tashkil(uth_word)
-        for k,v in conversion_map.items():
-            idx = targ_word.find(k)
-            if idx == -1:
-                continue
-            for vi in v:
-                fn = vi.get('fn')
-                if fn is None:
-                    targ_word = targ_word.replace(k, vi['r'])
-                    break
-                else:
-                    if fn(uth_no_tashkil):
-                        targ_word = targ_word.replace(k, vi['r'])
-                        break
+repls = [
+    # Remove pause marks and similar
+    # Don't remove sajda and hizb to keep the number of words the same as uthmani
+    (1, r'[ۤۖ-ۣۭٜۜۢ۬\u2060 ]', ''),
+    # These two "small zeros" are used to indicate characters
+    # that aren't pronounced.
+    # TODO: some of the characters before them need to be removed (e.g. وَمَلَإِی۟هِ)
+    # (1, r'[۟۠]', ''),
 
-        targ_word = remove_tashkil(targ_word)
-        targ_arr.append(targ_word)
-    
-    targ = ' '.join(targ_arr)
+    (0, 'ٱلَّی', 'اللي'),  # وَٱلَّیۡلِ
+    (0, 'ٱلَّـٰ', 'اللا'),  # وَٱلَّـٰتِی
 
-    # Compare to incoming imlaai and exit on error
-    if targ != iml:
-        print(f'= Imlaai Mismatch => {i} -> {uth}')
-        iml_arr = iml.split(' ')
-        for i in range(0, len(iml_arr)):
-            if iml_arr[i] != targ_arr[i]:
-                print(f"Uthmani: [ {get_word(uth_arr[i])} ] = {uth_arr[i]}")
-                print(f"Imlaai : [ {get_word(iml_arr[i])} ] = {iml_arr[i]}")
-                print(f"Result : [ {get_word(targ_arr[i])} ] = {targ_arr[i]}")
-                print('')
+    (0, 'ٱ', 'ا'),
+    (0, 'ی', 'ي'),  # Farsi yaa
+
+    (0, 'َا۟', ''),  # لَصَالُوا۟, قَوَارِیرَا۟, سَلَـٰسِلَا۟
+
+    # E.g. داوود
+    (0, 'وُۥ', 'وو'),
+    # E.g. إِبۡرَ ٰ⁠هِـۧمَ
+    (0, 'ِـۧ', 'ِي'),
+
+    (0, 'إِۦ', 'إي'),   # إِۦلَـٰفِهِمۡ
+    (0, 'ۡـِۧ', 'ي'),    # یُحۡـِۧیَ
+    (0, 'يُحۡيِ', 'يُحۡييِ'),   # یُحۡیِ
+
+    (0, 'ـ', ''),   # أَعۡطَیۡنَـٰكَ, ٱلنَّفَّـٰثَـٰتِ
+
+    # Use more common sukoon and tanweens
+    (0, 'ۡ', 'ْ'),
+    (0, 'ࣰ', 'ً'),
+    (0, 'ࣱ', 'ٌ'),
+    (0, 'ࣲ', 'ٍ'),
+
+    # (0, 'ا۟', ''),  # قَوَارِیرَا۟, لَصَالُوا۟
+    (0, 'َٔا', 'آ'),
+    (0, 'ءَا', 'آ'),   # وَءَامَنَهُم, ءَانِیَةࣲ
+    # TODO: [ٕٔ]
+
+    (0, 'ءِي', 'ئي'),  # إسرائيل
+    (0, 'ءُۥ', 'ءو'),   # ٱلۡمَوۡءُۥدَةُ
+    (0, 'وٕ', 'ؤ'),
+    (0, 'ىٕ', 'ئ'),
+    (0, 'ئ', 'يئ'),    # خَطِیۤـَٔـٰتِهِمۡ
+
+    (0, 'ِْٔ', 'ئ'),  # الأفئدة
+    (0, 'َْٔ', 'أ'),   # یُسۡـَٔلُونَ
+    (0, 'ًْٔ', 'ئ'),  # وَطۡـࣰٔا
+
+    # Small alif
+    (0, 'ىٰه', 'اه'),  # أشقاها, ألهاكم, بطغواها
+    (0, 'ىٰك', 'اك'),  # أشقاها, ألهاكم, بطغواها
+    (0, 'وٰ', 'ا'),
+    (0, 'ىٰ', 'ى'),
+    (0, 'رَىة', 'رَاة'),     # ٱلتَّوۡرَىٰةَ
+    (0, 'ٰ', 'ا'),  # TODO: revert in keep_sm_alif cases
+]
+
+line_repls = {
+    2442: [
+        (0, 'یَبۡنَؤُمَّ', ''),  # TODO
+    ],
+    2571: [
+        (0, 'ۨ', 'ن'),  # ننجي
+    ],
+    # 5463: [
+    #     (0, 'وَأَلَّوِ', ''),  # TODO
+    # ],
+}
+
+
+def reverse_small_alef(word):
+    # Revert small alef in some cases
+    word_nodia = remove_tashkil(word)
+    for rv in keep_sm_alif:
+        if rv[0] in word_nodia:
+            return word_nodia.replace(rv[0], rv[1])
+    return word
+
+
+def apply_repls_to_word(word, repls, line_num, word_num):
+    if line_num == dbg_line and word_num == dbg_word:
+        i = 0
+
+    for r in repls:
+        if r[0]:
+            word = re.sub(r[1], r[2], word)
+        else:
+            word = word.replace(r[1], r[2])
+
+    return reverse_small_alef(word)
+
+
+def apply_repls_to_line(line, repls, line_num):
+    words = line.split(' ')
+    for i in range(0, len(words)):
+        words[i] = apply_repls_to_word(words[i], repls, line_num, i)
+    return ' '.join(words)
+
+
+def apply_repls(lines, repls):
+    for i in range(0, len(lines)):
+        lines[i] = apply_repls_to_line(lines[i], repls, i)
+    return lines
+
+
+with open('../src/assets/qdb_imlaai.json') as f:
+    ref_lines = json.load(f)
+
+with open('../src/assets/qdb_uthmani.json') as f:
+    uth_lines = json.load(f)
+
+lines = uth_lines.copy()
+lines = apply_repls(lines, repls)
+for line_no in line_repls:
+    lines[line_no - 1] = apply_repls_to_line(lines[line_no - 1], line_repls[line_no], line_no)
+
+
+# Perform some error validation on the imlaai reference
+# We gather the list of words that mismatch
+errs = {}
+for i in range(0, len(lines)):
+    pline = lines[i]
+    uth_line = uth_lines[i]
+    ref_line = ref_lines[i]
+
+    pline_arr = pline.split(' ')
+    uth_line_arr = uth_line.split(' ')
+    ref_line_arr = ref_line.split(' ')
+    if len(pline_arr) != len(ref_line_arr) or len(ref_line_arr) != len(pline_arr):
+        print(f'Mismatched Length; Id={i}')
+        print(f'Uthmani = {uth_line}')
+        print(f'Process = {pline}')
+        print(f'Imlaai  = {ref_line}')
         exit(1)
 
-    # Compare number of words
-    if len(uth_arr) != len(targ_arr):
-        print('= Length Mismatch')
-        print(uth_arr)
-        print(targ_arr)
-        print('')
-        exit(1)
+    for wi in range(0, len(pline_arr)):
+        pline_word = pline_arr[wi]
+        pline_word_nodia = remove_tashkil(pline_word)
+        ref_word = ref_line_arr[wi]
+        uth_word = uth_line_arr[wi]
+        if ref_word != pline_word_nodia:
+            err = errs.get(ref_word)
+            occ = []
+            if err is not None:
+                occ = err
+            occ.append({
+                'U': uth_word,
+                'U[uni]': word2unicode(uth_word),
+                'P': pline_word,
+                'P[uni]': word2unicode(pline_word),
+                'D': pline_word_nodia,
+                'D[uni]': word2unicode(pline_word_nodia),
+                'id': f'{i}->{wi}'
+            })
+            errs[ref_word] = occ
 
-    return targ
+if len(errs) > 0:
+    total_errors = 0
+    klist = errs.keys()
+    klist = sorted(klist, key=lambda e: len(errs[e]))
+    for k in klist:
+        err = errs[k]
+        print(f'Ref = {k}')
+        for e in err:
+            total_errors += 1
+            for ek,ev in e.items():
+                print(f'  "{ek}"\t=\t{ev}')
+            print('-')
+        print('---')
 
-
-uth = '../src/assets/qdb_uthmani.json'
-iml = '../src/assets/qdb_imlaai.json'
-
-with open(uth, 'r') as f:
-    uth_j = json.load(f)
-with open(iml, 'r') as f:
-    iml_j = json.load(f)
-
-if len(uth_j) != len(iml_j):
-    print('Mismatched number of Ayat')
+    print(f'Errors: {len(errs)}')
+    print(f'Total: {total_errors}')
+    for k in klist:
+        print(k, end=' , ')
+    print('')
     exit(1)
 
-n_errors = 0
-targ = []
-for idx in range(0, len(uth_j)):
-    u = uth_j[idx]
-    i = iml_j[idx]
-    t = convert_uthmani(idx, u, i)
-    targ.append(t)
-
-if n_errors > 0:
-    print(f'Errors: {n_errors}')
-    exit(1)
-iml_out = '../src/assets/qdb_imlaai_output.json'
-with open(iml_out, 'w') as f:
-    json.dump(targ, f, ensure_ascii=False, indent=2)
+with open('../src/assets/qdb_imlaai_output.json', 'w') as f:
+    json.dump(lines, f, ensure_ascii=False, indent=2)
