@@ -9,8 +9,10 @@ TODO:
 import re
 import json
 
-dbg_line = 5443
-dbg_word = 1
+dbg_line = 20
+dbg_word = 15
+cur_line = 0
+cur_word = 0
 
 remove_ranges = [
     [0x064B, 0x065F],
@@ -67,15 +69,13 @@ keep_special_cases = [
     # ['أولوا', 'أولو'],
     # ['يدعوا', 'يدعو'],
     ['أرءيتم', 'أرأيتم'],
-    ['يستهزءون', 'يستهزئون'],
-    ['سيآت', 'سيئات']   # Caused by the substitution
+    ['هزءو', 'هزئو'],
+    ['سيآت', 'سيئات'],   # Caused by the substitution
+    # ['أُو۟لُوا۟', 'أُولُو']
     # ['رآ', 'رأى'],
     ]
 
 repls = [
-    # Remove pause marks and similar
-    # Don't remove sajda and hizb to keep the number of words the same as uthmani
-    (1, r'[ۤۖ-ۣۭٜۜۢ۬\u2060 ]', ''),
     # These two "small zeros" are used to indicate characters
     # that aren't pronounced.
     # TODO: some of the characters before them need to be removed (e.g. وَمَلَإِی۟هِ)
@@ -96,6 +96,8 @@ repls = [
     # E.g. إِبۡرَ ٰ⁠هِـۧمَ
     (0, 'ِـۧ', 'ِي'),
 
+    (0, 'صۜ', 'س'),     # بَصۜۡطَةࣰۖ
+
     (0, 'إِۦ', 'إي'),   # إِۦلَـٰفِهِمۡ
     (0, 'ۡـِۧ', 'ي'),    # یُحۡـِۧیَ
     (0, 'يُحۡيِ', 'يُحۡييِ'),   # یُحۡیِ
@@ -107,8 +109,19 @@ repls = [
     (0, 'ࣱ', 'ٌ'),
     (0, 'ࣲ', 'ٍ'),
 
+    # Remove pause marks and similar
+    # Don't remove sajda and hizb to keep the number of words the same as uthmani
+    (1, r'[ۤۖ-ۣۭٜۜۢ۬\u2060 ]', ''),
+
     (1, 'َٔا(.+)', r'آ\1'),
     (1, 'ءَا(.+)', r'آ\1'),   # ءَانِیَة,وَءَامَنَهُم,ٱلۡـَٔاخِرَةُ
+
+    (1, '^ءَ', 'أَ'),  # ءَأَسْلَمْتُمْ, ءَأَقْرَرْتُمْ
+    (1, 'ءُو$', 'ءُوا'),  # فَبَاءُو, فَاءُو
+    (1, 'ٰۤؤُا۟$', 'اءُ'),  # ٱلضُّعَفَـٰۤؤُا۟, شُرَكَـٰۤؤُا۟ۚ, جَزَ ٰ⁠ۤؤُا۟
+    (1, 'ؤُا۟$', 'أ'),  # نَبَؤُا۟, یَبۡدَؤُا۟
+    (1, 'َءَا$', 'أَى'),  # رَءَا
+
     (0, 'ـَٔـٰ', 'آ'),      # ٱلۡـَٔـٰنَ
 
     # (0, 'ِـِٔ', 'ئ'),  # متكئين
@@ -123,19 +136,23 @@ repls = [
     # (0, 'َء', 'أ'),
 
     (0, 'أَءِ', 'أَإِ'),    # أَءِنَّا, أَءِذَا
+    (0, 'أَءُ', 'أَأُ'),    # أَءُلۡقِیَ
     (0, 'ـِٔ', 'ئ'),  # الأفئدة
     (0, 'ـَٔ', 'أ'),   # یُسۡـَٔلُونَ
     (0, 'ـٔ', 'ئ'),  # وَطۡـࣰٔا
     (0, 'َئْ', 'أ'),    # یَسۡتَـٔۡخِرُونَ
     (0, 'َءَ', 'أ'),    # رَءَا
+    (0, 'ُّء', 'ُّؤ'),      # ٱلرُّءۡیَا
 
     (0, 'ـ', ''),  # أَعۡطَیۡنَـٰكَ, ٱلنَّفَّـٰثَـٰتِ
 
     # Small alif
+    (1, 'َوٰا۟$', 'ا'),  # ٱلرِّبَوٰا۟
+    (1, 'ىٰ$', 'ى'),
+    # (1, 'َا$', 'َى'),
     (0, 'ىٰه', 'اه'),  # أشقاها, ألهاكم, بطغواها
     (0, 'ىٰك', 'اك'),  # أشقاها, ألهاكم, بطغواها
     (0, 'وٰ', 'ا'),
-    (1, 'ىٰ$', 'ى'),
     (0, 'ىٰ', 'ا'),     # ٱلتَّوۡرَىٰةَ
     (0, 'ٰ', 'ا')
 ]
@@ -157,14 +174,16 @@ def reverse_small_alef(word):
     # Revert small alef in some cases
     word_nodia = remove_tashkil(word)
     for rv in keep_special_cases:
-        if rv[0] in word_nodia:
+        if rv[0] in word or rv[0] in word_nodia:
             return word_nodia.replace(rv[0], rv[1])
     return word
 
 
-def apply_repls_to_word(word, repls, line_num, word_num):
-    if line_num == dbg_line and word_num == dbg_word:
+def apply_repls_to_word(word, repls):
+    global cur_line, cur_word, dbg_line, dbg_word
+    if cur_line == dbg_line and cur_word == dbg_word:
         i = 0
+    cur_word += 1
 
     for r in repls:
         if r[0]:
@@ -175,17 +194,16 @@ def apply_repls_to_word(word, repls, line_num, word_num):
     return reverse_small_alef(word)
 
 
-def apply_repls_to_line(line, repls, line_num):
-    words = line.split(' ')
-    for i in range(0, len(words)):
-        words[i] = apply_repls_to_word(words[i], repls, line_num, i)
+def apply_repls_to_line(line, repls):
+    global cur_word, cur_line
+    cur_word = 0
+    words = map(lambda w: apply_repls_to_word(w, repls), line.split(' '))
+    cur_line += 1
     return ' '.join(words)
 
 
 def apply_repls(lines, repls):
-    for i in range(0, len(lines)):
-        lines[i] = apply_repls_to_line(lines[i], repls, i)
-    return lines
+    return [apply_repls_to_line(l, repls) for l in lines]
 
 
 with open('../src/assets/qdb_imlaai.json') as f:
@@ -197,8 +215,9 @@ with open('../src/assets/qdb_uthmani.json') as f:
 lines = uth_lines.copy()
 lines = apply_repls(lines, repls)
 for line_no in line_repls:
-    lines[line_no - 1] = apply_repls_to_line(lines[line_no - 1], line_repls[line_no], line_no)
+    lines[line_no - 1] = apply_repls_to_line(lines[line_no - 1], line_repls[line_no])
 
+print('++ Finished --')
 
 # Perform some error validation on the imlaai reference
 # We gather the list of words that mismatch
@@ -231,10 +250,10 @@ for i in range(0, len(lines)):
             occ.append({
                 'U': uth_word,
                 'U[uni]': word2unicode(uth_word),
-                'P': pline_word,
-                'P[uni]': word2unicode(pline_word),
-                'D': pline_word_nodia,
-                'D[uni]': word2unicode(pline_word_nodia),
+                'R': pline_word,
+                'R[uni]': word2unicode(pline_word),
+                'RD': pline_word_nodia,
+                'RD[uni]': word2unicode(pline_word_nodia),
                 'id': f'{i}->{wi}'
             })
             errs[ref_word] = occ
@@ -254,7 +273,7 @@ if len(errs) > 0:
         print('---')
 
     for k in klist:
-        print(f'{k} ({errs[k][0]["U"]}) <= ({errs[k][0]["P"]}) {errs[k][0]["D"]} [{len(errs[k])}]')
+        print(f'{k} ({errs[k][0]["U"]}) <= ({errs[k][0]["R"]}) {errs[k][0]["RD"]} [{len(errs[k])}]')
 
     print(f'Errors: {len(errs)}')
     print(f'Total: {total_errors}')
