@@ -61,13 +61,32 @@ keep_special_cases = [
     ['هاذه', 'هذه'],
     ['هاؤلاء', 'هؤلاء'],
     # Frequent special cases
-    # ['أولوا', 'أولو'],
-    # ['يدعوا', 'يدعو'],
     ['أرءيتم', 'أرأيتم'],
     ['هزءو', 'هزئو'],
     ['سيآت', 'سيئات'],   # Caused by the substitution
-    # ['أُو۟لُوا۟', 'أُولُو']
-    # ['رآ', 'رأى'],
+
+
+    # Alif After Waaw
+
+    ['أُولُوا', 'أُولُو'],
+    # ['دْعُوا', 'دْعُو'],
+    # ['تْلُوا', 'تْلُو'],
+    # ['رْجُوا', 'رْجُو'],
+    ['وَيَعْفُوا', 'وَيَعْفُو'],
+    ['مُّلَاقُوا', 'مُّلَاقُو'],
+    ['مُرسِلُوا', 'مُرسِلُو'],
+    ['كَاشِفُوا', 'كَاشِفُو'],
+    ['صَالُوا', 'صَالُو'],
+    ['لَذَائِقُوا', 'لَذَائِقُو'],
+    ['لَتَارِكُوا', 'لَتَارِكُو'],
+    ['نَاكِسُوا', 'نَاكِسُو'],
+    ['يَرْبُوا', 'يَرْبُو'],
+    ['مُهْلِكُوا', 'مُهْلِكُو'],
+    ['يَمْحُوا', 'يَمْحُو'],
+    ['أَشْكُوا', 'أَشْكُو'],
+    ['بَنُوا', 'بَنُو'],
+    ['تَبْلُوا', 'تَبْلُو'],
+    ['بَاسِطُوا', 'بَاسِطُو']
     ]
 
 repls = [
@@ -153,11 +172,13 @@ repls = [
     (0, 'ىٰ', 'ا'),     # ٱلتَّوۡرَىٰةَ
     (0, 'ٰ', 'ا'),
 
-    # TODO Use more common sukoon and tanweens (Add it again)
-    # (0, 'ۡ', 'ْ'),
-    # (0, 'ࣰ', 'ً'),
-    # (0, 'ࣱ', 'ٌ'),
-    # (0, 'ࣲ', 'ٍ')
+    # Use more common sukoon and tanweens
+    (0, 'و۟', 'و'),
+    (0, 'ا۟', 'ا'),
+    (0, 'ۡ', 'ْ'),
+    (0, 'ࣰ', 'ً'),
+    (0, 'ࣱ', 'ٌ'),
+    (0, 'ࣲ', 'ٍ')
 ]
 
 line_repls = {
@@ -177,7 +198,9 @@ def reverse_small_alef(word):
     # Revert small alef in some cases
     word_nodia = remove_tashkil(word)
     for rv in keep_special_cases:
-        if rv[0] in word or rv[0] in word_nodia:
+        if rv[0] in word:
+            return word.replace(rv[0], rv[1])
+        if rv[0] in word_nodia:
             return word_nodia.replace(rv[0], rv[1])
     return word
 
@@ -219,7 +242,7 @@ print('++ Finished --')
 # Perform some error validation on the imlaai reference
 # We gather the list of words that mismatch
 errs = {}
-for i in range(0, len(lines)):
+for i in range(len(lines)):
     pline = lines[i]
     uth_line = uth_lines[i]
     ref_line = ref_lines[i]
@@ -234,7 +257,7 @@ for i in range(0, len(lines)):
         print(f'Imlaai  = {ref_line}')
         exit(1)
 
-    for wi in range(0, len(pline_arr)):
+    for wi in range(len(pline_arr)):
         pline_word = pline_arr[wi]
         pline_word_nodia = remove_tashkil(pline_word)
         ref_word = ref_line_arr[wi]
