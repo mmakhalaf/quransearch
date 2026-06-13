@@ -1,21 +1,46 @@
 /* You can add global styles to this file, and also import other style files.
    The Angular Material theme is loaded via angular.json (azure-blue prebuilt). */
 
+/* Self-hosted Material Symbols Outlined (Apache-2.0) for offline-capable icons. */
+@font-face {
+   font-family: 'Material Symbols Outlined';
+   font-style: normal;
+   font-weight: 400;
+   font-display: block;
+   src: url(assets/fonts/material-symbols-outlined.woff2) format('woff2');
+}
+
+.material-symbols-outlined {
+   font-family: 'Material Symbols Outlined';
+   font-weight: normal;
+   font-style: normal;
+   font-size: 24px;
+   line-height: 1;
+   letter-spacing: normal;
+   text-transform: none;
+   display: inline-block;
+   white-space: nowrap;
+   word-wrap: normal;
+   direction: ltr;
+   -webkit-font-feature-settings: 'liga';
+   -webkit-font-smoothing: antialiased;
+}
+
+/* Self-hosted Scheherazade New (SIL OFL) Arabic subset — replaces the
+   previously CDN-hosted font which failed to load. */
 @font-face {
    font-family: Scheherazade;
    font-style: normal;
-   font-display: block;
+   font-display: swap;
    font-weight: 400;
-   src: url(https://deendev.com/fonts/scheh.woff2) format('woff2'),
-   url(https://deendev.com/fonts/scheh.woff) format('woff');
+   src: url(assets/fonts/scheherazade-regular.woff2) format('woff2');
 }
 @font-face {
    font-family: Scheherazade;
    font-style: normal;
-   font-display: block;
+   font-display: swap;
    font-weight: 700;
-   src: url(https://deendev.com/fonts/scheh-b.woff2) format('woff2'),
-   url(https://deendev.com/fonts/scheh-b.woff) format('woff');
+   src: url(assets/fonts/scheherazade-bold.woff2) format('woff2');
 }
 
 /* General */

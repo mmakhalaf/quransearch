@@ -1,7 +1,6 @@
 import { Injectable, NgZone, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { CookieService } from 'ngx-cookie-service';
 import { Quran, QuranRoot, Category } from '../quran/quran';
 import { QuranSearcher } from '../quran/quran-search/quran-searcher';
 import { SearchResult, SearchResults } from '../quran/quran-search/search-result';
@@ -50,7 +49,6 @@ export class SearchService {
 
    private zone = inject(NgZone);
    private data = inject(QuranDataService);
-   private cookieService = inject(CookieService);
 
    constructor() {
       this.init_worker();
@@ -196,18 +194,21 @@ export class SearchService {
          return;
       }
 
-      if (this.cookieService.check('SortOrder')) {
-         this.searchCriteriaPres.cur_sort_order = this.cookieService.get('SortOrder');
+      let sortOrder = readStored('SortOrder');
+      if (sortOrder != null) {
+         this.searchCriteriaPres.cur_sort_order = sortOrder;
       }
-      if (this.cookieService.check('SearchType')) {
-         this.searchCriteriaPres.cur_filter.cur_term_type = this.cookieService.get('SearchType');
+      let searchType = readStored('SearchType');
+      if (searchType != null) {
+         this.searchCriteriaPres.cur_filter.cur_term_type = searchType;
       }
-      if (this.cookieService.check('SearchTerm')) {
-         this.searchCriteriaPres.cur_filter.cur_search_term = this.cookieService.get('SearchTerm');
+      let searchTerm = readStored('SearchTerm');
+      if (searchTerm != null) {
+         this.searchCriteriaPres.cur_filter.cur_search_term = searchTerm;
       }
-      if (this.cookieService.check('CurSearch')) {
-         let j = this.cookieService.get('CurSearch');
-         let p = JSON.parse(j);
+      let curSearch = readStored('CurSearch');
+      if (curSearch != null) {
+         let p = JSON.parse(curSearch);
          if (p !== undefined) {
             let g = FilterGroupPres.from_params(p);
             if (g != null && g.has_search()) {
@@ -224,9 +225,27 @@ export class SearchService {
          return;
       }
 
-      this.cookieService.set('SortOrder', this.searchCriteriaPres.cur_sort_order);
-      this.cookieService.set('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
-      this.cookieService.set('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);
-      this.cookieService.set('CurSearch', JSON.stringify(this.searchCriteriaPres.to_params(this.data.quran)));
+      writeStored('SortOrder', this.searchCriteriaPres.cur_sort_order);
+      writeStored('SearchType', this.searchCriteriaPres.cur_filter.cur_term_type);
+      writeStored('SearchTerm', this.searchCriteriaPres.cur_filter.cur_search_term);
+      writeStored('CurSearch', JSON.stringify(this.searchCriteriaPres.to_params(this.data.quran)));
+   }
+}
+
+// Persist search state in localStorage; guarded so private-mode / disabled
+// storage never breaks the app.
+function readStored(key: string): string | null {
+   try {
+      return localStorage.getItem(key);
+   } catch {
+      return null;
+   }
+}
+
+function writeStored(key: string, value: string) {
+   try {
+      localStorage.setItem(key, value);
+   } catch {
+      // ignore storage failures (quota, private mode)
    }
 }
