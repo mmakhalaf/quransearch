@@ -36,7 +36,7 @@ export class CategorySearchFilter extends SearchFilter {
       return matches;
    }
    
-   equals(oth: SearchFilter): boolean {
+   override equals(oth: SearchFilter): boolean {
       if (!(oth instanceof CategorySearchFilter)) {
          return false;
       }

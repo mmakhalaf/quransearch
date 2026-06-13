@@ -1,7 +1,6 @@
 
 import * as MathUtils from './utils/math-utils';
 import * as StringUtils from './utils/string-utils';
-import { isNullOrUndefined } from 'util';
 
 export type AyahWithIdFn = (ayah: Ayah, ayah_id: string) => void;
 
@@ -23,8 +22,8 @@ export class Quran {
       this.ayat.forEach(fn);
    }
 
-   get_category(c: string): Category {
-      let found = null;
+   get_category(c: string): Category | null {
+      let found: Category | null = null;
       this.categories.forEach((val: Category, k: number) => {
          if (val.name == c) {
             found = val;
@@ -33,8 +32,8 @@ export class Quran {
       return found;
    }
 
-   get_surah(s: string): Surah {
-      let found = null;
+   get_surah(s: string): Surah | null {
+      let found: Surah | null = null;
       this.suwar.forEach((val: Surah) => {
          if (val.name == s) {
             found = val;
@@ -60,8 +59,8 @@ export class Quran {
       return arr;
    }
 
-   get_ayah(id: number): Ayah {
-      let ayah: Ayah = null;
+   get_ayah(id: number): Ayah | null {
+      let ayah: Ayah | null = null;
       this.for_each_ayah((a: Ayah) => {
          if (ayah == null && a.id == id) {
             ayah = a;
@@ -103,7 +102,7 @@ export class Surah {
 //
 export class Ayah {
    id: number = -1;
-   surah: Surah = null;
+   surah: Surah;
    ayah_surah_idx: number = -1;
    uthmani: string;
    uthmani_words: Array<string>;
@@ -151,7 +150,7 @@ export class Ayah {
          console.error(`Mismatching number of words in Ayah ${this.id}`);
          succ = false;
       }
-      if (isNullOrUndefined(this.surah)) {
+      if (this.surah == null) {
          console.error(`No Surah assigned to Ayah ${this.id}`);
          succ = false;
       }
@@ -274,12 +273,12 @@ export class QuranWordStore {
    }
 
    private add_word(
-      iml: string, 
-      uth: string, 
-      root: QuranRoot,
-      vf: VerbForm,
-      tags: Array<PartOfSpeech>, 
-      ayah: Ayah, 
+      iml: string,
+      uth: string,
+      root: QuranRoot | null,
+      vf: VerbForm | null,
+      tags: Array<PartOfSpeech>,
+      ayah: Ayah,
       word_index: number
    ): QuranWord {
       let id = `${ayah.id}:${word_index}`;
@@ -300,7 +299,7 @@ export class QuranWordStore {
       return w;
    }
 
-   private add_root(root: string): QuranRoot {
+   private add_root(root: string): QuranRoot | null {
       if (root == null) {
          return null;
       }
@@ -331,7 +330,7 @@ export class QuranWordStore {
          tag_objs.push(this.part_of_speech[t]);
       }
 
-      let vf_obj: VerbForm = null;
+      let vf_obj: VerbForm | null = null;
       if (vf != -1) {
          vf_obj = this.verb_forms[vf];
       }
@@ -340,7 +339,7 @@ export class QuranWordStore {
       return word;
    }
 
-   get_root(r: string): QuranRoot {
+   get_root(r: string): QuranRoot | null {
       let rt = this.roots.get(r);
       if (rt !== undefined) {
          return rt;
@@ -357,7 +356,7 @@ export class QuranWordStore {
       return arr;
    }
 
-   get_verb_form(vfi: number): VerbForm {
+   get_verb_form(vfi: number): VerbForm | null {
       for (let vfo of this.verb_forms) {
          if (vfo.id === vfi) {
             return vfo;
@@ -366,7 +365,7 @@ export class QuranWordStore {
       return null;
    }
 
-   get_part_of_speech(pos_sym: string): PartOfSpeech {
+   get_part_of_speech(pos_sym: string): PartOfSpeech | null {
       for (let pos of this.part_of_speech) {
          if (pos.sym === pos_sym) {
             return pos;
@@ -421,8 +420,8 @@ export class VerbForm {
 // 
 export class QuranWord {
 
-   private root: QuranRoot = null;
-   public verb_form: VerbForm = null;
+   private root: QuranRoot | null = null;
+   public verb_form: VerbForm | null = null;
    public parts_of_speech = new Array<PartOfSpeech>();
 
    constructor(public imlaai: string, public uthmani: string, public ayah: Ayah) {
@@ -446,7 +445,7 @@ export class QuranWord {
       }
    }
 
-   get_root(): QuranRoot {
+   get_root(): QuranRoot | null {
       return this.root;
    }
 }
@@ -459,7 +458,7 @@ export class QuranWord {
 export class Category {
    ayat = new Array<Ayah>();
    subcat = new Array<Category>();
-   parent: Category = null;
+   parent: Category | null = null;
 
    constructor(public id: number, public name: string) {
 

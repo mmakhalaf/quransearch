@@ -1,9 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { QuranService } from '../../../services/quran.service';
-import { opts_ayah_order, opts_ayah_loc } from 'src/app/services/filter-pres';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { Platform } from '@angular/cdk/platform';
-import { MatSlideToggleChange } from '@angular/material';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { QuranService } from '../../../services/quran.service';
+import { opts_ayah_order, opts_ayah_loc } from '../../../services/filter-pres';
 
 @Component({
    selector: 'qterm-settings',
@@ -11,19 +17,30 @@ import { MatSlideToggleChange } from '@angular/material';
    styleUrls: ['./term-settings.component.css'],
    host: {
       'style': 'display: flex; direction: rtl;'
-   }
+   },
+   imports: [
+      CommonModule,
+      FormsModule,
+      ReactiveFormsModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatSelectModule,
+      MatIconModule,
+      MatSlideToggleModule
+   ]
 })
-export class TermSettingsComponent implements OnInit, OnDestroy {
-   
+export class TermSettingsComponent implements OnInit {
+
    show_native = false;
 
-   pos = new FormControl();
-   vf = new FormControl();
+   pos = new UntypedFormControl();
+   vf = new UntypedFormControl();
 
-   constructor(
-      platform: Platform, 
-      public qService: QuranService
-      ) {
+   qService = inject(QuranService);
+   private destroyRef = inject(DestroyRef);
+
+   constructor() {
+      const platform = inject(Platform);
       if (platform.ANDROID || platform.IOS) {
          this.show_native = true;
       } else {
@@ -32,19 +49,21 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
-      this.pos.valueChanges.subscribe((e: any) => {
-         this.onPOSChanged(e);
-      });
-      this.vf.valueChanges.subscribe((e: any) => {
-         this.onVFChanged(e);
-      });
-      
-      this.on_filters_updated();
-   }
+      this.qService.searchCriteriaPres.filtersUpdated$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(() => this.on_filters_updated());
+      this.pos.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onPOSChanged(e);
+         });
+      this.vf.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onVFChanged(e);
+         });
 
-   ngOnDestroy() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
+      this.on_filters_updated();
    }
 
    onPOSChanged(e: Array<string>) {

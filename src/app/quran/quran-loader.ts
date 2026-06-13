@@ -1,7 +1,6 @@
 import { Quran, Ayah, Category, Surah, QuranWord, PartOfSpeech, VerbForm, PartOfSpeechGroup } from './quran';
 import * as StringUtils from './utils/string-utils';
 import * as SortUtils from './utils/sort-utils';
-import { isNullOrUndefined } from 'util';
 
 function all_quran_loaded(): boolean {
    for (let k in qurans) {
@@ -26,7 +25,7 @@ function quran_len(): number {
    return qurans.uthmani.length;
 }
 
-let qurans = {
+let qurans: { [k: string]: any } = {
    'suwar': undefined,
    'uthmani': undefined,
    'imlaai': undefined,
@@ -81,7 +80,7 @@ export class QuranLoader extends Quran {
          .then(json => { qurans[k] = json; });
    }
 
-   private add_category(cat: any, parent: Category) {
+   private add_category(cat: any, parent: Category | null) {
       let o = new Category(cat.id, cat.name);
       this.categories.set(o.id, o);
       if (parent != null) {
@@ -127,6 +126,10 @@ export class QuranLoader extends Quran {
       let cur_s = 1;
       for (let i = 0; i < len; ++i) {
          let surah = this.suwar.get(cur_s);
+         if (surah == null) {
+            console.error(`Missing surah ${cur_s} while building ayat`);
+            return false;
+         }
          let a = new Ayah(i, surah, cur_a, qurans.uthmani[i], qurans.imlaai[i]);
          surah.ayat.push(a);
          this.ayat.set(StringUtils.ayah_str_id(cur_s, cur_a), a);
@@ -209,20 +212,20 @@ export class QuranLoader extends Quran {
             // Exclude the sajda and hezb symbols from the root
             let morph_id = `${ayah.surah.surah_num}:${ayah.ayah_surah_idx}:${i+1}`;
             let morph = qurans.morph.w[morph_id];
-            if (isNullOrUndefined(morph)) {
+            if (morph == null) {
                if (morph_excluded.indexOf(morph_id) == -1) {
                   // Repor the error if it's not just a previously detected false positive
                   console.error(`Ayah word ${morph_id} does not have root in ${ayah.imlaai}`);
                   succ = false;
                }
             } else {
-               if (!isNullOrUndefined(morph.r)) {
+               if (morph.r != null) {
                   root = morph.r;
                }
-               if (!isNullOrUndefined(morph.vf)) {
+               if (morph.vf != null) {
                   vf = morph.vf;
                }
-               if (!isNullOrUndefined(morph.t)) {
+               if (morph.t != null) {
                   tags = morph.t;
                }
             }

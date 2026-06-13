@@ -1,15 +1,22 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { QuranService } from 'src/app/services/quran.service';
-import { SearchInputStateMatcher, extract_term_strings } from '../../../../services/filter-pres';
-import { FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material';
-import { Quran } from 'src/app/quran/quran';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { QuranService } from '../../../../services/quran.service';
+import { extract_term_strings } from '../../../../services/filter-pres';
+import { SearchInputStateMatcher } from '../../../../services/search-input-state-matcher';
+import { Quran } from '../../../../quran/quran';
 
 let timer: any = 0;
 const debounce = (() => {
-   return (cb, ms) => {
+   return (cb: () => void, ms: number) => {
       clearTimeout(timer);
       timer = setTimeout(cb, ms);
    };
@@ -18,17 +25,26 @@ const debounce = (() => {
 @Component({
    selector: 'qinput-input-field',
    templateUrl: './input-field.component.html',
-   styleUrls: ['./input-field.component.css']
+   styleUrls: ['./input-field.component.css'],
+   imports: [
+      CommonModule,
+      ReactiveFormsModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatAutocompleteModule,
+      MatIconModule,
+      MatButtonModule
+   ]
 })
-export class InputFieldComponent implements OnInit, OnDestroy {
+export class InputFieldComponent implements OnInit {
 
-   searchFormControl = new FormControl('', [
+   searchFormControl = new UntypedFormControl('', [
       Validators.required
    ]);
 
    matcher = new SearchInputStateMatcher();
 
-   autocomp_foptions: Observable<Array<string>>;
+   autocomp_foptions!: Observable<Array<string>>;
    autocomp_options = new Array<string>();
    autocomp_roots = new Array<string>();
    autocomp_categories = new Array<string>();
@@ -41,7 +57,10 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    @Output()
    onOpenTermOpts = new EventEmitter<void>();
 
-   constructor(public qService: QuranService) {
+   qService = inject(QuranService);
+   private destroyRef = inject(DestroyRef);
+
+   constructor() {
       this.matcher.filter_group = this.qService.searchCriteriaPres;
    }
 
@@ -51,20 +70,21 @@ export class InputFieldComponent implements OnInit, OnDestroy {
          map(value => this._filter(value)),
       );
 
-      this.searchFormControl.valueChanges.subscribe((e: any) => {
-         this.onInputChanged(e);
-      });
+      this.searchFormControl.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onInputChanged(e);
+         });
 
-      this.qService.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_criteria_updated(); });
-      this.qService.onQuranLoaded.set(this, (q: Quran) => { this.on_quran_loaded(q); });
+      this.qService.searchCriteriaPres.filtersUpdated$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(() => this.on_criteria_updated());
+      this.qService.quranLoaded$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((q: Quran) => this.on_quran_loaded(q));
 
       this.on_quran_loaded(this.qService.quran);
       this.on_criteria_updated();
-   }
-
-   ngOnDestroy() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
-      this.qService.onQuranLoaded.delete(this);
    }
 
    ///

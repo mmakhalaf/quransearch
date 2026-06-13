@@ -7,8 +7,8 @@ import { WordSearchFilter } from './quran/quran-search/word-filter';
 import { RootSearchFilter } from './quran/quran-search/root-filter';
 import { QuranLoader } from './quran/quran-loader';
 
-let quran: Quran = null;
-let search: QuranSearcher = null;
+let quran: Quran;
+let search: QuranSearcher;
 
 describe('Search', () => {
    it('Test Suite', (done: any) => {
@@ -100,12 +100,12 @@ function expect_word_search(q: string, num_ayat: number, num_occ: number, opts: 
 function expect_root_search(r: string, num_ayat: number, num_occ: number, opts: QuranSearchOpts, vf?: Array<number>, pos?:Array<string>) {
    console.log(`Test Root: ${r}`);
 
-   let vfarr = vf !== undefined ? vf.map(x => quran.word_store.get_verb_form(x)) : new Array<VerbForm>();
-   let posarr = pos !== undefined ? pos.map(x => quran.word_store.get_part_of_speech(x)) : new Array<PartOfSpeech>();
+   let vfarr = vf !== undefined ? vf.map((x: number) => quran.word_store.get_verb_form(x)!) : new Array<VerbForm>();
+   let posarr = pos !== undefined ? pos.map((x: string) => quran.word_store.get_part_of_speech(x)!) : new Array<PartOfSpeech>();
 
    let root = quran.word_store.get_root(r);
    let crit = new QuranSearchCriteria();
-   crit.filters.push(new RootSearchFilter(opts, [root], vfarr, posarr));
+   crit.filters.push(new RootSearchFilter(opts, [root!], vfarr, posarr));
    search.update_criteria(crit);
    expect(search.matches.length()).toEqual(num_ayat);
    expect(search.matches.num_occurances()).toEqual(num_occ);

@@ -1,9 +1,18 @@
+/* To learn more about Angular + TypeScript configuration:
+ * https://angular.dev/reference/configs/tsconfig
+ */
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "types": []
   },
+  "files": [
+    "main.ts"
+  ],
+  "include": [
+    "**/*.d.ts"
+  ],
   "exclude": [
     "test.ts",
     "**/*.spec.ts"

@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Ayah } from '../quran/quran';
 import { QuranService } from './quran.service';
 
 @Injectable({
@@ -8,9 +7,8 @@ import { QuranService } from './quran.service';
 })
 export class NavService {
 
-   constructor(private router: Router, private qService: QuranService) {
-
-   }
+   private router = inject(Router);
+   private qService = inject(QuranService);
 
    close_ayah(route: ActivatedRoute) {
       if (route.outlet == 'modal') {
@@ -22,9 +20,7 @@ export class NavService {
 
    open_ayah(ayah_id: number) {
       this.router.navigate(
-         [{ outlets: {'modal': `ayah/${ayah_id}` }}], { 
-            // replaceUrl: true,
-            // skipLocationChange: false
+         [{ outlets: {'modal': `ayah/${ayah_id}` }}], {
          });
    }
 

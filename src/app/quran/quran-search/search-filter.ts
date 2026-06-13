@@ -3,7 +3,7 @@ import { SearchResults } from './search-result';
 import { QuranSearchOpts } from './search-opts';
 
 export abstract class SearchFilter {
-   quran: Quran = null;
+   quran: Quran | null = null;
    
    constructor(protected searchOpts: QuranSearchOpts) {
    }

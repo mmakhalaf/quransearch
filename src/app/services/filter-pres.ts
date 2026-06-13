@@ -4,11 +4,10 @@ import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode, QuranSearc
 import { RootSearchFilter } from '../quran/quran-search/root-filter';
 import { Quran, QuranRoot, Category, Surah, VerbForm, PartOfSpeech } from '../quran/quran';
 import { CategorySearchFilter } from '../quran/quran-search/category-filter';
-import { ErrorStateMatcher } from '@angular/material';
-import { FormGroupDirective, NgForm, FormControl } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
-import { ParamMap, Params } from '@angular/router';
+import type { Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
+import { Subject } from 'rxjs';
 
 
 export const opts_query_types = [
@@ -130,54 +129,6 @@ function extract_suwar(search_term: string, quran: Quran): Array<Surah> {
    return ss;
 }
 
-// Blocks the search when we receive a filter update
-// This is to use when we have multiple operations that could
-// issue the callback but we only want to perform the search in the end
-// NOTE: We must call dispose() at the end because we can't rely on the GC
-//       to support this particular pattern
-export class SearchBlocker {
-   private static g_instances = 0;
-
-   constructor() {
-      SearchBlocker.g_instances++;
-   }
-
-   dispose() {
-      SearchBlocker.g_instances--;
-      if (SearchBlocker.g_instances < 0) {
-         console.error('dispose() called too many times');
-         SearchBlocker.g_instances = 0;
-      }
-   }
-
-   static isBlocked(): boolean {
-      return SearchBlocker.g_instances != 0;
-   }
-
-}
-
-export class SearchInputStateMatcher implements ErrorStateMatcher {
-   filter_group: FilterGroupPres = null;
-   quran: Quran = null;
-
-   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-      if (this.filter_group.cur_filter == null) {
-         console.error('Null Filter');
-         return false;
-      } else if (this.quran == null) {
-         return false;
-      } else {
-         let err = this.filter_group.cur_filter.validate(this.quran);
-         if (err.length == 0) {
-            return false;
-         } else {
-            control.setErrors({err: err});
-            return true;
-         }
-      }
-   }
- }
-
 // Represent a group of active filters and their effect on the UI
 export class FilterGroupPres {
    cur_filter = new FilterPres();
@@ -186,7 +137,7 @@ export class FilterGroupPres {
    available_sort_order = new Array<string>();
    cur_sort_order = 'seq';
 
-   onFiltersUpdated = new Map<any, ()=>void>();
+   readonly filtersUpdated$ = new Subject<void>();
 
    show_sort_order_opt(opt: string): boolean {
       return this.available_sort_order.indexOf(opt) != -1;
@@ -304,7 +255,7 @@ export class FilterGroupPres {
       // Make sure the current filter is the last
       let cf = this.cur_filter.to_filter(quran);
       if (cf != null) {
-         c.filters.push(this.cur_filter.to_filter(quran));
+         c.filters.push(cf);
       }
       return c;
    }
@@ -315,9 +266,7 @@ export class FilterGroupPres {
       }
       this.cur_filter.set_term_type(this.cur_filter.cur_term_type);
       this.available_sort_order = this.sort_order_options();
-      this.onFiltersUpdated.forEach((cb, k: any) => {
-         cb();
-      });
+      this.filtersUpdated$.next();
    }
 
    show_sort_by(): boolean {
@@ -326,6 +275,7 @@ export class FilterGroupPres {
             return true;
          }
       }
+      return false;
    }
 
    show_settings(): boolean {
@@ -334,6 +284,7 @@ export class FilterGroupPres {
             return true;
          }
       }
+      return false;
    }
 
    show_filters(): boolean {
@@ -362,7 +313,7 @@ export class FilterGroupPres {
    }
 
    to_params(quran: Quran): Params {
-      let map = {};
+      let map: Params = {};
       map['s'] = opts_sort_order.findIndex((v) => v.opt == this.cur_sort_order);
       this.filter_to_map(this.cur_filter, -1, map);
       let nfilters = 0;
@@ -386,7 +337,7 @@ export class FilterGroupPres {
       map[i < 0 ? 'vf': `vf${i}`] = f.cur_verb_form.join(',');
    }
 
-   static from_params(params: ParamMap): FilterGroupPres {
+   static from_params(params: Params): FilterGroupPres {
       let group = new FilterGroupPres();
 
       let n = +params['n'];
@@ -413,16 +364,18 @@ export class FilterGroupPres {
          }
       }
 
-      group.cur_filter = FilterGroupPres.map_to_filter(params, -1, false);
-      if (group.cur_filter == null) {
+      let cur = FilterGroupPres.map_to_filter(params, -1, false);
+      if (cur == null) {
          console.error('Could not find current filter');
          group.cur_filter = new FilterPres();
+      } else {
+         group.cur_filter = cur;
       }
 
       return group;
    }
 
-   private static map_to_filter(params: ParamMap, i: number, ensure_valid: boolean): FilterPres {
+   private static map_to_filter(params: Params, i: number, ensure_valid: boolean): FilterPres | null {
 
       let type = +params[i < 0 ? 't' : `t${i}`];
       if (isNaN(type)) {
@@ -465,7 +418,7 @@ export class FilterGroupPres {
 
       let vf = params[i < 0 ? 'vf' : `vf${i}`];
       if (vf !== undefined) {
-         f.cur_verb_form = vf.split(',').map(x => +x);
+         f.cur_verb_form = vf.split(',').map((x: string) => +x);
       }
       
       return f;
@@ -633,7 +586,7 @@ export class FilterPres {
       return opts;
    }
 
-   to_filter(quran: Quran): SearchFilter {
+   to_filter(quran: Quran): SearchFilter | null {
       if (!this.is_valid(quran)) {
          return null;
       }

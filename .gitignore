@@ -5,6 +5,9 @@
 /tmp
 /out-tsc
 
+# Angular CLI / esbuild cache
+/.angular
+
 # dependencies
 /node_modules
 

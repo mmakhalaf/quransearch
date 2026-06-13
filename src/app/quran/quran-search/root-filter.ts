@@ -55,7 +55,7 @@ export class RootSearchFilter extends SearchFilter {
       return matches;
    }
 
-   equals(oth: SearchFilter): boolean {
+   override equals(oth: SearchFilter): boolean {
       if (!(oth instanceof RootSearchFilter)) {
          return false;
       }
@@ -97,6 +97,9 @@ export class RootSearchFilter extends SearchFilter {
 
    private is_right_form(w: QuranWord): boolean {
       if (this.vforms.length > 0) {
+         if (w.verb_form == null) {
+            return false;
+         }
          let idx = this.vforms.indexOf(w.verb_form);
          if (idx == -1) {
             return false;

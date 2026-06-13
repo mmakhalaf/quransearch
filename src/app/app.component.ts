@@ -1,22 +1,16 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { QuranService } from './services/quran.service';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { MatIconRegistry } from '@angular/material/icon';
 
-// Consts
 @Component({
    selector: 'app-root',
    templateUrl: './app.component.html',
-   styleUrls: ['./app.component.css']
+   styleUrls: ['./app.component.css'],
+   imports: [RouterOutlet]
 })
-export class AppComponent implements OnInit {
-
-   @ViewChild('cb')
-   cb: any;
-
-   constructor(private qService: QuranService) {
-
-   }
-
-   ngOnInit() {
-      this.qService.cbElem = this.cb.nativeElement;
+export class AppComponent {
+   constructor() {
+      // Use the Material Symbols Outlined font for all <mat-icon> elements.
+      inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
    }
 }

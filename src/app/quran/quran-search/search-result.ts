@@ -91,7 +91,7 @@ export class SearchResults {
    }
 
    add_result(ayah: Ayah, word_indices: Set<number>) {
-      let res: SearchResult = this.get_by_ayah(ayah);
+      let res: SearchResult | null = this.get_by_ayah(ayah);
       if (res != null && res !== undefined) {
          res.add_words(word_indices);
       } else {
@@ -111,14 +111,14 @@ export class SearchResults {
       }
    }
 
-   get_by_ayah_id(ayah_id: number): SearchResult {
+   get_by_ayah_id(ayah_id: number): SearchResult | null {
       let idx = this.results.findIndex((r: SearchResult):boolean => {
          return r.ayah.id == ayah_id;
       });
       return idx == -1 ? null : this.results[idx];
    }
-   
-   get_by_ayah(ayah: Ayah): SearchResult {
+
+   get_by_ayah(ayah: Ayah): SearchResult | null {
       let idx = this.results.findIndex((r: SearchResult):boolean => {
          return r.ayah == ayah;
       });
