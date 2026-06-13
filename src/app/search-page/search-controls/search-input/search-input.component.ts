@@ -1,6 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { QuranService } from '../../../services/quran.service';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { QuranService } from '../../../services/quran.service';
+import { InputFieldComponent } from './input-field/input-field.component';
+import { TypeSelectComponent } from './type-select/type-select.component';
+import { OptsButtonsComponent } from './opts-buttons/opts-buttons.component';
 
 export enum DisplayMode {
    SingleLine,
@@ -10,7 +14,8 @@ export enum DisplayMode {
 @Component({
    selector: 'qsearch-input',
    templateUrl: './search-input.component.html',
-   styleUrls: ['./search-input.component.css']
+   styleUrls: ['./search-input.component.css'],
+   imports: [CommonModule, InputFieldComponent, TypeSelectComponent, OptsButtonsComponent]
 })
 export class SearchInputComponent {
 
@@ -25,8 +30,11 @@ export class SearchInputComponent {
 
    DisplayMode = DisplayMode;
    displayMode = DisplayMode.SingleLine;
-   
-   constructor(public qService: QuranService, breakpointObserver: BreakpointObserver) {
+
+   qService = inject(QuranService);
+
+   constructor() {
+      const breakpointObserver = inject(BreakpointObserver);
       breakpointObserver.observe([
          Breakpoints.HandsetPortrait,
          Breakpoints.XSmall
@@ -38,7 +46,7 @@ export class SearchInputComponent {
          }
       });
    }
-   
+
    ///
    /// Functions
 

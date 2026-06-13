@@ -1,5 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+/* You can add global styles to this file, and also import other style files.
+   The Angular Material theme is loaded via angular.json (azure-blue prebuilt). */
 
 @font-face {
    font-family: Scheherazade;
@@ -45,25 +45,21 @@ body {
 
 /** Angular Material Overrides **/
 
-/* Respect 'rtl' */
-.controls .mat-standard-chip .mat-chip-remove, .controls .mat-standard-chip .mat-chip-trailing-icon {
+/* Respect 'rtl' (MDC / Material 3 class names) */
+.controls .mat-mdc-chip .mat-mdc-chip-remove {
    margin-right: 8px;
    margin-left: 0px;
 }
 
-/* .controls .mat-form-field-infix {
-   border-top: 0.2rem;
-} */
-
-.opts .mat-form-field {
+.opts .mat-mdc-form-field {
    text-align: right;
 }
 
-.mat-select-panel .mat-optgroup-label, .mat-select-panel .mat-option {
+.mat-mdc-select-panel .mat-mdc-optgroup-label, .mat-mdc-select-panel .mat-mdc-option {
    text-align: right;
 }
 
-.opts .mat-slide-toggle-bar {
+.opts .mat-mdc-slide-toggle {
    margin-right: 0px;
    margin-left: 8px;
 }

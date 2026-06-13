@@ -1,29 +1,29 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Ayah, Surah, Quran, QuranWord, Category } from '../../quran/quran';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { isNullOrUndefined } from 'util';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { Ayah, Quran, QuranWord, Category } from '../../quran/quran';
+import { ActivatedRoute } from '@angular/router';
 import { QuranService } from '../../services/quran.service';
 import { NavService } from '../../services/nav-service.service';
 
 @Component({
    selector: 'qmodal-ayah-dialog',
    templateUrl: './ayah.component.html',
-   styleUrls: ['./ayah.component.css']
+   styleUrls: ['./ayah.component.css'],
+   imports: [CommonModule, MatDialogModule, MatTabsModule, MatButtonModule, MatIconModule]
 })
 export class AyahDialogComponent implements OnInit {
 
-   constructor(
-      public dialogRef: MatDialogRef<AyahDialogComponent>,
-      private qService: QuranService,
-      private navService: NavService,
-      @Inject(MAT_DIALOG_DATA) public ayah: Ayah
-      ) {
-      
-   }
+   dialogRef = inject<MatDialogRef<AyahDialogComponent>>(MatDialogRef);
+   private qService = inject(QuranService);
+   private navService = inject(NavService);
+   ayah = inject<Ayah>(MAT_DIALOG_DATA);
 
    ngOnInit() {
-      if (isNullOrUndefined(this.ayah)) {
+      if (this.ayah == null) {
          console.error('No Ayah Provided');
          this.dialogRef.close();
       }
@@ -71,19 +71,17 @@ export class AyahComponent implements OnInit, OnDestroy {
    id = NaN;
    private dialogRef: MatDialogRef<AyahDialogComponent, any> = null;
 
-   constructor(
-      private dialog: MatDialog,
-      private route: ActivatedRoute,
-      private qService: QuranService,
-      private navService: NavService
-      ) {
-      this.qService.onQuranLoaded.set(this, (q: Quran) => {this.on_quran_loaded(q); });
+   private dialog = inject(MatDialog);
+   private route = inject(ActivatedRoute);
+   private qService = inject(QuranService);
+   private navService = inject(NavService);
+
+   constructor() {
+      this.qService.onQuranLoaded.set(this, (q: Quran) => { this.on_quran_loaded(q); });
    }
-   
+
    ngOnInit() {
-      // console.log('Ayah Component Created');
       this.route.params.subscribe((params: {id: string}) => {
-         // console.log('Ayah Query');
          this.id = +params.id;
          setTimeout(() => {
             this.on_quran_loaded(this.qService.quran);
@@ -96,8 +94,7 @@ export class AyahComponent implements OnInit, OnDestroy {
    }
 
    ngOnDestroy() {
-      // console.log('Ayah Component Destroyed');
-      if (!isNullOrUndefined(this.dialogRef)) {
+      if (this.dialogRef != null) {
          this.dialogRef.close();
       }
    }
@@ -108,7 +105,7 @@ export class AyahComponent implements OnInit, OnDestroy {
       }
 
       let ayah = q.get_ayah(this.id);
-      if (isNullOrUndefined(ayah)) {
+      if (ayah == null) {
          this.destroy();
          return;
       }
@@ -121,7 +118,7 @@ export class AyahComponent implements OnInit, OnDestroy {
             autoFocus: false,
             data: ayah
          });
-         
+
          this.dialogRef.afterClosed().subscribe(() => {
             this.destroy();
          });

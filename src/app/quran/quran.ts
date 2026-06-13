@@ -1,7 +1,6 @@
 
 import * as MathUtils from './utils/math-utils';
 import * as StringUtils from './utils/string-utils';
-import { isNullOrUndefined } from 'util';
 
 export type AyahWithIdFn = (ayah: Ayah, ayah_id: string) => void;
 
@@ -151,7 +150,7 @@ export class Ayah {
          console.error(`Mismatching number of words in Ayah ${this.id}`);
          succ = false;
       }
-      if (isNullOrUndefined(this.surah)) {
+      if (this.surah == null) {
          console.error(`No Surah assigned to Ayah ${this.id}`);
          succ = false;
       }

@@ -4,8 +4,8 @@ import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode, QuranSearc
 import { RootSearchFilter } from '../quran/quran-search/root-filter';
 import { Quran, QuranRoot, Category, Surah, VerbForm, PartOfSpeech } from '../quran/quran';
 import { CategorySearchFilter } from '../quran/quran-search/category-filter';
-import { ErrorStateMatcher } from '@angular/material';
-import { FormGroupDirective, NgForm, FormControl } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { ParamMap, Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
@@ -160,7 +160,7 @@ export class SearchInputStateMatcher implements ErrorStateMatcher {
    filter_group: FilterGroupPres = null;
    quran: Quran = null;
 
-   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+   isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
       if (this.filter_group.cur_filter == null) {
          console.error('Null Filter');
          return false;

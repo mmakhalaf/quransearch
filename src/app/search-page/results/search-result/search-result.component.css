@@ -1,4 +1,13 @@
 
+:host {
+   /* Native off-screen virtualization: the browser skips layout/paint for rows
+      that are outside the viewport, which keeps large result sets responsive
+      without a JS virtual-scroll library. Handles variable row heights. */
+   display: block;
+   content-visibility: auto;
+   contain-intrinsic-size: auto 64px;
+}
+
 .result-row {
    margin: 0.2rem;
 }

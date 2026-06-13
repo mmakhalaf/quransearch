@@ -4,16 +4,18 @@
       <mat-icon class="opts-title-item">filter_list</mat-icon>
       <span class="opts-title-item">التصفيات الحالية</span>
    </legend>
-   
+
    <div class="opts-group">
-      <mat-chip-list multiple="false" selectable="false" >
-            <button mat-icon-button (click)="onClearAllClicked()">
-               <mat-icon>clear_all</mat-icon>
-            </button>
-         <mat-chip *ngFor="let f of qService.searchCriteriaPres.filters" [(value)]="f" disableRipple="true">
+      <mat-chip-set>
+         <button mat-icon-button (click)="onClearAllClicked()">
+            <mat-icon>clear_all</mat-icon>
+         </button>
+         <mat-chip-row *ngFor="let f of qService.searchCriteriaPres.filters" (removed)="onRemoveFilterClicked(f)" [disableRipple]="true">
             <span [innerHTML]="f.to_string()" (click)="onSelectFilterClicked(f)"></span>
-            <mat-icon matChipRemove (click)="onRemoveFilterClicked(f)">cancel</mat-icon>
-         </mat-chip>
-      </mat-chip-list>
+            <button matChipRemove>
+               <mat-icon>cancel</mat-icon>
+            </button>
+         </mat-chip-row>
+      </mat-chip-set>
    </div>
 </fieldset>

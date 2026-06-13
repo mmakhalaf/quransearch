@@ -4,13 +4,12 @@ import { QuranSearchOpts } from './search-opts';
 import { SearchResults } from './search-result';
 import { Surah } from '../quran';
 import * as SortUtils from '../utils/sort-utils';
-import { isNullOrUndefined } from 'util';
 
 export class SurahSearcFilter extends SearchFilter {
 
    constructor(searchOpts: QuranSearchOpts, private suwar: Array<Surah>) {
       super(searchOpts);
-      if (isNullOrUndefined(suwar)) {
+      if (suwar == null) {
          this.suwar = new Array<Surah>();
          console.error(`Null | Undefined surah provided to filter`);
       } else {

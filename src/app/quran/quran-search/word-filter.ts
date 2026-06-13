@@ -49,7 +49,7 @@ export class WordSearchFilter extends SearchFilter {
    private search_by_regex(re: RegExp, searchRes: SearchResults): SearchResults {
       let matches = new SearchResults();
       for (let res of searchRes.results) {
-         let words_i = new Set();
+         let words_i = new Set<number>();
          let found = false;
          let m: RegExpExecArray = null;
          while ((m = re.exec(res.ayah.imlaai)) !== null) {

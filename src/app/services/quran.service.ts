@@ -1,15 +1,13 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Location } from '@angular/common';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Quran, QuranRoot, Category } from '../quran/quran';
 import { QuranSearcher, QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { SearchResults } from '../quran/quran-search/search-result';
 import { QuranSearchDisplayOpts, QuranSearchOpts } from '../quran/quran-search/search-opts';
 import { FilterGroupPres, SearchBlocker } from './filter-pres';
 import { CookieService } from 'ngx-cookie-service';
-import { ClipboardService } from 'ngx-clipboard';
-import { MatSnackBar } from '@angular/material';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { QuranLoader } from '../quran/quran-loader';
-import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
 export type OnQuranLoaded = (q: Quran) => void;
@@ -32,22 +30,18 @@ export class QuranService {
    onSearchCompleted = new Map<any, OnSearchCompleted>();
    onQuranLoaded = new Map<any, OnQuranLoaded>();
 
-   cbElem: any = null;
-
    search_opts = new QuranSearchOpts();
    disp_opts = new QuranSearchDisplayOpts();
 
    // For debugging only
    disable_defaults = false;
 
-   constructor(
-      private zone: NgZone, 
-      private location: Location, 
-      private router: Router,
-      private cookieService: CookieService,
-      private cbService: ClipboardService,
-      private snackBar: MatSnackBar
-      ) {
+   private zone = inject(NgZone);
+   private cookieService = inject(CookieService);
+   private clipboard = inject(Clipboard);
+   private snackBar = inject(MatSnackBar);
+
+   constructor() {
       this.isOpPending = true;
       QuranLoader.create().then(this.on_quran_loaded);
       this.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
@@ -87,8 +81,7 @@ export class QuranService {
    }
 
    copy_text(txt: string, message: string) {
-      let succ = this.cbService.copyFromContent(txt, this.cbElem);
-      this.cbService.destroy(this.cbElem);
+      this.clipboard.copy(txt);
       this.snackBar.open(message, 'أغلق', {
          duration: 2000,
          direction: "rtl"

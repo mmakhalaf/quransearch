@@ -1,33 +1,24 @@
 
 <div #scrolltop></div>
-<virtual-scroller
-   #scroll
-   [items]="qService.matches.results"
-   [enableUnequalChildrenSizes]="true"
-   [scrollThrottlingTime]="5"
-   [bufferAmount]="15"
-   [parentScroll]="parent"
-   (vsChange)="onScrollChanged($event)"
-   >
-   <div *ngIf="qService.matches.length() > 0" class="data-msg">
-      عدد الآيات: {{num_results()}}،
-      وردت: {{num_occurances()}} مرة
-   </div>
-   
-   <fieldset class="opts root-card" *ngIf="roots.length > 0">
-      <legend class="opts-title">
-         <span class="opts-title-item">الجذور</span>
-      </legend>
-      <span *ngFor="let r of roots" class="root-word" (click)="onRootClicked(r)">
-         {{r.text}}
-      </span>
-   </fieldset>
-   
-   <div #container>
-      <qsearch-result
-         *ngFor="let r of scroll.viewPortItems; let i = index"
-         [result]="r"
-         >
-      </qsearch-result>
-   </div>
-</virtual-scroller>
+
+<div *ngIf="qService.matches.length() > 0" class="data-msg">
+   عدد الآيات: {{num_results()}}،
+   وردت: {{num_occurances()}} مرة
+</div>
+
+<fieldset class="opts root-card" *ngIf="roots.length > 0">
+   <legend class="opts-title">
+      <span class="opts-title-item">الجذور</span>
+   </legend>
+   <span *ngFor="let r of roots" class="root-word" (click)="onRootClicked(r)">
+      {{r.text}}
+   </span>
+</fieldset>
+
+<div class="results-list">
+   <qsearch-result
+      *ngFor="let r of qService.matches.results; trackBy: trackByAyah"
+      [result]="r"
+      >
+   </qsearch-result>
+</div>

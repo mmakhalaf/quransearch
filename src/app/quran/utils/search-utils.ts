@@ -1,8 +1,6 @@
 
 import * as MathUtils from './math-utils';
 
-declare var XRegExp: any;
-
 
 const multi_match_map_any = { 
    ا: '[اأآإى]',

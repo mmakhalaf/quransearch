@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { QuranService } from '../../../services/quran.service';
 import * as HttpUtils from '../../../quran/utils/http-utils';
-import { Router } from '@angular/router';
 
 @Component({
    selector: 'qsearch-settings',
@@ -9,14 +15,13 @@ import { Router } from '@angular/router';
    styleUrls: ['./search-settings.component.css'],
    host: {
       'style': 'display: flex; direction: rtl;'
-   }
+   },
+   imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule]
 })
 export class SearchSettingsComponent {
 
-   constructor(
-      public qService: QuranService,
-      private router: Router) {
-   }
+   qService = inject(QuranService);
+   private router = inject(Router);
 
    onSortOrderChanged() {
       this.qService.searchCriteriaPres.filter_updated();
@@ -32,5 +37,5 @@ export class SearchSettingsComponent {
          'تم نسخ رابط البحث'
          );
    }
-   
+
 }

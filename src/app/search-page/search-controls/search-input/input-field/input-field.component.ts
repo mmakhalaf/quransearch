@@ -1,11 +1,16 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { QuranService } from 'src/app/services/quran.service';
-import { SearchInputStateMatcher, extract_term_strings } from '../../../../services/filter-pres';
-import { FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material';
-import { Quran } from 'src/app/quran/quran';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { QuranService } from '../../../../services/quran.service';
+import { SearchInputStateMatcher, extract_term_strings } from '../../../../services/filter-pres';
+import { Quran } from '../../../../quran/quran';
 
 let timer: any = 0;
 const debounce = (() => {
@@ -18,11 +23,20 @@ const debounce = (() => {
 @Component({
    selector: 'qinput-input-field',
    templateUrl: './input-field.component.html',
-   styleUrls: ['./input-field.component.css']
+   styleUrls: ['./input-field.component.css'],
+   imports: [
+      CommonModule,
+      ReactiveFormsModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatAutocompleteModule,
+      MatIconModule,
+      MatButtonModule
+   ]
 })
 export class InputFieldComponent implements OnInit, OnDestroy {
 
-   searchFormControl = new FormControl('', [
+   searchFormControl = new UntypedFormControl('', [
       Validators.required
    ]);
 
@@ -41,7 +55,9 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    @Output()
    onOpenTermOpts = new EventEmitter<void>();
 
-   constructor(public qService: QuranService) {
+   qService = inject(QuranService);
+
+   constructor() {
       this.matcher.filter_group = this.qService.searchCriteriaPres;
    }
 
