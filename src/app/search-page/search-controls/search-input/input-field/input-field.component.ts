@@ -10,7 +10,8 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { QuranService } from '../../../../services/quran.service';
-import { SearchInputStateMatcher, extract_term_strings } from '../../../../services/filter-pres';
+import { extract_term_strings } from '../../../../services/filter-pres';
+import { SearchInputStateMatcher } from '../../../../services/search-input-state-matcher';
 import { Quran } from '../../../../quran/quran';
 
 let timer: any = 0;

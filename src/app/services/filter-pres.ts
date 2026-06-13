@@ -4,10 +4,8 @@ import { QuranSearchOpts, QuranSearchPlaceMode, QuranSearchMatchMode, QuranSearc
 import { RootSearchFilter } from '../quran/quran-search/root-filter';
 import { Quran, QuranRoot, Category, Surah, VerbForm, PartOfSpeech } from '../quran/quran';
 import { CategorySearchFilter } from '../quran/quran-search/category-filter';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
-import { Params } from '@angular/router';
+import type { Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
 import { Subject } from 'rxjs';
 
@@ -130,28 +128,6 @@ function extract_suwar(search_term: string, quran: Quran): Array<Surah> {
    }
    return ss;
 }
-
-export class SearchInputStateMatcher implements ErrorStateMatcher {
-   filter_group!: FilterGroupPres;
-   quran: Quran | null = null;
-
-   isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-      if (this.filter_group.cur_filter == null) {
-         console.error('Null Filter');
-         return false;
-      } else if (this.quran == null) {
-         return false;
-      } else {
-         let err = this.filter_group.cur_filter.validate(this.quran);
-         if (err.length == 0) {
-            return false;
-         } else {
-            control?.setErrors({err: err});
-            return true;
-         }
-      }
-   }
- }
 
 // Represent a group of active filters and their effect on the UI
 export class FilterGroupPres {

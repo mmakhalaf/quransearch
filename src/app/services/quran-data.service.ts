@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Quran } from '../quran/quran';
+import { Ayah, Quran } from '../quran/quran';
 import { QuranLoader } from '../quran/quran-loader';
 
 /**
@@ -15,6 +15,9 @@ export class QuranDataService {
 
    quran!: Quran;
    isOpPending = true;
+
+   /** Global ayah-id -> Ayah index, for mapping worker search results back. */
+   readonly ayahById = new Map<number, Ayah>();
 
    /** Emits the loaded Quran once; late subscribers get the last value. */
    readonly quranLoaded$ = new ReplaySubject<Quran>(1);
@@ -37,6 +40,7 @@ export class QuranDataService {
          return;
       }
 
+      quran.for_each_ayah((a: Ayah) => this.ayahById.set(a.id, a));
       this.quranLoaded$.next(quran);
    }
 }

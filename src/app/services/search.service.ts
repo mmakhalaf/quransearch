@@ -4,16 +4,28 @@ import { debounceTime } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Quran, QuranRoot, Category } from '../quran/quran';
 import { QuranSearcher } from '../quran/quran-search/quran-searcher';
-import { SearchResults } from '../quran/quran-search/search-result';
+import { SearchResult, SearchResults } from '../quran/quran-search/search-result';
 import { QuranSearchDisplayOpts } from '../quran/quran-search/search-opts';
 import { FilterGroupPres } from './filter-pres';
 import { QuranDataService } from './quran-data.service';
 
+interface WorkerResult {
+   type: 'result' | 'ready';
+   reqId: number;
+   updated: boolean;
+   error?: boolean;
+   results: { id: number; wi: number[] }[];
+}
+
 /**
  * Owns the search engine and the presentation/criteria state, and runs searches
- * in response to filter changes. Filter mutations emit on
- * `searchCriteriaPres.filtersUpdated$`; a `debounceTime(0)` coalesces a burst of
- * synchronous mutations into a single search (replacing the old SearchBlocker).
+ * in response to filter changes. A `debounceTime(0)` on
+ * `searchCriteriaPres.filtersUpdated$` coalesces a synchronous burst of filter
+ * mutations into one search (replacing the old SearchBlocker).
+ *
+ * Searches run in a Web Worker (search.worker.ts) when available, keeping the
+ * main thread responsive; an in-thread QuranSearcher is used as a fallback and
+ * for searches issued before the worker has finished loading its dataset.
  */
 @Injectable({
    providedIn: 'root'
@@ -28,6 +40,11 @@ export class SearchService {
    private isSearchPending = false;
    private disable_defaults = false;
 
+   private worker: Worker | null = null;
+   private workerReady = false;
+   private reqId = 0;
+   private latestReqId = 0;
+
    /** Emits whenever a search produced an updated result set. */
    readonly searchCompleted$ = new Subject<SearchResults>();
 
@@ -36,11 +53,59 @@ export class SearchService {
    private cookieService = inject(CookieService);
 
    constructor() {
+      this.init_worker();
+
       this.data.quranLoaded$.subscribe((quran: Quran) => this.on_quran_loaded(quran));
       // Coalesce a synchronous burst of filter mutations into one search.
       this.searchCriteriaPres.filtersUpdated$
          .pipe(debounceTime(0))
          .subscribe(() => this.run_search());
+   }
+
+   private init_worker() {
+      if (typeof Worker === 'undefined') {
+         return;
+      }
+      try {
+         this.worker = new Worker(new URL('../search.worker', import.meta.url), { type: 'module' });
+         this.worker.onmessage = ({ data }: MessageEvent<WorkerResult>) => {
+            this.zone.run(() => this.on_worker_message(data));
+         };
+         this.worker.onerror = () => {
+            // Fall back to in-thread search on any worker failure.
+            this.worker = null;
+            this.workerReady = false;
+         };
+      } catch {
+         this.worker = null;
+      }
+   }
+
+   private on_worker_message(data: WorkerResult) {
+      if (data.type === 'ready') {
+         this.workerReady = !data.error;
+         return;
+      }
+      // Ignore stale responses superseded by a newer request.
+      if (data.reqId !== this.latestReqId) {
+         return;
+      }
+      this.matches = this.results_from_worker(data.results);
+      if (data.updated) {
+         this.searchCompleted$.next(this.matches);
+         this.save_cookies();
+      }
+   }
+
+   private results_from_worker(items: { id: number; wi: number[] }[]): SearchResults {
+      let sr = new SearchResults();
+      for (let item of items) {
+         let ayah = this.data.ayahById.get(item.id);
+         if (ayah != null) {
+            sr.results.push(new SearchResult(ayah, new Set<number>(item.wi)));
+         }
+      }
+      return sr;
    }
 
    private on_quran_loaded(quran: Quran) {
@@ -95,13 +160,28 @@ export class SearchService {
          }
          return;
       }
+      this.isSearchPending = false;
 
+      if (this.worker != null && this.workerReady) {
+         // Off-main-thread: send serializable criteria; results arrive async.
+         this.latestReqId = ++this.reqId;
+         this.worker.postMessage({
+            type: 'search',
+            reqId: this.latestReqId,
+            params: this.searchCriteriaPres.to_params(this.data.quran)
+         });
+         return;
+      }
+
+      this.run_search_in_thread();
+   }
+
+   private run_search_in_thread() {
       let crit = this.searchCriteriaPres.to_criteria(this.data.quran);
       if (crit.filters.length == 0) {
          return;
       }
 
-      this.isSearchPending = false;
       let updated: boolean = this.searcher.update_criteria(crit);
       this.matches = this.searcher.matches;
 
