@@ -200,33 +200,55 @@ single highest-value follow-up.
 
 ---
 
-## 7. Recommended backlog (prioritized)
+## 7. Backlog — status
+
+All of the originally-identified backlog items have now been implemented (see the
+git history; each was a separate commit).
 
 **High value**
-1. **Enable TypeScript `strict` + Angular `strictTemplates` incrementally.** Biggest
-   long-term safety win; left off to keep this migration buildable.
-2. **Fix the Karma harness** so the search-correctness spec runs in CI (the spec is
-   valuable — it asserts exact match counts against the real data).
-3. **Add a CI workflow** (`.github/workflows`): install, lint, build, test on Node
-   22 — there is currently none.
+1. ✅ **TypeScript `strict` + Angular `strictTemplates` enabled.** `tsconfig.json`
+   now sets `strict`, `noImplicitOverride`, `noImplicitReturns`,
+   `noFallthroughCasesInSwitch`, and `strictTemplates`; all fallout fixed.
+2. ✅ **Karma harness fixed.** `src/karma.conf.js` declares `frameworks: ['jasmine']`
+   (the `@angular/build:karma` builder needs it) + a no-sandbox launcher; the
+   search-correctness spec runs green headless.
+3. ✅ **CI workflow added** (`.github/workflows/ci.yml`, `on: pull_request`): Node 22,
+   lint → typecheck → build → headless unit tests, plus a separate Playwright e2e job.
 
 **Medium value**
-4. **Decompose `QuranService`** into a search engine/service, a state store, and a
-   thin side-effects facade.
-5. **Replace the `Map`-based event buses** with RxJS `Subject`s/signals + `OnPush`
-   throughout; remove `SearchBlocker`.
-6. **Performance**: build an **inverted word index** (O(k) instead of O(n·m) word
-   search) and/or move parsing + search into a **Web Worker** to keep the main
-   thread free.
-7. **PWA / offline**: add `@angular/pwa` to cache the 6.5 MB dataset and app shell.
-8. **Windowed virtual scroll** for very large result sets (CDK experimental
-   autosize or a maintained library), if `content-visibility` proves insufficient.
+4. ✅ **`QuranService` decomposed** into `QuranDataService` (loading),
+   `SearchService` (engine + state + persistence) and a thin `QuranService` facade
+   (+ clipboard side effect).
+5. ✅ **`Map`-based event buses replaced with RxJS** (`filtersUpdated$`, `scroll$`,
+   `scrollToTop$`, `searchCompleted$`, `quranLoaded$`) with `takeUntilDestroyed()`;
+   **`SearchBlocker` removed** in favour of `debounceTime(0)` coalescing; `OnPush`
+   on the result row.
+6. ✅ **Search moved into a Web Worker** (`search.worker.ts`), running the identical
+   `QuranSearcher` for guaranteed parity, with an in-thread fallback.
+   ⚠️ **Inverted word index: deferred (deliberate).** Preserving exact parity with
+   the flexible Arabic matching (alef/teh variants, optional و, begin/end/full-word
+   modes) via a token index is high-risk, and search is already fast once
+   off-thread. Re-evaluate only if profiling shows a need. Trade-off of the worker:
+   the dataset is parsed twice (once per thread) — acceptable as the worker parse is
+   off the main thread; revisit if memory becomes a concern.
+7. ✅ **PWA / offline**: `@angular/service-worker` + `ngsw-config.json` (app-shell
+   prefetch; `/assets/**` incl. the 6.5 MB dataset cached) + web manifest. Verified
+   registering/controlling against a production build.
+8. ✅ **Windowed virtual scroll** via CDK `cdk-virtual-scroll-viewport autosize`
+   (`@angular/cdk-experimental`) — only ~14 rows in the DOM for a 1,661-result query.
 
-**Low value / polish**
-9. **Icons**: templates use `*_outline` ligatures (e.g. `link_outline`) that aren't
-   in the loaded "Material Icons" (filled) font, so they render as text. Switch to
-   Material Symbols or use the filled names. _(Pre-existing, not a regression.)_
-10. **Self-host the Scheherazade Arabic font** instead of the unreliable
-    `deendev.com` CDN.
-11. Migrate E2E to **Playwright**; consider replacing cookies with `localStorage`
-    for search-state persistence.
+**Polish**
+9. ✅ **Icons**: switched to **Material Symbols Outlined**, self-hosted, set as the
+   default `mat-icon` font; icon names corrected.
+10. ✅ **Scheherazade New Arabic font self-hosted** (SIL OFL, Arabic subset).
+    Together with #9 the app now has **zero external resource dependencies** (fully
+    offline-capable; smoke test shows 0 console errors).
+11. ✅ **localStorage** replaces cookie persistence (`ngx-cookie-service` removed);
+    **Playwright** e2e added (`playwright.config.ts`, `e2e/search.spec.ts`,
+    `npm run e2e`).
+
+### Remaining / future
+- Inverted word index (see #6) if search latency ever matters.
+- Fuller `OnPush`/signal-based state across the control components (they still bind
+  to mutable service state with default change detection).
+- App icons + installable-PWA polish (the manifest currently reuses `favicon.ico`).
