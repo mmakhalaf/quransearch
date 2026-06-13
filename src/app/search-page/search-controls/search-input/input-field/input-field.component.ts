@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -34,7 +35,7 @@ const debounce = (() => {
       MatButtonModule
    ]
 })
-export class InputFieldComponent implements OnInit, OnDestroy {
+export class InputFieldComponent implements OnInit {
 
    searchFormControl = new UntypedFormControl('', [
       Validators.required
@@ -56,6 +57,7 @@ export class InputFieldComponent implements OnInit, OnDestroy {
    onOpenTermOpts = new EventEmitter<void>();
 
    qService = inject(QuranService);
+   private destroyRef = inject(DestroyRef);
 
    constructor() {
       this.matcher.filter_group = this.qService.searchCriteriaPres;
@@ -67,20 +69,21 @@ export class InputFieldComponent implements OnInit, OnDestroy {
          map(value => this._filter(value)),
       );
 
-      this.searchFormControl.valueChanges.subscribe((e: any) => {
-         this.onInputChanged(e);
-      });
+      this.searchFormControl.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onInputChanged(e);
+         });
 
-      this.qService.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_criteria_updated(); });
-      this.qService.onQuranLoaded.set(this, (q: Quran) => { this.on_quran_loaded(q); });
+      this.qService.searchCriteriaPres.filtersUpdated$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(() => this.on_criteria_updated());
+      this.qService.quranLoaded$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((q: Quran) => this.on_quran_loaded(q));
 
       this.on_quran_loaded(this.qService.quran);
       this.on_criteria_updated();
-   }
-
-   ngOnDestroy() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
-      this.qService.onQuranLoaded.delete(this);
    }
 
    ///

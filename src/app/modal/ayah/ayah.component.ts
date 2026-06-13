@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -77,7 +78,9 @@ export class AyahComponent implements OnInit, OnDestroy {
    private navService = inject(NavService);
 
    constructor() {
-      this.qService.onQuranLoaded.set(this, (q: Quran) => { this.on_quran_loaded(q); });
+      this.qService.quranLoaded$
+         .pipe(takeUntilDestroyed())
+         .subscribe((q: Quran) => this.on_quran_loaded(q));
    }
 
    ngOnInit() {

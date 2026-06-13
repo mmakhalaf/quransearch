@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +16,7 @@ import { SearchResultComponent } from '../search-result/search-result.component'
    styleUrls: ['./search-results.component.css'],
    imports: [CommonModule, MatIconModule, MatButtonModule, SearchResultComponent]
 })
-export class SearchResultsComponent implements OnInit, OnDestroy {
+export class SearchResultsComponent implements OnInit {
 
    @ViewChild("scrolltop")
    top_item: any;
@@ -24,15 +25,15 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
    qService = inject(QuranService);
    private constrolService = inject(ControlsResService);
+   private destroyRef = inject(DestroyRef);
 
    ngOnInit() {
-      this.qService.onSearchCompleted.set(this, this.on_search_complete);
-      this.constrolService.onScrollToTopRequest.set(this, this.scrollToTop);
-   }
-
-   ngOnDestroy() {
-      this.qService.onSearchCompleted.delete(this);
-      this.constrolService.onScrollToTopRequest.delete(this);
+      this.qService.searchCompleted$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(this.on_search_complete);
+      this.constrolService.scrollToTop$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(this.scrollToTop);
    }
 
    num_results() {

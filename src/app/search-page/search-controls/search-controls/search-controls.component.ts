@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,7 +28,7 @@ import { FiltersListComponent } from '../filters-list/filters-list.component';
       FiltersListComponent
    ]
 })
-export class SearchControlsComponent implements OnInit, OnDestroy {
+export class SearchControlsComponent {
 
    show_toolbar = true;
    show_up_arrow = false;
@@ -46,7 +47,7 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
       breakpointObserver.observe([
          Breakpoints.Handset,
          Breakpoints.XSmall
-      ]).subscribe((result: BreakpointState) => {
+      ]).pipe(takeUntilDestroyed()).subscribe((result: BreakpointState) => {
          if (result.matches) {
             this.show_opts_one_at_time = true;
          } else {
@@ -54,14 +55,10 @@ export class SearchControlsComponent implements OnInit, OnDestroy {
          }
          this.update_options_layout();
       });
-   }
 
-   ngOnInit() {
-      this.constrolService.onScroll.set(this, (dir, at_top) => { this.onScroll(dir, at_top); });
-   }
-
-   ngOnDestroy() {
-      this.constrolService.onScroll.delete(this);
+      this.constrolService.scroll$
+         .pipe(takeUntilDestroyed())
+         .subscribe(e => this.onScroll(e.dir, e.atTop));
    }
 
    /// Events

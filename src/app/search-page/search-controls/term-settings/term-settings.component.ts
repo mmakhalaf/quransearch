@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { Platform } from '@angular/cdk/platform';
@@ -28,7 +29,7 @@ import { opts_ayah_order, opts_ayah_loc } from '../../../services/filter-pres';
       MatSlideToggleModule
    ]
 })
-export class TermSettingsComponent implements OnInit, OnDestroy {
+export class TermSettingsComponent implements OnInit {
 
    show_native = false;
 
@@ -36,6 +37,7 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    vf = new UntypedFormControl();
 
    qService = inject(QuranService);
+   private destroyRef = inject(DestroyRef);
 
    constructor() {
       const platform = inject(Platform);
@@ -47,19 +49,21 @@ export class TermSettingsComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.set(this, () => { this.on_filters_updated(); });
-      this.pos.valueChanges.subscribe((e: any) => {
-         this.onPOSChanged(e);
-      });
-      this.vf.valueChanges.subscribe((e: any) => {
-         this.onVFChanged(e);
-      });
+      this.qService.searchCriteriaPres.filtersUpdated$
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(() => this.on_filters_updated());
+      this.pos.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onPOSChanged(e);
+         });
+      this.vf.valueChanges
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe((e: any) => {
+            this.onVFChanged(e);
+         });
 
       this.on_filters_updated();
-   }
-
-   ngOnDestroy() {
-      this.qService.searchCriteriaPres.onFiltersUpdated.delete(this);
    }
 
    onPOSChanged(e: Array<string>) {

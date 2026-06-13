@@ -1,32 +1,28 @@
-
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+
+export interface ScrollEvent {
+   dir: number;
+   atTop: boolean;
+}
 
 @Injectable({
    providedIn: 'root'
 })
 export class ControlsResService {
 
-   onScroll = new Map<any, (dir: number, atTop: boolean)=>void>();
-   onScrollToTopRequest = new Map<any, ()=>void>();
-
-   constructor() {
-   }
+   readonly scroll$ = new Subject<ScrollEvent>();
+   readonly scrollToTop$ = new Subject<void>();
 
    onScrollUp(at_top: boolean) {
-      this.onScroll.forEach((cb) => {
-         cb(1, at_top);
-      });
+      this.scroll$.next({ dir: 1, atTop: at_top });
    }
 
    onScrollDown(at_top: boolean) {
-      this.onScroll.forEach((cb) => {
-         cb(-1, at_top);
-      });
+      this.scroll$.next({ dir: -1, atTop: at_top });
    }
 
    request_scroll_to_top() {
-      this.onScrollToTopRequest.forEach((cb) => {
-         cb();
-      });
+      this.scrollToTop$.next();
    }
 }

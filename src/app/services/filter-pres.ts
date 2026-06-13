@@ -9,6 +9,7 @@ import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
 import { Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
+import { Subject } from 'rxjs';
 
 
 export const opts_query_types = [
@@ -130,32 +131,6 @@ function extract_suwar(search_term: string, quran: Quran): Array<Surah> {
    return ss;
 }
 
-// Blocks the search when we receive a filter update
-// This is to use when we have multiple operations that could
-// issue the callback but we only want to perform the search in the end
-// NOTE: We must call dispose() at the end because we can't rely on the GC
-//       to support this particular pattern
-export class SearchBlocker {
-   private static g_instances = 0;
-
-   constructor() {
-      SearchBlocker.g_instances++;
-   }
-
-   dispose() {
-      SearchBlocker.g_instances--;
-      if (SearchBlocker.g_instances < 0) {
-         console.error('dispose() called too many times');
-         SearchBlocker.g_instances = 0;
-      }
-   }
-
-   static isBlocked(): boolean {
-      return SearchBlocker.g_instances != 0;
-   }
-
-}
-
 export class SearchInputStateMatcher implements ErrorStateMatcher {
    filter_group!: FilterGroupPres;
    quran: Quran | null = null;
@@ -186,7 +161,7 @@ export class FilterGroupPres {
    available_sort_order = new Array<string>();
    cur_sort_order = 'seq';
 
-   onFiltersUpdated = new Map<any, ()=>void>();
+   readonly filtersUpdated$ = new Subject<void>();
 
    show_sort_order_opt(opt: string): boolean {
       return this.available_sort_order.indexOf(opt) != -1;
@@ -315,9 +290,7 @@ export class FilterGroupPres {
       }
       this.cur_filter.set_term_type(this.cur_filter.cur_term_type);
       this.available_sort_order = this.sort_order_options();
-      this.onFiltersUpdated.forEach((cb, k: any) => {
-         cb();
-      });
+      this.filtersUpdated$.next();
    }
 
    show_sort_by(): boolean {
