@@ -1,6 +1,4 @@
 
-<div #scrolltop></div>
-
 <div *ngIf="qService.matches.length() > 0" class="data-msg">
    عدد الآيات: {{num_results()}}،
    وردت: {{num_occurances()}} مرة
@@ -15,10 +13,10 @@
    </span>
 </fieldset>
 
-<div class="results-list">
+<cdk-virtual-scroll-viewport autosize class="results-viewport">
    <qsearch-result
-      *ngFor="let r of qService.matches.results; trackBy: trackByAyah"
+      *cdkVirtualFor="let r of qService.matches.results; trackBy: trackByAyah"
       [result]="r"
       >
    </qsearch-result>
-</div>
+</cdk-virtual-scroll-viewport>

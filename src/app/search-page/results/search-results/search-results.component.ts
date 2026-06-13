@@ -1,6 +1,8 @@
-import { Component, OnInit, ViewChild, HostListener, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { ScrollingModule, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { QuranService } from '../../../services/quran.service';
@@ -14,18 +16,26 @@ import { SearchResultComponent } from '../search-result/search-result.component'
    selector: 'qsearch-results',
    templateUrl: './search-results.component.html',
    styleUrls: ['./search-results.component.css'],
-   imports: [CommonModule, MatIconModule, MatButtonModule, SearchResultComponent]
+   imports: [
+      CommonModule,
+      ScrollingModule,
+      ExperimentalScrollingModule,
+      MatIconModule,
+      MatButtonModule,
+      SearchResultComponent
+   ]
 })
-export class SearchResultsComponent implements OnInit {
+export class SearchResultsComponent implements OnInit, AfterViewInit {
 
-   @ViewChild("scrolltop")
-   top_item: any;
+   @ViewChild(CdkVirtualScrollViewport)
+   viewport?: CdkVirtualScrollViewport;
 
    roots = new Array<QuranRoot>();
 
    qService = inject(QuranService);
    private constrolService = inject(ControlsResService);
    private destroyRef = inject(DestroyRef);
+   private curPos = 0;
 
    ngOnInit() {
       this.qService.searchCompleted$
@@ -34,6 +44,22 @@ export class SearchResultsComponent implements OnInit {
       this.constrolService.scrollToTop$
          .pipe(takeUntilDestroyed(this.destroyRef))
          .subscribe(this.scrollToTop);
+   }
+
+   ngAfterViewInit() {
+      // Drive the toolbar show/hide from the virtual viewport's scroll position.
+      this.viewport?.elementScrolled()
+         .pipe(takeUntilDestroyed(this.destroyRef))
+         .subscribe(() => {
+            let offset = this.viewport!.measureScrollOffset('top');
+            let at_top = offset <= 0;
+            if (offset < this.curPos) {
+               this.constrolService.onScrollUp(at_top);
+            } else {
+               this.constrolService.onScrollDown(at_top);
+            }
+            this.curPos = offset;
+         });
    }
 
    num_results() {
@@ -49,12 +75,7 @@ export class SearchResultsComponent implements OnInit {
    }
 
    scrollToTop = () => {
-      // Scroll to the top of the search when a new query is done
-      if (this.top_item != null) {
-         this.top_item.nativeElement.scrollIntoView({
-            behavior: "auto", block: 'nearest'
-         });
-      }
+      this.viewport?.scrollToOffset(0);
    }
 
    on_search_complete = (results: SearchResults) => {
@@ -81,19 +102,5 @@ export class SearchResultsComponent implements OnInit {
 
    onRootClicked(root: QuranRoot) {
       this.qService.request_search_with_root_filter(root, true);
-   }
-
-   private curPos = 0;
-
-   @HostListener('window:scroll')
-   onWindowScroll() {
-      let y = window.scrollY || document.documentElement.scrollTop || 0;
-      let at_top = y <= 0;
-      if (y < this.curPos) {
-         this.constrolService.onScrollUp(at_top);
-      } else {
-         this.constrolService.onScrollDown(at_top);
-      }
-      this.curPos = y;
    }
 }
