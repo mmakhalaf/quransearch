@@ -7,7 +7,7 @@ import { CategorySearchFilter } from '../quran/quran-search/category-filter';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { QuranSearchCriteria } from '../quran/quran-search/quran-searcher';
-import { ParamMap, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { SurahSearcFilter } from '../quran/quran-search/surah-filter';
 
 
@@ -157,8 +157,8 @@ export class SearchBlocker {
 }
 
 export class SearchInputStateMatcher implements ErrorStateMatcher {
-   filter_group: FilterGroupPres = null;
-   quran: Quran = null;
+   filter_group!: FilterGroupPres;
+   quran: Quran | null = null;
 
    isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
       if (this.filter_group.cur_filter == null) {
@@ -171,7 +171,7 @@ export class SearchInputStateMatcher implements ErrorStateMatcher {
          if (err.length == 0) {
             return false;
          } else {
-            control.setErrors({err: err});
+            control?.setErrors({err: err});
             return true;
          }
       }
@@ -304,7 +304,7 @@ export class FilterGroupPres {
       // Make sure the current filter is the last
       let cf = this.cur_filter.to_filter(quran);
       if (cf != null) {
-         c.filters.push(this.cur_filter.to_filter(quran));
+         c.filters.push(cf);
       }
       return c;
    }
@@ -326,6 +326,7 @@ export class FilterGroupPres {
             return true;
          }
       }
+      return false;
    }
 
    show_settings(): boolean {
@@ -334,6 +335,7 @@ export class FilterGroupPres {
             return true;
          }
       }
+      return false;
    }
 
    show_filters(): boolean {
@@ -362,7 +364,7 @@ export class FilterGroupPres {
    }
 
    to_params(quran: Quran): Params {
-      let map = {};
+      let map: Params = {};
       map['s'] = opts_sort_order.findIndex((v) => v.opt == this.cur_sort_order);
       this.filter_to_map(this.cur_filter, -1, map);
       let nfilters = 0;
@@ -386,7 +388,7 @@ export class FilterGroupPres {
       map[i < 0 ? 'vf': `vf${i}`] = f.cur_verb_form.join(',');
    }
 
-   static from_params(params: ParamMap): FilterGroupPres {
+   static from_params(params: Params): FilterGroupPres {
       let group = new FilterGroupPres();
 
       let n = +params['n'];
@@ -413,16 +415,18 @@ export class FilterGroupPres {
          }
       }
 
-      group.cur_filter = FilterGroupPres.map_to_filter(params, -1, false);
-      if (group.cur_filter == null) {
+      let cur = FilterGroupPres.map_to_filter(params, -1, false);
+      if (cur == null) {
          console.error('Could not find current filter');
          group.cur_filter = new FilterPres();
+      } else {
+         group.cur_filter = cur;
       }
 
       return group;
    }
 
-   private static map_to_filter(params: ParamMap, i: number, ensure_valid: boolean): FilterPres {
+   private static map_to_filter(params: Params, i: number, ensure_valid: boolean): FilterPres | null {
 
       let type = +params[i < 0 ? 't' : `t${i}`];
       if (isNaN(type)) {
@@ -465,7 +469,7 @@ export class FilterGroupPres {
 
       let vf = params[i < 0 ? 'vf' : `vf${i}`];
       if (vf !== undefined) {
-         f.cur_verb_form = vf.split(',').map(x => +x);
+         f.cur_verb_form = vf.split(',').map((x: string) => +x);
       }
       
       return f;
@@ -633,7 +637,7 @@ export class FilterPres {
       return opts;
    }
 
-   to_filter(quran: Quran): SearchFilter {
+   to_filter(quran: Quran): SearchFilter | null {
       if (!this.is_valid(quran)) {
          return null;
       }

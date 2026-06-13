@@ -1,17 +1,14 @@
 /* To learn more about Angular + TypeScript configuration:
  * https://angular.dev/reference/configs/tsconfig
- *
- * NOTE: Full `strict` mode and `strictTemplates` are intentionally left OFF for
- * now so the migrated Angular 7 code compiles without a large type-annotation
- * rewrite. Enabling them incrementally is tracked in APP_REVIEW.md.
  */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
-    "strict": false,
-    "noImplicitOverride": false,
-    "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -29,6 +26,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": false
+    "strictTemplates": true
   }
 }
+

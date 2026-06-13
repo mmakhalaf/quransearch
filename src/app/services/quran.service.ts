@@ -19,8 +19,8 @@ export type OnSearchCompleted = (res: SearchResults) => void;
 })
 export class QuranService {
 
-   quran: Quran = null;
-   searcher: QuranSearcher = null;
+   quran!: Quran;
+   searcher!: QuranSearcher;
    isOpPending = false;
    isSearchPending = false;
 

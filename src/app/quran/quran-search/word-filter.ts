@@ -51,7 +51,7 @@ export class WordSearchFilter extends SearchFilter {
       for (let res of searchRes.results) {
          let words_i = new Set<number>();
          let found = false;
-         let m: RegExpExecArray = null;
+         let m: RegExpExecArray | null = null;
          while ((m = re.exec(res.ayah.imlaai)) !== null) {
             found = true;
             let word_indices: Array<number> = res.ayah.imlaai_index_to_word(m.index, re.lastIndex);
@@ -70,7 +70,7 @@ export class WordSearchFilter extends SearchFilter {
       return matches;
    }
 
-   equals(oth: SearchFilter): boolean {
+   override equals(oth: SearchFilter): boolean {
       if (!(oth instanceof WordSearchFilter)) {
          return false;
       }

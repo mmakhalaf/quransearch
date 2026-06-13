@@ -14,7 +14,7 @@ import { Quran } from '../../../../quran/quran';
 
 let timer: any = 0;
 const debounce = (() => {
-   return (cb, ms) => {
+   return (cb: () => void, ms: number) => {
       clearTimeout(timer);
       timer = setTimeout(cb, ms);
    };
@@ -42,7 +42,7 @@ export class InputFieldComponent implements OnInit, OnDestroy {
 
    matcher = new SearchInputStateMatcher();
 
-   autocomp_foptions: Observable<Array<string>>;
+   autocomp_foptions!: Observable<Array<string>>;
    autocomp_options = new Array<string>();
    autocomp_roots = new Array<string>();
    autocomp_categories = new Array<string>();

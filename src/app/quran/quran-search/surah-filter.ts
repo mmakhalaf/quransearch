@@ -28,7 +28,7 @@ export class SurahSearcFilter extends SearchFilter {
       return matches;
    }
 
-   equals(oth: SearchFilter): boolean {
+   override equals(oth: SearchFilter): boolean {
       if (!(oth instanceof SurahSearcFilter)) {
          return false;
       }

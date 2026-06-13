@@ -5,7 +5,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Ayah, Quran, QuranWord, Category } from '../../quran/quran';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { QuranService } from '../../services/quran.service';
 import { NavService } from '../../services/nav-service.service';
 
@@ -69,7 +69,7 @@ export class AyahDialogComponent implements OnInit {
 export class AyahComponent implements OnInit, OnDestroy {
 
    id = NaN;
-   private dialogRef: MatDialogRef<AyahDialogComponent, any> = null;
+   private dialogRef: MatDialogRef<AyahDialogComponent, any> | null = null;
 
    private dialog = inject(MatDialog);
    private route = inject(ActivatedRoute);
@@ -81,8 +81,8 @@ export class AyahComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit() {
-      this.route.params.subscribe((params: {id: string}) => {
-         this.id = +params.id;
+      this.route.params.subscribe((params: Params) => {
+         this.id = +params['id'];
          setTimeout(() => {
             this.on_quran_loaded(this.qService.quran);
          });

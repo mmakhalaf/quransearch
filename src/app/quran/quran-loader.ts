@@ -25,7 +25,7 @@ function quran_len(): number {
    return qurans.uthmani.length;
 }
 
-let qurans = {
+let qurans: { [k: string]: any } = {
    'suwar': undefined,
    'uthmani': undefined,
    'imlaai': undefined,
@@ -80,7 +80,7 @@ export class QuranLoader extends Quran {
          .then(json => { qurans[k] = json; });
    }
 
-   private add_category(cat: any, parent: Category) {
+   private add_category(cat: any, parent: Category | null) {
       let o = new Category(cat.id, cat.name);
       this.categories.set(o.id, o);
       if (parent != null) {
@@ -126,6 +126,10 @@ export class QuranLoader extends Quran {
       let cur_s = 1;
       for (let i = 0; i < len; ++i) {
          let surah = this.suwar.get(cur_s);
+         if (surah == null) {
+            console.error(`Missing surah ${cur_s} while building ayat`);
+            return false;
+         }
          let a = new Ayah(i, surah, cur_a, qurans.uthmani[i], qurans.imlaai[i]);
          surah.ayat.push(a);
          this.ayat.set(StringUtils.ayah_str_id(cur_s, cur_a), a);

@@ -2,13 +2,13 @@
 import * as MathUtils from './math-utils';
 
 
-const multi_match_map_any = { 
+const multi_match_map_any: { [c: string]: string } = {
    ا: '[اأآإى]',
    أ: '[أءؤئ]',
    ٱ: '[ءاأآ]',
    ء: '[ءأؤئ]'
    };
-const multi_match_map_end = {
+const multi_match_map_end: { [c: string]: string } = {
    ة: '[ةته]',   // END ONLY
    ت: '[تة]',    // END ONLY
    ه: '[تهة]',   // END ONLY

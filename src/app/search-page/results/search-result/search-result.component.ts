@@ -21,7 +21,7 @@ import { NavService } from '../../../services/nav-service.service';
 export class SearchResultComponent implements OnInit {
 
    @Input()
-   result: SearchResult;
+   result!: SearchResult;
 
    private highlight_set = new Set<number>();
 
