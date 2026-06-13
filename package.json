@@ -6,8 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint"
+    "test": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
+    "typecheck": "tsc -p src/tsconfig.app.json --noEmit && tsc -p src/tsconfig.spec.json --noEmit",
+    "lint": "ng lint",
+    "e2e": "playwright test"
   },
   "private": true,
   "engines": {
